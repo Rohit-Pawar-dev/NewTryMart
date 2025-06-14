@@ -1,0 +1,79 @@
+<div class="card">
+  <div class="card-header">
+    <h3>Add New Banner</h3>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <!-- Title -->
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input
+          type="text"
+          id="title"
+          class="form-control"
+          formControlName="title"
+          [class.is-invalid]="
+            form.get('title')?.invalid && form.get('title')?.touched
+          "
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="form.get('title')?.errors?.['required']"
+        >
+          Title is required.
+        </div>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="mb-3">
+        <label for="imageUpload" class="form-label">Upload Image</label>
+        <input
+          type="file"
+          id="imageUpload"
+          class="form-control"
+          accept="image/*"
+          (change)="onImageSelected($event)"
+          [disabled]="isUploading"
+        />
+        <div *ngIf="imagePreview" class="mt-2">
+          <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="uploadError">
+          {{ uploadError }}
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <select
+          id="status"
+          class="form-select"
+          formControlName="status"
+          [class.is-invalid]="
+            form.get('status')?.invalid && form.get('status')?.touched
+          "
+        >
+          <option value="">Select status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <div
+          class="invalid-feedback"
+          *ngIf="form.get('status')?.errors?.['required']"
+        >
+          Status is required.
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="isSubmitting || form.invalid"
+      >
+        {{ isSubmitting ? "Submitting..." : "Create Banner" }}
+      </button>
+    </form>
+  </div>
+</div>

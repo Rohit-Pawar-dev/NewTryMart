@@ -1,0 +1,22 @@
+<div class="card" *ngIf="!isLoading && banner; else loadingOrError">
+  <div class="card-header">
+    <h3>Banner Details</h3>
+  </div>
+  <div class="card-body">
+    <p><strong>Title:</strong> {{ banner.title }}</p>
+    <p>
+      <strong>Image:</strong><br />
+      <img [src]="banner.image" alt="{{ banner.title }}" width="300" />
+    </p>
+    <p><strong>Status:</strong> {{ banner.status }}</p>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div class="text-center p-4" *ngIf="isLoading">
+    <p>Loading banner data...</p>
+  </div>
+  <div class="alert alert-danger" *ngIf="error">
+    {{ error }}
+  </div>
+</ng-template>

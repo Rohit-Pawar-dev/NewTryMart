@@ -1,0 +1,83 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h3>Banner Management</h3>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <div class="mb-3 d-flex justify-content-between align-items-center">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          class="form-control w-25"
+          placeholder="Search by title"
+        />
+        <button class="btn btn-primary" routerLink="/banners/add">
+          Add New Banner
+        </button>
+      </div>
+
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Image</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let banner of banners; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ banner.title }}</td>
+            <td>
+              <img [src]="banner.image" width="100" class="img-thumbnail" />
+            </td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': banner.status === 'active',
+                  'bg-danger': banner.status === 'inactive'
+                }"
+                >{{ banner.status | titlecase }}</span
+              >
+            </td>
+            <td>
+              <div class="btn-group" role="group">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  (click)="toggleStatus(banner)"
+                >
+                  <i class="cil-sync"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-info"
+                  [routerLink]="['/banners/view', banner._id]"
+                >
+                  <i class="cil-magnifying-glass"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-warning"
+                  [routerLink]="['/banners/edit', banner._id]"
+                >
+                  <i class="cil-pencil"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteBanner(banner._id!)"
+                >
+                  <i class="cil-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="banners.length === 0 && !isLoading">
+            <td colspan="5" class="text-center">No banners found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

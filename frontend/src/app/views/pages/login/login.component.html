@@ -1,0 +1,58 @@
+<div class="bg-light dark:bg-transparent min-vh-100 d-flex flex-row align-items-center">
+  <c-container breakpoint="md">
+    <c-row class="justify-content-center">
+      <c-col lg="8" xl="6">
+        <c-card class="p-4 w-100">
+          <c-card-body>
+            <form cForm (ngSubmit)="onLogin()">
+              <h1 class="text-center pb-2">Admin Login</h1>
+              <!-- <p class="text-body-secondary">Sign in</p> -->
+
+              <c-input-group class="mb-3">
+                <span cInputGroupText>
+                  <c-icon name="cilUser"></c-icon>
+                </span>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  cFormControl
+                  autocomplete="username"
+                  [(ngModel)]="username"
+                  name="username"
+                  required
+                />
+              </c-input-group>
+
+              <c-input-group class="mb-4">
+                <span cInputGroupText>
+                  <c-icon name="cilLockLocked"></c-icon>
+                </span>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  cFormControl
+                  autocomplete="current-password"
+                  [(ngModel)]="password"
+                  name="password"
+                  required
+                />
+              </c-input-group>
+
+              <c-row>
+                <c-col class="text-center">
+                  <button cButton color="primary" class="px-4" type="submit">
+                    Login
+                  </button>
+                </c-col>
+              </c-row>
+
+              <div *ngIf="error" class="text-danger mt-3 text-center">
+                {{ error }}
+              </div>
+            </form>
+          </c-card-body>
+        </c-card>
+      </c-col>
+    </c-row>
+  </c-container>
+</div>
