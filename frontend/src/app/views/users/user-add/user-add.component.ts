@@ -10,7 +10,7 @@ import { UserService, User } from '../../../services/user.service';
   standalone: true,
   selector: 'app-user-add',
   templateUrl: './user-add.component.html',
-  styleUrls: ['./user-add.component.scss'],
+  // styleUrls: ['./user-add.component.scss'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
