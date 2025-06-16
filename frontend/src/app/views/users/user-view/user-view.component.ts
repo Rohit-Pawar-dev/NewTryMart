@@ -7,7 +7,7 @@ import { UserService, User } from '../../../services/user.service';
   standalone: true,
   selector: 'app-user-view',
   templateUrl: './user-view.component.html',
-  styleUrls: ['./user-view.component.scss'],
+  // styleUrls: ['./user-view.component.scss'],
   imports: [CommonModule]
 })
 export class UserViewComponent implements OnInit {
