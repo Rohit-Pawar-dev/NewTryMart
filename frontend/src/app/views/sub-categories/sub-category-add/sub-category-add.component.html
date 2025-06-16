@@ -1,30 +1,44 @@
 <div class="card">
   <div class="card-header">
-    <h3>Edit Banner</h3>
+    <h3>Add New SubCategory</h3>
   </div>
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <!-- Title -->
+      <!-- Category Selection -->
       <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input
-          type="text"
-          id="title"
-          class="form-control"
-          formControlName="title"
-          [class.is-invalid]="
-            form.get('title')?.invalid && form.get('title')?.touched
-          "
-        />
+        <label for="category_id" class="form-label">Select Category</label>
+        <select
+          id="category_id"
+          class="form-select"
+          formControlName="category_id"
+          [class.is-invalid]="form.get('category_id')?.invalid && form.get('category_id')?.touched"
+        >
+          <option value="">-- Select Category --</option>
+          <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
+        </select>
         <div
           class="invalid-feedback"
-          *ngIf="form.get('title')?.errors?.['required']"
+          *ngIf="form.get('category_id')?.errors?.['required']"
         >
-          Title is required.
+          Category is required.
         </div>
       </div>
 
-      <!-- Image URL -->
+      <!-- Name -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input
+          type="text"
+          id="name"
+          class="form-control"
+          formControlName="name"
+          [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+        />
+        <div class="invalid-feedback" *ngIf="form.get('name')?.errors?.['required']">
+          Name is required.
+        </div>
+      </div>
+
       <!-- Image Upload -->
       <div class="mb-3">
         <label for="imageUpload" class="form-label">Upload Image</label>
@@ -36,26 +50,9 @@
           (change)="onImageSelected($event)"
           [disabled]="isUploading"
         />
-
-        <!-- Preview newly selected image -->
         <div *ngIf="imagePreview" class="mt-2">
-          <img
-            [src]="imagePreview"
-            alt="New Preview"
-            style="max-height: 150px"
-          />
+          <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
         </div>
-
-        <!-- Preview existing image if no new image is selected -->
-        <div *ngIf="!imagePreview && form.get('image')?.value" class="mt-2">
-          <img
-            [src]="form.get('image')?.value"
-            alt="Existing Image"
-            style="max-height: 150px"
-            class="rounded border"
-          />
-        </div>
-
         <div class="invalid-feedback d-block" *ngIf="uploadError">
           {{ uploadError }}
         </div>
@@ -68,18 +65,13 @@
           id="status"
           class="form-select"
           formControlName="status"
-          [class.is-invalid]="
-            form.get('status')?.invalid && form.get('status')?.touched
-          "
+          [class.is-invalid]="form.get('status')?.invalid && form.get('status')?.touched"
         >
           <option value="">Select status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <div
-          class="invalid-feedback"
-          *ngIf="form.get('status')?.errors?.['required']"
-        >
+        <div class="invalid-feedback" *ngIf="form.get('status')?.errors?.['required']">
           Status is required.
         </div>
       </div>
@@ -90,7 +82,7 @@
         class="btn btn-primary"
         [disabled]="isSubmitting || form.invalid"
       >
-        {{ isSubmitting ? "Saving..." : "Update Banner" }}
+        {{ isSubmitting ? "Submitting..." : "Create SubCategory" }}
       </button>
     </form>
   </div>

@@ -10,7 +10,7 @@ const sellerSchema = new Schema({
   gender: {
     type: String,
     enum: ['male', 'female', 'other', 'prefer_not_to_say'],
-    default: 'prefer_not_to_say'
+    default: 'male'
   },
   mobile: {
     type: String,
@@ -25,7 +25,7 @@ const sellerSchema = new Schema({
   },
   otp: {
     type: String,
-    required: true,
+    // required: true,
     default: '0000'
   },
   shop_name: {

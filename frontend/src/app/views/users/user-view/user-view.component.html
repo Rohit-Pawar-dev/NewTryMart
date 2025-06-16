@@ -6,6 +6,10 @@
     <p><strong>Name:</strong> {{ user.name }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Mobile:</strong> {{ user.mobile }}</p>
+    <p>
+      <strong>Image:</strong><br />
+      <img [src]="user.profilePicture" alt="{{ user.profilePicture }}" width="300" />
+    </p>
     <p><strong>Status:</strong> {{ user.status }}</p>
   </div>
 </div>

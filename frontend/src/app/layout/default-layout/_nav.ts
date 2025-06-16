@@ -16,10 +16,35 @@ export const navItems: INavData[] = [
     url: '/banners',
     iconComponent: { name: 'cil-bell' },
   },
+
+  {
+    name: 'Categories',
+    url: '/categories',
+    iconComponent: { name: 'cil-tags' },
+  },
+
+  {
+    name: 'SubCategories',
+    url: '/sub-categories',
+    iconComponent: { name: 'cil-tags' },
+  },
+
   {
     name: 'Users',
     url: '/users',
     iconComponent: { name: 'cil-user' },
+  },
+
+  {
+    name: 'Sellers',
+    url: '/sellers',
+    iconComponent: { name: 'cil-user' },
+  },
+
+  {
+    name: 'Delivery Men',
+    url: '/delivery-men',
+    iconComponent: { name: 'cil-truck' },
   },
 
   {

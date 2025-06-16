@@ -1,6 +1,7 @@
+<!-- seller-list.component.html -->
 <div class="card">
   <div class="card-header">
-    <h3>User Management</h3>
+    <h3>Seller Management</h3>
   </div>
   <div class="card-body">
     <div class="table-responsive">
@@ -12,8 +13,8 @@
           class="form-control w-25"
           placeholder="Search..."
         />
-        <button class="btn btn-primary" routerLink="/users/add">
-          Add New User
+        <button class="btn btn-primary" routerLink="/sellers/add">
+          Add New Seller
         </button>
       </div>
 
@@ -22,7 +23,6 @@
           <tr>
             <th>#</th>
             <th>Name</th>
-            <th>Image</th>
             <th>Email</th>
             <th>Mobile</th>
             <th>Status</th>
@@ -30,57 +30,54 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of users; let i = index">
+          <tr *ngFor="let seller of sellers; let i = index">
             <td>{{ i + 1 }}</td>
-            <td>{{ user.name }}</td>
-            <td>
-              <img [src]="user.profilePicture" width="100" class="img-thumbnail" />
-            </td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.mobile }}</td>
+            <td>{{ seller.name }}</td>
+            <td>{{ seller.email }}</td>
+            <td>{{ seller.mobile }}</td>
             <td>
               <span
                 class="badge"
                 [ngClass]="{
-                  'bg-success': user.status === 'active',
-                  'bg-danger': user.status === 'inactive'
+                  'bg-success': seller.status === 'active',
+                  'bg-danger': seller.status === 'inactive'
                 }"
               >
-                {{ user.status | titlecase }}
+                {{ seller.status | titlecase }}
               </span>
             </td>
             <td>
               <div class="btn-group" role="group">
                 <button
                   class="btn btn-sm btn-secondary ms-2"
-                  (click)="toggleStatus(user)"
+                  (click)="toggleStatus(seller)"
                   title="Toggle Status"
                 >
                   <i class="cil-sync"></i>
                 </button>
                 <button
                   class="btn btn-sm btn-info"
-                  [routerLink]="['/users/view', user._id]"
+                  [routerLink]="['/sellers/view', seller._id]"
                 >
                   <i class="cil-magnifying-glass"></i>
                 </button>
                 <button
                   class="btn btn-sm btn-warning"
-                  [routerLink]="['/users/edit', user._id]"
+                  [routerLink]="['/sellers/edit', seller._id]"
                 >
                   <i class="cil-pencil"></i>
                 </button>
                 <button
                   class="btn btn-sm btn-danger"
-                  (click)="deleteUser(user._id)"
+                  (click)="deleteSeller(seller._id)"
                 >
                   <i class="cil-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
-          <tr *ngIf="users.length === 0">
-            <td colspan="8" class="text-center">No users found</td>
+          <tr *ngIf="sellers.length === 0">
+            <td colspan="8" class="text-center">No sellers found</td>
           </tr>
         </tbody>
       </table>

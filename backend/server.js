@@ -45,6 +45,11 @@ app.use('/api/subcategories', subCategoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/review', reviewRoutes);
 
+// CART ROUTES
+app.use('/api', cartRoutes);
+
+// Address Routes
+app.use('/api',addressRoutes);
 
 
 // AUTHENTICATION  ROUTES
@@ -54,11 +59,7 @@ app.use('/api', accountRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
-// CART ROUTES
-app.use('/api', cartRoutes);
 
-// Address Routes
-app.use('/api',addressRoutes);
 
 mongoose.connect(process.env.MONGO_URI, { connectTimeoutMS: 30000 }).then(() => {
   console.log('MongoDB connected')
