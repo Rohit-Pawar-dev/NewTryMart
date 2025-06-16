@@ -16,6 +16,7 @@ async function calculatePrice(productId, selectedVariant = {}) {
   price = Math.max(price, 0);
 
   // Tax could be applied here as well
+    
   // For demo, skipping tax calculations
 
   return price;

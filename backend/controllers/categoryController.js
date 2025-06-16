@@ -1,5 +1,5 @@
 const Category = require("../models/Category");
-
+const SubCategory = require("../models/SubCategory");
 // Create
 exports.createCategory = async (req, res) => {
   try {
@@ -15,21 +15,40 @@ exports.getAllCategories = async (req, res) => {
   try {
     const { all, search = "", limit = 10, offset = 0 } = req.query;
 
-    const filter = all === "true" ? {} : { status: "active" };
+    const matchStage = {};
+    if (all !== "true") matchStage.status = "active";
+    if (search) matchStage.name = { $regex: search, $options: "i" };
 
-    if (search) {
-      filter.name = { $regex: search, $options: "i" };
-    }
+    const categories = await Category.aggregate([
+      { $match: matchStage },
+      { $sort: { createdAt: -1 } },
+      { $skip: parseInt(offset) },
+      { $limit: parseInt(limit) },
+      {
+        $lookup: {
+          from: "subcategories", // must match the collection name in MongoDB (usually plural)
+          localField: "_id",
+          foreignField: "category_id",
+          as: "sub_categories"
+        }
+      },
+      {
+        $addFields: {
+          sub_categories: {
+            $filter: {
+              input: "$sub_categories",
+              as: "sub",
+              cond: all === "true" ? {} : { $eq: ["$$sub.status", "active"] }
+            }
+          }
+        }
+      }
+    ]);
 
-    const total = await Category.countDocuments(filter);
-
-    const categories = await Category.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(parseInt(offset))
-      .limit(parseInt(limit));
+    const total = await Category.countDocuments(matchStage);
 
     res.json({
-      message: "Categories fetched successfully",
+      message: "Categories with subcategories fetched successfully",
       data: categories,
       total,
       limit: parseInt(limit),
@@ -40,6 +59,36 @@ exports.getAllCategories = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// exports.getAllCategories = async (req, res) => {
+//   try {
+//     const { all, search = "", limit = 10, offset = 0 } = req.query;
+
+//     const filter = all === "true" ? {} : { status: "active" };
+
+//     if (search) {
+//       filter.name = { $regex: search, $options: "i" };
+//     }
+
+//     const total = await Category.countDocuments(filter);
+
+//     const categories = await Category.find(filter)
+//       .sort({ createdAt: -1 })
+//       .skip(parseInt(offset))
+//       .limit(parseInt(limit));
+
+//     res.json({
+//       message: "Categories fetched successfully",
+//       data: categories,
+//       total,
+//       limit: parseInt(limit),
+//       offset: parseInt(offset),
+//       totalPages: Math.ceil(total / limit),
+//     });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
 
 // Get One
 exports.getCategoryById = async (req, res) => {
