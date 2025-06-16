@@ -1,35 +1,38 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BannerService } from '../../../../app/services/banner.service';
+import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http'; // ✅ Required for file upload
+import { environment } from '../../../../environments/environment';
+import { CategoryService } from '../../../../app/services/category.service';
 
 @Component({
   standalone: true,
-  selector: 'app-banner-edit',
-  templateUrl: './banner-edit.component.html',
+  selector: 'app-category-edit',
+  templateUrl: './category-edit.component.html',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
 })
-export class BannerEditComponent implements OnInit {
+export class CategoryEditComponent implements OnInit {
   form: FormGroup;
   id: string = '';
-  isSubmitting: boolean = false;
+  isSubmitting = false;
 
   imagePreview: string | null = null;
-  isUploading: boolean = false;
+  isUploading = false;
   uploadError: string | null = null;
+
+  private uploadUrl = `${environment.apiUrl}/upload-media`;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private bannerService: BannerService,
+    private categoryService: CategoryService,
     private router: Router,
-    private http: HttpClient // ✅ Inject HttpClient
+    private http: HttpClient
   ) {
     this.form = this.fb.group({
-      title: ['', Validators.required],
+      name: ['', Validators.required],
       image: ['', Validators.required],
       status: ['', Validators.required],
     });
@@ -37,9 +40,9 @@ export class BannerEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = this.route.snapshot.params['id'];
-    this.bannerService.getBanner(this.id).subscribe((banner) => {
-      this.form.patchValue(banner);
-      this.imagePreview = banner.image; // ✅ Set existing image preview
+    this.categoryService.getCategory(this.id).subscribe((category) => {
+      this.form.patchValue(category);
+      this.imagePreview = category.image;
     });
   }
 
@@ -48,33 +51,35 @@ export class BannerEditComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    this.bannerService.updateBanner(this.id, this.form.value).subscribe({
-      next: () => this.router.navigate(['/banners']),
+    this.categoryService.updateCategory(this.id, this.form.value).subscribe({
+      next: () => this.router.navigate(['/categories']),
       error: () => {
         this.isSubmitting = false;
-      }
+      },
     });
   }
 
-  onImageSelected(event: any): void {
-    const file = event.target.files[0];
+  onImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
     this.isUploading = true;
     const formData = new FormData();
+    formData.append('type', 'category');
     formData.append('file', file);
 
-    this.http.post<{ file: string }>('http://localhost:5000/api/upload-media', formData).subscribe({
+    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
       next: (res) => {
-        this.form.patchValue({ image: res.file });
-        this.imagePreview = res.file;
+        const normalizedUrl = res.file.replace(/\\/g, '/');
+        this.form.patchValue({ image: normalizedUrl });
+        this.imagePreview = normalizedUrl;
         this.uploadError = null;
         this.isUploading = false;
       },
       error: () => {
         this.uploadError = 'Failed to upload image. Please try again.';
         this.isUploading = false;
-      }
+      },
     });
   }
 }

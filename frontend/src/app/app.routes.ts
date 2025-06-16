@@ -20,11 +20,6 @@ export const routes: Routes = [
           import('./views/dashboard/routes').then((m) => m.routes),
       },
 
-      // {
-      //   path: 'users',
-      //   loadChildren: () =>
-      //     import('./views/users/routes').then((m) => m.routes),
-      // },
       {
         path: 'users',
         loadChildren: () =>
@@ -32,9 +27,39 @@ export const routes: Routes = [
       },
 
       {
+        path: 'sellers',
+        loadChildren: () =>
+          import('./views/sellers/sellers.module').then((m) => m.SellersModule),
+      },
+
+      // {
+      //   path: 'delivery-men',
+      //   loadChildren: () =>
+      //     import('./views/delivery-men/delivery-men.module').then(
+      //       (m) => m.DeliveryMenModule
+      //     ),
+      // },
+
+      {
         path: 'banners',
         loadChildren: () =>
           import('./views/banners/banners.module').then((m) => m.BannersModule),
+      },
+
+      {
+        path: 'categories',
+        loadChildren: () =>
+          import('./views/categories/categories.module').then(
+            (m) => m.CategoriesModule
+          ),
+      },
+
+      {
+        path: 'sub-categories',
+        loadChildren: () =>
+          import('./views/sub-categories/subCategories.module').then(
+            (m) => m.SubCategoriesModule
+          ),
       },
 
       {

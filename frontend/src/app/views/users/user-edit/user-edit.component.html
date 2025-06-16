@@ -4,7 +4,6 @@
   </div>
   <div class="card-body">
     <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-
       <!-- Name -->
       <div class="mb-3">
         <label for="name" class="form-label">Name</label>
@@ -13,9 +12,14 @@
           id="name"
           class="form-control"
           formControlName="name"
-          [class.is-invalid]="userForm.get('name')?.invalid && userForm.get('name')?.touched"
+          [class.is-invalid]="
+            userForm.get('name')?.invalid && userForm.get('name')?.touched
+          "
         />
-        <div class="invalid-feedback" *ngIf="userForm.get('name')?.errors?.['required']">
+        <div
+          class="invalid-feedback"
+          *ngIf="userForm.get('name')?.errors?.['required']"
+        >
           Name is required.
         </div>
       </div>
@@ -28,12 +32,20 @@
           id="email"
           class="form-control"
           formControlName="email"
-          [class.is-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+          [class.is-invalid]="
+            userForm.get('email')?.invalid && userForm.get('email')?.touched
+          "
         />
-        <div class="invalid-feedback" *ngIf="userForm.get('email')?.errors?.['required']">
+        <div
+          class="invalid-feedback"
+          *ngIf="userForm.get('email')?.errors?.['required']"
+        >
           Email is required.
         </div>
-        <div class="invalid-feedback" *ngIf="userForm.get('email')?.errors?.['email']">
+        <div
+          class="invalid-feedback"
+          *ngIf="userForm.get('email')?.errors?.['email']"
+        >
           Enter a valid email address.
         </div>
       </div>
@@ -46,10 +58,34 @@
           id="mobile"
           class="form-control"
           formControlName="mobile"
-          [class.is-invalid]="userForm.get('mobile')?.invalid && userForm.get('mobile')?.touched"
+          [class.is-invalid]="
+            userForm.get('mobile')?.invalid && userForm.get('mobile')?.touched
+          "
         />
-        <div class="invalid-feedback" *ngIf="userForm.get('mobile')?.errors?.['required']">
+        <div
+          class="invalid-feedback"
+          *ngIf="userForm.get('mobile')?.errors?.['required']"
+        >
           Mobile number is required.
+        </div>
+      </div>
+
+      <!-- Profile Picture -->
+      <div class="mb-3">
+        <label for="profileUpload" class="form-label">Profile Picture</label>
+        <input
+          type="file"
+          id="profileUpload"
+          class="form-control"
+          accept="image/*"
+          (change)="onImageSelected($event)"
+          [disabled]="isUploading"
+        />
+        <div *ngIf="imagePreview" class="mt-2">
+          <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="uploadError">
+          {{ uploadError }}
         </div>
       </div>
 
@@ -60,13 +96,18 @@
           id="status"
           class="form-select"
           formControlName="status"
-          [class.is-invalid]="userForm.get('status')?.invalid && userForm.get('status')?.touched"
+          [class.is-invalid]="
+            userForm.get('status')?.invalid && userForm.get('status')?.touched
+          "
         >
           <option value="">Select status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <div class="invalid-feedback" *ngIf="userForm.get('status')?.errors?.['required']">
+        <div
+          class="invalid-feedback"
+          *ngIf="userForm.get('status')?.errors?.['required']"
+        >
           Status is required.
         </div>
       </div>
@@ -77,9 +118,8 @@
         class="btn btn-primary"
         [disabled]="isSubmitting || userForm.invalid"
       >
-        {{ isSubmitting ? 'Saving...' : 'Update User' }}
+        {{ isSubmitting ? "Saving..." : "Update User" }}
       </button>
-
     </form>
   </div>
 </div>

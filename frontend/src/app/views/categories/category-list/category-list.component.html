@@ -1,0 +1,83 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h3>Category Management</h3>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <div class="mb-3 d-flex justify-content-between align-items-center">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          class="form-control w-25"
+          placeholder="Search by name"
+        />
+        <button class="btn btn-primary" routerLink="/categories/add">
+          Add New Category
+        </button>
+      </div>
+
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Image</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let category of categories; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ category.name }}</td>
+            <td>
+              <img [src]="category.image" width="100" class="img-thumbnail" />
+            </td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': category.status === 'active',
+                  'bg-danger': category.status === 'inactive'
+                }"
+                >{{ category.status | titlecase }}</span
+              >
+            </td>
+            <td>
+              <div class="btn-group" role="group">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  (click)="toggleStatus(category)"
+                >
+                  <i class="cil-sync"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-info"
+                  [routerLink]="['/categories/view', category._id]"
+                >
+                  <i class="cil-magnifying-glass"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-warning"
+                  [routerLink]="['/categories/edit', category._id]"
+                >
+                  <i class="cil-pencil"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteCategory(category._id!)"
+                >
+                  <i class="cil-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="categories.length === 0 && !isLoading">
+            <td colspan="5" class="text-center">No categories found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
