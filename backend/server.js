@@ -20,6 +20,7 @@ const subCategoryRoutes = require('./routes/subcategory.js');
 const productRoutes = require('./routes/products');
 const reviewRoutes = require('./routes/reviews');
 const cartRoutes = require("./routes/CartRoutes");
+const addressRoutes = require("./routes/AddressRoutes");
 
 
 
@@ -55,6 +56,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // CART ROUTES
 app.use('/api', cartRoutes);
+
+// Address Routes
+app.use('/api',addressRoutes);
 
 mongoose.connect(process.env.MONGO_URI, { connectTimeoutMS: 30000 }).then(() => {
   console.log('MongoDB connected')
