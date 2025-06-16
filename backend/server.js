@@ -16,12 +16,13 @@ const faqRoutes = require('./routes/FaqRoutes');
 const bannerRoutes = require('./routes/BannerRoutes');
 const categoryRoutes = require('./routes/categories');
 const subCategoryRoutes = require('./routes/subcategory.js');
-
 const productRoutes = require('./routes/products');
 const reviewRoutes = require('./routes/reviews');
 const cartRoutes = require("./routes/CartRoutes");
 const addressRoutes = require("./routes/AddressRoutes");
-
+const PlaceOrderRoutes = require("./routes/PlaceOrderRoutes.js");
+const CouponRoutes = require("./routes/couponRoutes.js");
+const deliveryManRoutes = require('./routes/DeliverManRoutes.js');
 
 
 app.use(cors());
@@ -41,7 +42,6 @@ app.use('/api/faq', faqRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/subcategories', subCategoryRoutes);
-
 app.use('/api/products', productRoutes);
 app.use('/api/review', reviewRoutes);
 
@@ -59,6 +59,15 @@ app.use('/api', cartRoutes);
 
 // Address Routes
 app.use('/api',addressRoutes);
+
+// COUPON ROUTES
+app.use('/api/coupons',CouponRoutes);
+
+// PLACEORDER ROUTES
+app.use('/api/orders',PlaceOrderRoutes);
+
+//Delivery Routes
+app.use('/api/delivery-men', deliveryManRoutes);
 
 mongoose.connect(process.env.MONGO_URI, { connectTimeoutMS: 30000 }).then(() => {
   console.log('MongoDB connected')

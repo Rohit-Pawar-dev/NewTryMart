@@ -78,7 +78,7 @@ const sellerSchema = new Schema({
   },
   status: {
     type: String,
-    default: 'active',
+    default: 'inactive',
     enum: ['active', 'inactive', 'blocked']
   }
 }, {

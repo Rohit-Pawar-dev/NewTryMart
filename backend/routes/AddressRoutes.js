@@ -14,4 +14,7 @@ router.put('/address/:addressId', AddressController.updateAddress);
 // Delete address
 router.delete('/address/:addressId', AddressController.deleteAddress);
 
+// Selecte address
+router.put('/addresses/select/:addressId',AddressController.selectAddress);
+
 module.exports = router;
