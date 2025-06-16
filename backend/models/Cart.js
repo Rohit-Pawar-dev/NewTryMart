@@ -25,11 +25,11 @@ const cartSchema = new Schema(
       of: String,
       default: {},
     },
-    price: {
+    total_price: {
       type: Number,
       required: true,
     },
-    mrp: {
+    unit_price: {
       type: Number,
       required: true,
     },

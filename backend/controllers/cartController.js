@@ -33,7 +33,7 @@ module.exports = {
       });
       const totalAmount = cartItems.reduce((total, item) => {
         // You can adjust this to include tax or discount if you want
-        return total + item.price * item.quantity;
+        return total + item.total_price * item.quantity;
       }, 0);
       res.json({
         cartItems,
@@ -68,8 +68,8 @@ module.exports = {
         {
           $inc: { quantity: quantity },
           $setOnInsert: {
-            price,
-            mrp:product.unit_price,
+          total_price:  price,
+            unit_price:product.unit_price,
             discount:product.discount,
             discount_type:product.discount_type,
             customer_id: userId,
