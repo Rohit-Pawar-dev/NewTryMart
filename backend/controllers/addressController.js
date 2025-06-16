@@ -4,14 +4,15 @@ const AddressController = {
   // 1. Add new address
   async addAddress(req, res) {
     try {
-      const { customer_id } = req.body;
+      const { customer_id, is_default } = req.body;
 
-    //   if (req.body.is_default) {
-    //     await Address.updateMany(
-    //       { customer_id },
-    //       { $set: { is_default: false } }
-    //     );
-    //   }
+      // If new address is default, unset previous default addresses for user
+      if (is_default) {
+        await Address.updateMany(
+          { customer_id },
+          { $set: { is_default: false } }
+        );
+      }
 
       const address = new Address(req.body);
       await address.save();
@@ -28,6 +29,10 @@ const AddressController = {
     try {
       const { userId } = req.params;
 
+      if (!userId) {
+        return res.status(400).json({ success: false, message: "User ID is required" }); // Added validation for userId
+      }
+
       const addresses = await Address.find({ customer_id: userId }).sort({ is_default: -1 });
 
       res.status(200).json({ success: true, data: addresses });
@@ -43,12 +48,16 @@ const AddressController = {
       const { addressId } = req.params;
       const updateData = req.body;
 
-    //   if (updateData.is_default) {
-    //     await Address.updateMany(
-    //       { customer_id: updateData.customer_id },
-    //       { $set: { is_default: false } }
-    //     );
-    //   }
+      // If updating to default, unset previous default addresses for user
+      if (updateData.is_default) {
+        if (!updateData.customer_id) {
+          return res.status(400).json({ success: false, message: "customer_id is required to set default" });
+        }
+        await Address.updateMany(
+          { customer_id: updateData.customer_id },
+          { $set: { is_default: false } }
+        );
+      }
 
       const updated = await Address.findByIdAndUpdate(addressId, updateData, { new: true });
 
@@ -75,7 +84,33 @@ const AddressController = {
       console.error('Delete address error:', err);
       res.status(500).json({ success: false, message: 'Server Error' });
     }
-  }
+  },
+
+  // 5. Select address (set is_default true for one address)
+  async selectAddress(req, res) {
+    try {
+      const userId = req.body.userId || req.query.userId;
+      const addressId = req.params.addressId;
+
+      if (!userId) return res.status(400).json({ message: "User ID is required" });
+
+      // Check address belongs to user
+      const address = await Address.findOne({ _id: addressId, customer_id: userId });
+      if (!address) return res.status(404).json({ message: "Address not found" });
+
+      // Reset all addresses for user to is_default: false
+      await Address.updateMany({ customer_id: userId }, { is_default: false });
+
+      // Set selected address as default
+      address.is_default = true;
+      await address.save();
+
+      return res.json({ message: "Address selected successfully", address });
+    } catch (error) {
+      console.error('Select address error:', error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  },
 };
 
 module.exports = AddressController;
