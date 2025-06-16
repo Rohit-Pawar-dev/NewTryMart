@@ -6,19 +6,28 @@ async function calculatePrice(productId, selectedVariant = {}) {
   const product = await Product.findById(productId);
   if (!product) throw new Error("Product not found");
 
-  // Basic discount calculation
-  let price = product.unit_price;
+  let basePrice = product.unit_price;
+  let discountAmount = 0;
   if (product.discount_type === "percent") {
-    price -= (product.discount / 100) * price;
+    discountAmount = (product.discount / 100) * basePrice;
   } else {
-    price -= product.discount;
+    discountAmount = product.discount;
   }
-  price = Math.max(price, 0);
+  discountAmount = Math.min(discountAmount, basePrice);
+  let priceAfterDiscount = basePrice - discountAmount;
 
-  // Tax could be applied here as well
-  // For demo, skipping tax calculations
+  // Example tax: 10%
+  const taxRate = 0.1;
+  const taxAmount = priceAfterDiscount * taxRate;
 
-  return price;
+  const finalPrice = priceAfterDiscount + taxAmount;
+
+  return {
+    basePrice,
+    discountAmount,
+    taxAmount,
+    finalPrice,
+  };
 }
 
 module.exports = {
@@ -31,16 +40,31 @@ module.exports = {
         customer_id: userId,
         save_for_later: false,
       });
-      const totalAmount = cartItems.reduce((total, item) => {
-        // You can adjust this to include tax or discount if you want
-        return total + item.total_price * item.quantity;
-      }, 0);
+
+      let totalAmount = 0;
+      let totalDiscount = 0;
+      let totalTax = 0;
+
+      for (const item of cartItems) {
+        // Use calculatePrice for each item
+        const { discountAmount, taxAmount } = await calculatePrice(item.product_id, item.selected_variant);
+        totalDiscount += discountAmount * item.quantity;
+        totalTax += taxAmount * item.quantity;
+        totalAmount += (item.total_price * item.quantity);
+      }
+
       res.json({
-        cartItems,
-        totalAmount,
+        status: true,
+        message: "Cart fetched successfully",
+        data: {
+          cartItems,
+          totalAmount,
+          totalDiscount,
+          totalTax,
+        },
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
 
@@ -48,14 +72,12 @@ module.exports = {
   async addToCart(req, res) {
     const { userId, productId, selectedVariant } = req.body;
     const quantity = req.body.quantity || 1;
-    if (!userId || !productId ) {
-      return res
-        .status(400)
-        .json({ error: "userId and productId required" });
+    if (!userId || !productId) {
+      return res.status(400).json({ status: false, message: "userId and productId required" });
     }
 
     try {
-      const price = await calculatePrice(productId, selectedVariant);
+      const priceData = await calculatePrice(productId, selectedVariant);
       const product = await Product.findById(productId);
 
       // Upsert cart item: if exists, increment quantity
@@ -68,10 +90,11 @@ module.exports = {
         {
           $inc: { quantity: quantity },
           $setOnInsert: {
-          total_price:  price,
-            unit_price:product.unit_price,
-            discount:product.discount,
-            discount_type:product.discount_type,
+            name : product.name,
+            total_price: priceData.finalPrice,
+            unit_price: product.unit_price,
+            discount: product.discount,
+            discount_type: product.discount_type,
             customer_id: userId,
             product_id: productId,
             selected_variant: selectedVariant || {},
@@ -80,9 +103,13 @@ module.exports = {
         { upsert: true, new: true }
       );
 
-      res.json(cartItem);
+      res.json({
+        status: true,
+        message: "Item added/updated in cart",
+        data: cartItem,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
 
@@ -91,7 +118,7 @@ module.exports = {
     const { userId, productId, selectedVariant } = req.body;
 
     if (!userId || !productId) {
-      return res.status(400).json({ error: "userId and productId required" });
+      return res.status(400).json({ status: false, message: "userId and productId required" });
     }
 
     try {
@@ -100,9 +127,12 @@ module.exports = {
         product_id: productId,
         selected_variant: selectedVariant || {},
       });
-      res.json({ message: "Removed from cart" });
+      res.json({
+        status: true,
+        message: "Removed from cart",
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
 
@@ -111,13 +141,11 @@ module.exports = {
     const { userId, productId, quantity, selectedVariant } = req.body;
 
     if (!userId || !productId || quantity === undefined) {
-      return res
-        .status(400)
-        .json({ error: "userId, productId, and quantity required" });
+      return res.status(400).json({ status: false, message: "userId, productId, and quantity required" });
     }
 
     if (quantity < 1) {
-      return res.status(400).json({ error: "Quantity must be at least 1" });
+      return res.status(400).json({ status: false, message: "Quantity must be at least 1" });
     }
 
     try {
@@ -132,11 +160,15 @@ module.exports = {
       );
 
       if (!updated)
-        return res.status(404).json({ error: "Cart item not found" });
+        return res.status(404).json({ status: false, message: "Cart item not found" });
 
-      res.json(updated);
+      res.json({
+        status: true,
+        message: "Quantity updated",
+        data: updated,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
 
@@ -146,17 +178,21 @@ module.exports = {
 
     try {
       await Cart.deleteMany({ customer_id: userId });
-      res.json({ message: "Cart cleared" });
+      res.json({
+        status: true,
+        message: "Cart cleared",
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
-  // 👇 Increase quantity (+)
+
+  // Increase quantity (+)
   async increaseQuantity(req, res) {
     const { userId, productId, selectedVariant } = req.body;
 
     if (!userId || !productId) {
-      return res.status(400).json({ error: "userId and productId required" });
+      return res.status(400).json({ status: false, message: "userId and productId required" });
     }
 
     try {
@@ -171,20 +207,24 @@ module.exports = {
       );
 
       if (!updated)
-        return res.status(404).json({ error: "Cart item not found" });
+        return res.status(404).json({ status: false, message: "Cart item not found" });
 
-      res.json(updated);
+      res.json({
+        status: true,
+        message: "Quantity increased",
+        data: updated,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
 
-  // 👇 Decrease quantity (–)
+  // Decrease quantity (–)
   async decreaseQuantity(req, res) {
     const { userId, productId, selectedVariant } = req.body;
 
     if (!userId || !productId) {
-      return res.status(400).json({ error: "userId and productId required" });
+      return res.status(400).json({ status: false, message: "userId and productId required" });
     }
 
     try {
@@ -195,29 +235,37 @@ module.exports = {
       });
 
       if (!cartItem)
-        return res.status(404).json({ error: "Cart item not found" });
+        return res.status(404).json({ status: false, message: "Cart item not found" });
 
       if (cartItem.quantity <= 1) {
         await cartItem.deleteOne();
-        return res.json({ message: "Item removed from cart" });
+        return res.json({
+          status: true,
+          message: "Item removed from cart",
+        });
       }
 
-      // Direct update instead of modifying the document and calling `save()`
       await Cart.updateOne({ _id: cartItem._id }, { $inc: { quantity: -1 } });
 
       const updatedCartItem = await Cart.findById(cartItem._id);
-      res.json(updatedCartItem);
+      res.json({
+        status: true,
+        message: "Quantity decreased",
+        data: updatedCartItem,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
+
   async toggleSaveForLater(req, res) {
     const { userId, productId, selectedVariant, saveForLater } = req.body;
 
     if (!userId || !productId || typeof saveForLater !== "boolean") {
-      return res
-        .status(400)
-        .json({ error: "userId, productId, and saveForLater are required" });
+      return res.status(400).json({
+        status: false,
+        message: "userId, productId, and saveForLater are required",
+      });
     }
 
     try {
@@ -232,21 +280,27 @@ module.exports = {
       );
 
       if (!cartItem) {
-        return res.status(404).json({ error: "Cart item not found" });
+        return res.status(404).json({ status: false, message: "Cart item not found" });
       }
 
-      res.json(cartItem);
+      res.json({
+        status: true,
+        message: "Save for later toggled",
+        data: cartItem,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
-   async toggleMoveToCart(req, res) {
+
+  async toggleMoveToCart(req, res) {
     const { userId, productId, selectedVariant, saveForLater } = req.body;
 
     if (!userId || !productId || typeof saveForLater !== "boolean") {
-      return res
-        .status(400)
-        .json({ error: "userId, productId, and saveForLater are required" });
+      return res.status(400).json({
+        status: false,
+        message: "userId, productId, and saveForLater are required",
+      });
     }
 
     try {
@@ -261,14 +315,19 @@ module.exports = {
       );
 
       if (!cartItem) {
-        return res.status(404).json({ error: "Cart item not found" });
+        return res.status(404).json({ status: false, message: "Cart item not found" });
       }
 
-      res.json(cartItem);
+      res.json({
+        status: true,
+        message: saveForLater ? "Moved to save for later" : "Moved to cart",
+        data: cartItem,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
+
   async getSavedForLater(req, res) {
     const userId = req.params.userId;
 
@@ -278,9 +337,13 @@ module.exports = {
         save_for_later: true,
       });
 
-      res.json(savedItems);
+      res.json({
+        status: true,
+        message: "Saved items fetched successfully",
+        data: savedItems,
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ status: false, message: error.message });
     }
   },
 };
