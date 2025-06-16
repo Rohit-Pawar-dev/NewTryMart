@@ -9,7 +9,7 @@ import { UserService, User } from '../../../services/user.service';
   standalone: true,
   selector: 'app-user-edit',
   templateUrl: './user-edit.component.html',
-  styleUrls: ['./user-edit.component.scss'],
+  // styleUrls: ['./user-edit.component.scss'],
   imports: [
     CommonModule,
     ReactiveFormsModule,
