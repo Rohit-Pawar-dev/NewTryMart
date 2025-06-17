@@ -5,17 +5,13 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 import { UserService, User } from '../../../services/user.service';
-import { environment } from '../../../../environments/environment'; // Adjust path if needed
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
   selector: 'app-user-edit',
   templateUrl: './user-edit.component.html',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-  ]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
 })
 export class UserEditComponent implements OnInit {
   userForm: FormGroup;
@@ -23,6 +19,7 @@ export class UserEditComponent implements OnInit {
   isUploading = false;
   uploadError: string | null = null;
   imagePreview: string | null = null;
+  selectedFile: File | null = null; // ✅ Store image locally before upload
   userId: string | null = null;
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
@@ -46,21 +43,15 @@ export class UserEditComponent implements OnInit {
   ngOnInit(): void {
     this.userId = this.route.snapshot.paramMap.get('id');
     if (this.userId) {
-      this.userService.getUser(this.userId).subscribe(
-        (user) => {
-          this.userForm.patchValue({
-            name: user.name,
-            email: user.email,
-            mobile: user.mobile,
-            status: user.status,
-            profilePicture: user.profilePicture || ''
-          });
+      this.userService.getUser(this.userId).subscribe({
+        next: (user) => {
+          this.userForm.patchValue(user);
           this.imagePreview = user.profilePicture || null;
         },
-        (error) => {
-          console.error('Error loading user:', error);
+        error: (err) => {
+          console.error('Error loading user:', err);
         }
-      );
+      });
     }
   }
 
@@ -68,40 +59,55 @@ export class UserEditComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('type', 'profile');
-    formData.append('file', file);
+    this.selectedFile = file;
+    this.userForm.patchValue({ profilePicture: 'selected' }); // ✅ To satisfy validation
 
-    this.isUploading = true;
-    this.uploadError = null;
-
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const fileUrl = res.file.replace(/\\/g, '/');
-        this.userForm.patchValue({ profilePicture: fileUrl });
-        this.imagePreview = fileUrl;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Image upload failed:', err);
-        this.uploadError = 'Failed to upload image';
-        this.isUploading = false;
-      }
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   onSubmit(): void {
-    if (this.userForm.valid && this.userId) {
-      this.isSubmitting = true;
-      const updatedUser: Partial<User> = this.userForm.value;
+    if (this.userForm.invalid || !this.userId) return;
 
-      this.userService.updateUser(this.userId, updatedUser).subscribe({
+    this.isSubmitting = true;
+    this.uploadError = null;
+
+    const finalizeUpdate = () => {
+      const updatedUser: Partial<User> = this.userForm.value;
+      this.userService.updateUser(this.userId!, updatedUser).subscribe({
         next: () => this.router.navigate(['/users']),
         error: (error) => {
           console.error('Error updating user:', error);
           this.isSubmitting = false;
         }
       });
+    };
+
+    if (this.selectedFile) {
+      this.isUploading = true;
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      formData.append('type', 'profile');
+
+      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+        next: (res) => {
+          const fileUrl = res.file.replace(/\\/g, '/');
+          this.userForm.patchValue({ profilePicture: fileUrl });
+          this.isUploading = false;
+          finalizeUpdate(); // ✅ Continue after upload
+        },
+        error: (err) => {
+          console.error('Image upload failed:', err);
+          this.uploadError = 'Failed to upload image';
+          this.isUploading = false;
+          this.isSubmitting = false;
+        }
+      });
+    } else {
+      finalizeUpdate(); // ✅ Continue directly if no new image
     }
   }
 }

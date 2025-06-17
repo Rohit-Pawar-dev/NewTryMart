@@ -19,6 +19,7 @@ export class BannerAddComponent {
   isUploading = false;
   uploadError: string | null = null;
   imagePreview: string | null = null;
+  selectedFile: File | null = null;
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
@@ -39,38 +40,62 @@ export class BannerAddComponent {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('type', 'banner');
-    formData.append('file', file);
+    this.selectedFile = file;
 
-    this.isUploading = true;
-    this.uploadError = null;
+    // Set temporary image value to make form valid
+    this.form.patchValue({ image: 'selected' });
 
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.form.patchValue({ image: normalizedUrl });
-        this.imagePreview = normalizedUrl;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
-        this.uploadError = 'Image upload failed';
-        this.isUploading = false;
-      },
-    });
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
+    this.uploadError = null;
 
-    this.bannerService.createBanner(this.form.value).subscribe({
-      next: () => this.router.navigate(['/banners']),
-      error: () => {
-        this.isSubmitting = false;
-      },
-    });
+    const uploadAndCreate = () => {
+      this.bannerService.createBanner(this.form.value).subscribe({
+        next: () => this.router.navigate(['/banners']),
+        error: () => {
+          this.isSubmitting = false;
+        },
+      });
+    };
+
+    // If an image file is selected, upload it first
+    if (this.selectedFile) {
+      const formData = new FormData();
+      formData.append('type', 'banner');
+      formData.append('file', this.selectedFile);
+
+      this.isUploading = true;
+
+      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+        next: (res) => {
+          const normalizedUrl = res.file.replace(/\\/g, '/');
+          this.form.patchValue({ image: normalizedUrl });
+          this.isUploading = false;
+
+          // Now create banner after successful image upload
+          uploadAndCreate();
+        },
+        error: (err) => {
+          console.error('Image upload failed', err);
+          this.uploadError = 'Image upload failed';
+          this.isUploading = false;
+          this.isSubmitting = false;
+        },
+      });
+    } else {
+      // No image selected (shouldn’t happen since image is required)
+      this.uploadError = 'Please select an image';
+      this.isSubmitting = false;
+    }
   }
 }

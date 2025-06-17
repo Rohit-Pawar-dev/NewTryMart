@@ -71,34 +71,6 @@
         </div>
       </div>
 
-      <!-- Password -->
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input
-          type="password"
-          id="password"
-          class="form-control"
-          formControlName="password"
-          maxlength="15"
-          [class.is-invalid]="
-            userForm.get('password')?.invalid &&
-            userForm.get('password')?.touched
-          "
-        />
-        <div
-          class="invalid-feedback"
-          *ngIf="userForm.get('password')?.errors?.['required']"
-        >
-          Password is required.
-        </div>
-        <div
-          class="invalid-feedback"
-          *ngIf="userForm.get('password')?.errors?.['minlength']"
-        >
-          Password must be at least 8 characters.
-        </div>
-      </div>
-
       <!-- Profile Picture -->
       <div class="mb-3">
         <label for="profileUpload" class="form-label">Profile Picture</label>

@@ -1,0 +1,58 @@
+<div class="container mt-4" *ngIf="!isLoading && order">
+  <h3>Order Details</h3>
+
+  <div *ngIf="order as o">
+  <strong>Order ID:</strong> {{ o._id }}<br />
+  <strong>Customer Name:</strong> {{ o.customer_id?.name || 'N/A' }}<br />
+  <strong>Mobile:</strong> {{ o.customer_id?.mobile || 'N/A' }}<br />
+  <strong>Total Price:</strong> ₹{{ o.total_price }}<br />
+  <strong>Payment Method:</strong> {{ o.payment_method }}<br />
+  <strong>Status:</strong> {{ o.status }}<br />
+  <strong>Created At:</strong> {{ o.createdAt | date: 'medium' }}<br />
+</div>
+
+
+
+  <h5>Items</h5>
+  <table class="table table-bordered table-hover mt-2">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th>Thumbnail</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Total Price</th>
+        <th>Variant</th>
+        <th>Seller</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of order.order_items; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.name }}</td>
+        <td>
+          <img
+            [src]="item.product_id?.thumbnail || item.thumbnail"
+            alt="thumb"
+            width="50"
+            height="50"
+          />
+        </td>
+        <td>{{ item.quantity }}</td>
+        <td>₹{{ item.unit_price }}</td>
+        <td>₹{{ item.total_price }}</td>
+        <td>{{ item.selected_variant || '-' }}</td>
+        <td>{{ item.seller_id?.shop_name || 'Admin' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="isLoading" class="text-center mt-4">
+  Loading order details...
+</div>
+
+<div *ngIf="!isLoading && errorMessage" class="alert alert-danger mt-4">
+  {{ errorMessage }}
+</div>
