@@ -5,7 +5,7 @@ const Product = require("../models/Product");
 
 async function placeOrder(req, res) {
   try {
-    const userId = req.user?._id || "684d01a167bc70037c94af6a";
+    const userId = req.body.user_id;
     const shippingAddressId = req.body.address_id;
 
     // 1. Fetch all cart items for this user and populate product & seller info

@@ -1,0 +1,146 @@
+<div class="card">
+  <div class="card-header">
+    <h3>Add New Product</h3>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <!-- Product Name -->
+      <div class="mb-3">
+        <label class="form-label">Product Name</label>
+        <input type="text" class="form-control" formControlName="name" required />
+      </div>
+
+      <!-- Description -->
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" formControlName="description" rows="3"></textarea>
+      </div>
+
+      <!-- Category -->
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select class="form-select" formControlName="category_id" (change)="onCategoryChange()" required>
+          <option value="">-- Select Category --</option>
+          <option *ngFor="let category of categories" [value]="category._id">{{ category.name }}</option>
+        </select>
+      </div>
+
+      <!-- Sub Category -->
+      <div class="mb-3">
+        <label class="form-label">Sub Category</label>
+        <select class="form-select" formControlName="sub_category_id" required>
+          <option value="">-- Select Subcategory --</option>
+          <option *ngFor="let sub of subcategories" [value]="sub._id">{{ sub.name }}</option>
+        </select>
+      </div>
+
+      <!-- Unit -->
+      <div class="mb-3">
+        <label class="form-label">Unit</label>
+        <select class="form-select" formControlName="unit">
+          <option value="piece">Piece</option>
+          <option value="liter">Liter</option>
+          <option value="kg">Kilogram</option>
+        </select>
+      </div>
+
+      <!-- Unit Price -->
+      <div class="mb-3">
+        <label class="form-label">Unit Price</label>
+        <input type="number" class="form-control" formControlName="unit_price" min="0" />
+      </div>
+
+      <!-- Tax Model -->
+      <div class="mb-3">
+        <label class="form-label">Tax Model</label>
+        <select class="form-select" formControlName="tax_model">
+          <option value="include">Include</option>
+          <option value="exclude">Exclude</option>
+        </select>
+      </div>
+
+      <!-- Tax -->
+      <div class="mb-3">
+        <label class="form-label">Tax (%)</label>
+        <input type="number" class="form-control" formControlName="tax" min="0" />
+      </div>
+
+      <!-- Discount Type -->
+      <div class="mb-3">
+        <label class="form-label">Discount Type</label>
+        <select class="form-select" formControlName="discount_type">
+          <option value="flat">Flat</option>
+          <option value="percent">Percentage</option>
+        </select>
+      </div>
+
+      <!-- Discount -->
+      <div class="mb-3">
+        <label class="form-label">Discount</label>
+        <input type="number" class="form-control" formControlName="discount" min="0" />
+      </div>
+
+      <!-- Current Stock -->
+      <div class="mb-3">
+        <label class="form-label">Current Stock</label>
+        <input type="number" class="form-control" formControlName="current_stock" min="0" />
+      </div>
+
+      <!-- Minimum Quantity Purchase -->
+      <div class="mb-3">
+        <label class="form-label">Minimum Quantity Purchase</label>
+        <input type="number" class="form-control" formControlName="min_qty" min="1" />
+      </div>
+
+      <!-- Thumbnail -->
+      <div class="mb-3">
+        <label class="form-label">Thumbnail</label>
+        <input type="file" class="form-control" (change)="onImageSelected($event)" />
+        <div *ngIf="imagePreview" class="mt-2 position-relative d-inline-block">
+          <img [src]="imagePreview" alt="Thumbnail" class="rounded border" style="max-height: 150px;" />
+          <button
+            type="button"
+            class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle"
+            (click)="removeThumbnail()"
+            title="Remove thumbnail"
+          >
+            ❌
+          </button>
+        </div>
+      </div>
+
+      <!-- Photos Upload -->
+      <div class="mb-3">
+        <label class="form-label">Photos</label>
+
+        <div *ngFor="let input of photoInputs; let i = index" class="mb-2">
+          <input type="file" class="form-control" (change)="onSinglePhotoSelected($event, i)" />
+        </div>
+
+        <div class="mt-3 d-flex flex-wrap gap-3">
+          <div
+            *ngFor="let img of photoPreviews; let i = index"
+            class="position-relative border rounded p-1"
+            style="max-width: 120px;"
+          >
+            <img [src]="img" alt="Photo" class="img-fluid rounded" style="max-height: 100px; object-fit: cover;" />
+            <button
+              type="button"
+              class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle"
+              (click)="removePhoto(i)"
+              title="Remove image"
+            >
+              ❌
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary">
+        {{ isSubmitting ? 'Submitting...' : 'Create Product' }}
+      </button>
+    </form>
+  </div>
+</div>
