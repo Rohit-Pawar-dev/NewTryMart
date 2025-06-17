@@ -21,7 +21,7 @@ const reviewRoutes = require('./routes/reviews');
 const cartRoutes = require("./routes/CartRoutes");
 const addressRoutes = require("./routes/AddressRoutes");
 const PlaceOrderRoutes = require("./routes/PlaceOrderRoutes.js");
-const CouponRoutes = require("./routes/couponRoutes.js");
+const CouponRoutes = require("./routes/CouponRoutes.js");
 const deliveryManRoutes = require('./routes/DeliverManRoutes.js');
 
 

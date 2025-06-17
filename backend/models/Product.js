@@ -13,14 +13,14 @@ const productSchema = new Schema(
   {
     seller_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Seller", 
+      ref: "Seller",
       default: null,
     },
 
     added_by: {
       type: String,
       enum: ["admin", "seller"],
-      required: true,
+      // required: true,
     },
     name: { type: String, required: true },
     category_id: {
@@ -30,7 +30,7 @@ const productSchema = new Schema(
     },
     sub_category_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "SubCategory", // Make sure this matches your actual model name
+      ref: "SubCategory",
       default: null,
     },
     slug: { type: String, required: true, unique: true },
@@ -38,7 +38,7 @@ const productSchema = new Schema(
     thumbnail: { type: String, required: true },
     images: [String], // array of image URLs
     unit_price: { type: Number, required: true },
-    purchase_price: { type: Number, required: true },
+    // purchase_price: { type: Number, required: true },
     tax: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
     discount_type: { type: String, enum: ["flat", "percent"], default: "flat" },
@@ -47,6 +47,9 @@ const productSchema = new Schema(
     status: { type: Number, enum: [0, 1], default: 1 },
     request_status: { type: Number, enum: [0, 1], default: 0 },
     variants: [variantSchema],
+
+    sku_code: { type: String }, // SKU code field
+    unit: { type: String, required: true }, // Unit field (e.g., pcs, kg)
   },
   {
     timestamps: {

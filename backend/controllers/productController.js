@@ -1,18 +1,42 @@
 const Product = require("../models/Product");
 const Review = require('../models/Review');
 // Create Product
+function generateSkuCode(name) {
+  const cleanName = name.toLowerCase().replace(/\s+/g, '-').substring(0, 10);
+  const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase(); // 4-char random
+  const randomNum = Math.floor(100 + Math.random() * 900); // 3-digit number
+  return `${cleanName}-${randomStr}${randomNum}`;
+}
+
 exports.createProduct = async (req, res) => {
   try {
     const data = req.body;
 
-    if (data.added_by === "admin") {
+    // Auto-fill seller/admin flags
+    if (data.added_by === 'admin') {
       data.seller_id = null;
       data.status = 1;
       data.request_status = 1;
-    } else if (data.added_by === "seller") {
+    } else if (data.added_by === 'seller') {
       data.status = 0;
       data.request_status = 0;
     }
+
+    // Ensure name is present
+    if (!data.name) {
+      return res.status(400).json({ error: "Product name is required to generate SKU." });
+    }
+
+    // Generate and attach unique SKU
+    let sku = generateSkuCode(data.name);
+
+    // Ensure uniqueness in DB (in rare case of conflict)
+    let skuExists = await Product.findOne({ sku_code: sku });
+    while (skuExists) {
+      sku = generateSkuCode(data.name);
+      skuExists = await Product.findOne({ sku_code: sku });
+    }
+    data.sku_code = sku;
 
     const product = await Product.create(data);
     res.status(201).json(product);

@@ -141,7 +141,15 @@ exports.applyCoupon = async (req, res) => {
 
     const now = new Date();
 
-    // Check if coupon is active
+    // Check if coupon status is active
+    if (coupon.status !== 'active') {
+      return res.status(400).json({
+        status: false,
+        message: 'Coupon is inactive'
+      });
+    }
+
+    // Check if coupon is within valid date range
     if (coupon.startDate > now) {
       return res.status(400).json({
         status: false,
@@ -190,9 +198,11 @@ exports.applyCoupon = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Coupon apply error:', error);
     res.status(500).json({
       status: false,
       message: 'Internal server error'
     });
   }
 };
+

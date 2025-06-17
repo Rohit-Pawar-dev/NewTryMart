@@ -1,0 +1,60 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Product Details</h4>
+    <button class="btn btn-secondary" (click)="goBack()">Back</button>
+  </div>
+
+  <ng-container *ngIf="product as p">
+    <div class="card-body">
+      <!-- Thumbnail -->
+      <div class="mb-4 text-center">
+        <img
+          [src]="p.thumbnail"
+          alt="Thumbnail"
+          class="img-thumbnail"
+          style="max-height: 200px;"
+        />
+      </div>
+
+      <!-- Product Info -->
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Name:</strong> {{ p.name }}</li>
+        <li class="list-group-item"><strong>Category:</strong> {{ categoryName }}</li>
+        <li class="list-group-item"><strong>Unit Price:</strong> ₹{{ p.unit_price }}</li>
+        <li class="list-group-item"><strong>Unit:</strong> {{ p.unit }}</li>
+        <li class="list-group-item"><strong>Minimum Purchase Qty:</strong> {{ p.min_qty }}</li>
+        <li class="list-group-item"><strong>Current Stock:</strong> {{ p.current_stock }}</li>
+        <li class="list-group-item"><strong>SKU Code:</strong> {{ p.sku_code }}</li>
+        <li class="list-group-item">
+          <strong>Status:</strong>
+          <span class="badge" [ngClass]="p.status === 1 ? 'bg-success' : 'bg-danger'">
+            {{ p.status === 1 ? 'Active' : 'Inactive' }}
+          </span>
+        </li>
+        <li class="list-group-item"><strong>Added By:</strong> {{ p.added_by }}</li>
+        <li class="list-group-item">
+          <strong>Description:</strong>
+          <p class="mb-0">{{ p.description }}</p>
+        </li>
+      </ul>
+
+      <!-- Gallery -->
+      <div class="mt-4" *ngIf="p.images?.length">
+        <h5>Images</h5>
+        <div class="d-flex flex-wrap gap-2">
+          <img
+            *ngFor="let img of p.images"
+            [src]="img"
+            alt="Gallery Image"
+            class="img-thumbnail"
+            style="max-height: 120px;"
+          />
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="card-body text-center" *ngIf="!product">
+    <p>Loading product details...</p>
+  </div>
+</div>

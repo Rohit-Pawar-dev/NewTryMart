@@ -28,7 +28,11 @@ export const navItems: INavData[] = [
     url: '/sub-categories',
     iconComponent: { name: 'cil-tags' },
   },
-
+ {
+    name: 'Products',
+    url: '/products',
+    iconComponent: { name: 'cil-tags' },
+  },
   {
     name: 'Users',
     url: '/users',
@@ -42,9 +46,9 @@ export const navItems: INavData[] = [
   },
 
   {
-    name: 'Delivery Men',
-    url: '/delivery-men',
-    iconComponent: { name: 'cil-truck' },
+    name: 'Review',
+    url: '/reviews',
+    iconComponent: { name: 'cil-star' },
   },
 
   {

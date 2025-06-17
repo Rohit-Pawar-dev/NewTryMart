@@ -1,0 +1,41 @@
+<h2>Reviews</h2>
+
+<div *ngIf="isLoading">Loading reviews...</div>
+<div *ngIf="error" style="color: red;">{{ error }}</div>
+
+<table border="1" cellpadding="8" cellspacing="0" *ngIf="!isLoading && reviews.length">
+  <thead>
+    <tr>
+      <th>Customer Name</th>
+      <th>Mobile</th>
+      <th>Product</th>
+      <th>Rating</th>
+      <th>Comment</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let review of reviews">
+      <td>{{ review.user_id?.name || 'N/A' }}</td>
+      <td>{{ review.user_id?.mobile || 'N/A' }}</td>
+      <td>{{ review.product_id?.name || 'N/A' }}</td>
+      <td>{{ review.rating }}</td>
+      <td>{{ review.comment | slice:0:30 }}{{ review.comment.length > 30 ? '...' : '' }}</td>
+      <td><button (click)="selectReview(review)">View</button></td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="!isLoading && !reviews.length">No reviews found.</div>
+
+<!-- Review Details -->
+<div *ngIf="selectedReview" style="margin-top:20px; border-top:1px solid #ccc; padding-top:10px;">
+  <h3>Review Details</h3>
+  <p><strong>Customer Name:</strong> {{ selectedReview.user_id?.name || 'N/A' }}</p>
+  <p><strong>Mobile:</strong> {{ selectedReview.user_id?.mobile || 'N/A' }}</p>
+  <p><strong>Product:</strong> {{ selectedReview.product_id?.name || 'N/A' }}</p>
+  <p><strong>Rating:</strong> {{ selectedReview.rating }}</p>
+  <p><strong>Comment:</strong> {{ selectedReview.comment }}</p>
+  <p><strong>Status:</strong> {{ selectedReview.status }}</p>
+  <!-- <p><strong>Created At:</strong> {{ selectedReview.createdAt | date:'medium' }}</p> -->
+</div>
