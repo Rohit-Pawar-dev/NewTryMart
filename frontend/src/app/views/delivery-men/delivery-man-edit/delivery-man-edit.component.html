@@ -1,0 +1,126 @@
+<div class="card">
+  <div class="card-header">
+    <h3>Edit Delivery Man</h3>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="deliveryManForm" (ngSubmit)="onSubmit()">
+
+      <!-- Name -->
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-control" formControlName="name" />
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" formControlName="email" />
+      </div>
+
+      <!-- Mobile -->
+      <div class="mb-3">
+        <label class="form-label">Mobile</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="mobile"
+          maxlength="10"
+        />
+      </div>
+
+      <!-- Gender -->
+      <div class="mb-3">
+        <label class="form-label">Gender</label>
+        <select class="form-select" formControlName="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- Address -->
+      <div class="mb-3">
+        <label class="form-label">Address</label>
+        <input type="text" class="form-control" formControlName="address" />
+      </div>
+
+      <!-- Upload Profile Image -->
+      <div class="mb-3">
+        <label class="form-label">Profile Image</label>
+        <input
+          type="file"
+          class="form-control"
+          accept="image/*"
+          (change)="uploadFile($event, 'image', 'imagePreview')"
+          [disabled]="isUploading"
+        />
+        <div *ngIf="imagePreview" class="mt-2">
+          <img [src]="imagePreview" alt="Profile Preview" style="max-height: 150px" />
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="uploadError">
+          {{ uploadError }}
+        </div>
+      </div>
+
+      <!-- License Number -->
+      <div class="mb-3">
+        <label class="form-label">License Number</label>
+        <input type="text" class="form-control" formControlName="licenseNumber" />
+      </div>
+
+      <!-- Upload License Photo -->
+      <div class="mb-3">
+        <label class="form-label">License Photo</label>
+        <input
+          type="file"
+          class="form-control"
+          accept="image/*"
+          (change)="uploadFile($event, 'licensePhoto', 'licensePhotoPreview')"
+          [disabled]="isUploading"
+        />
+        <div *ngIf="licensePhotoPreview" class="mt-2">
+          <img [src]="licensePhotoPreview" alt="License Preview" style="max-height: 150px" />
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="uploadError">
+          {{ uploadError }}
+        </div>
+      </div>
+
+      <!-- Upload Identity Proof -->
+      <div class="mb-3">
+        <label class="form-label">Identity Proof</label>
+        <input
+          type="file"
+          class="form-control"
+          accept="image/*"
+          (change)="uploadFile($event, 'identityProofPhoto', 'identityProofPreview')"
+          [disabled]="isUploading"
+        />
+        <div *ngIf="identityProofPreview" class="mt-2">
+          <img [src]="identityProofPreview" alt="ID Preview" style="max-height: 150px" />
+        </div>
+        <div class="invalid-feedback d-block" *ngIf="uploadError">
+          {{ uploadError }}
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" formControlName="status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-success"
+        [disabled]="isSubmitting || deliveryManForm.invalid"
+      >
+        {{ isSubmitting ? 'Updating...' : 'Update Delivery Man' }}
+      </button>
+    </form>
+  </div>
+</div>

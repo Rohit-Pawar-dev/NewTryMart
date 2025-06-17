@@ -62,18 +62,28 @@ exports.getCoupons = async (req, res) => {
 exports.getCouponById = async (req, res) => {
   try {
     const coupon = await Coupon.findById(req.params.id);
-    if (!coupon) {
-      return res.status(404).json({ status: false, message: 'Coupon not found' });
-    }
-    res.json({
-      status: true,
-      message: 'Coupon fetched successfully',
-      data: coupon
-    });
-  } catch (error) {
-    res.status(500).json({ status: false, message: 'Internal server error' });
+    if (!coupon) return res.status(404).json({ msg: 'Coupon not found' });
+    res.json(coupon);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 };
+
+// exports.getCouponById = async (req, res) => {
+//   try {
+//     const coupon = await Coupon.findById(req.params.id);
+//     if (!coupon) {
+//       return res.status(404).json({ status: false, message: 'Coupon not found' });
+//     }
+//     res.json({
+//       status: true,
+//       message: 'Coupon fetched successfully',
+//       data: coupon
+//     });
+//   } catch (error) {
+//     res.status(500).json({ status: false, message: 'Internal server error' });
+//   }
+// };
 
 // UPDATE coupon by ID
 exports.updateCoupon = async (req, res) => {
@@ -121,41 +131,49 @@ exports.generateCouponCode = (req, res) => {
 exports.applyCoupon = async (req, res) => {
   try {
     const { couponCode, totalAmount } = req.body;
-
+ 
     if (!couponCode || typeof totalAmount !== 'number') {
       return res.status(400).json({
         status: false,
         message: 'couponCode and totalAmount are required'
       });
     }
-
+ 
     // Find coupon by code (case-insensitive)
     const coupon = await Coupon.findOne({ couponCode: couponCode.toUpperCase() });
-
+ 
     if (!coupon) {
       return res.status(404).json({
         status: false,
         message: 'Invalid coupon code'
       });
     }
-
+ 
     const now = new Date();
-
-    // Check if coupon is active
+ 
+    // Check if coupon status is active
+    if (coupon.status !== 'active') {
+      return res.status(400).json({
+        status: false,
+        message: 'Coupon is inactive'
+      });
+    }
+ 
+    // Check if coupon is within valid date range
     if (coupon.startDate > now) {
       return res.status(400).json({
         status: false,
         message: 'Coupon is not active yet'
       });
     }
-
+ 
     if (coupon.expireDate < now) {
       return res.status(400).json({
         status: false,
         message: 'Coupon has expired'
       });
     }
-
+ 
     // Check minimum purchase
     if (totalAmount < coupon.minimumPurchase) {
       return res.status(400).json({
@@ -163,7 +181,7 @@ exports.applyCoupon = async (req, res) => {
         message: `Minimum purchase amount for this coupon is ${coupon.minimumPurchase}`
       });
     }
-
+ 
     // Calculate discount
     let discountValue = 0;
     if (coupon.discountType === 'percentage') {
@@ -171,12 +189,12 @@ exports.applyCoupon = async (req, res) => {
     } else if (coupon.discountType === 'fixed') {
       discountValue = coupon.discountAmount;
     }
-
+ 
     // Ensure discount does not exceed purchase amount
     if (discountValue > totalAmount) discountValue = totalAmount;
-
+ 
     const finalAmount = totalAmount - discountValue;
-
+ 
     res.json({
       status: true,
       message: 'Coupon applied successfully',
@@ -190,6 +208,7 @@ exports.applyCoupon = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Coupon apply error:', error);
     res.status(500).json({
       status: false,
       message: 'Internal server error'
