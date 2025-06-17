@@ -19,6 +19,7 @@ export class CategoryAddComponent {
   isUploading = false;
   uploadError: string | null = null;
   imagePreview: string | null = null;
+  selectedFile: File | null = null; // ✅ store file temporarily
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
@@ -39,38 +40,53 @@ export class CategoryAddComponent {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('type', 'category');
-    formData.append('file', file);
+    this.selectedFile = file;
+    this.form.patchValue({ image: 'selected' }); // satisfies form validation
 
-    this.isUploading = true;
-    this.uploadError = null;
-
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.form.patchValue({ image: normalizedUrl });
-        this.imagePreview = normalizedUrl;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
-        this.uploadError = 'Image upload failed';
-        this.isUploading = false;
-      },
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
+    this.uploadError = null;
 
-    this.categoryService.createCategory(this.form.value).subscribe({
-      next: () => this.router.navigate(['/categories']),
-      error: () => {
-        this.isSubmitting = false;
-      },
-    });
+    const finalizeSubmit = () => {
+      this.categoryService.createCategory(this.form.value).subscribe({
+        next: () => this.router.navigate(['/categories']),
+        error: () => {
+          this.isSubmitting = false;
+        },
+      });
+    };
+
+    if (this.selectedFile) {
+      this.isUploading = true;
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      formData.append('type', 'category');
+
+      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+        next: (res) => {
+          const normalizedUrl = res.file.replace(/\\/g, '/');
+          this.form.patchValue({ image: normalizedUrl });
+          this.isUploading = false;
+          finalizeSubmit(); // ✅ only submit after image upload success
+        },
+        error: (err) => {
+          console.error('Upload failed', err);
+          this.uploadError = 'Image upload failed';
+          this.isUploading = false;
+          this.isSubmitting = false;
+        },
+      });
+    } else {
+      finalizeSubmit(); // ✅ no image uploaded, just submit
+    }
   }
 }

@@ -1,8 +1,12 @@
 const Cart = require("../models/Cart");
 const OrderItemDetail = require("../models/OrderDetails");
 const Order = require("../models/Order");
-const Product = require("../models/Product"); 
+const Product = require("../models/Product");
+const User = require("../models/User");
+const Seller = require("../models/Seller");
+const nlogger = require("../logger");
 
+// Place Order
 async function placeOrder(req, res) {
   try {
     const userId = req.body.user_id;
@@ -10,8 +14,8 @@ async function placeOrder(req, res) {
 
     // 1. Fetch all cart items for this user and populate product & seller info
     const cartItems = await Cart.find({ customer_id: userId })
-      .populate('product_id')  // populate product details
-      .populate('seller_id');  // populate seller details
+      .populate("product_id") // populate product details
+      .populate("seller_id"); // populate seller details
 
     if (cartItems.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
@@ -25,7 +29,9 @@ async function placeOrder(req, res) {
       const product = item.product_id;
 
       if (!product) {
-        return res.status(400).json({ message: `Product not found for cart item ${item._id}` });
+        return res
+          .status(400)
+          .json({ message: `Product not found for cart item ${item._id}` });
       }
 
       if (product.current_stock < item.quantity) {
@@ -102,4 +108,88 @@ async function placeOrder(req, res) {
   }
 }
 
-module.exports = { placeOrder };
+// Admin Order Listing (with search + pagination)
+async function getOrders(req, res) {
+  try {
+    const searchText = req.query.search ?? "";
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+
+    const userFilter = {
+      $or: [
+        { name: { $regex: searchText, $options: "i" } },
+        { mobile: { $regex: searchText, $options: "i" } },
+      ],
+    };
+
+    const matchingUsers = await User.find(userFilter).select("_id");
+    const userIds = matchingUsers.map(u => u._id);
+
+    const filter = searchText ? { customer_id: { $in: userIds } } : {};
+
+    const total = await Order.countDocuments(filter);
+
+    const orders = await Order.find(filter)
+      .populate("customer_id", "name mobile")
+      .populate({
+        path: "order_items",
+        populate: {
+          path: "seller_id",
+          select: "shop_name",
+        },
+      })
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
+
+    return res.status(200).json({
+      status: true,
+      message: "Orders fetched successfully",
+      data: orders,
+      total,
+      limit,
+      offset,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    nlogger.error("Error retrieving orders", err);
+    return res.status(500).json({ status: false, message: "Server error" });
+  }
+}
+
+// Get Single Order by ID
+async function getOrderById(req, res) {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate("customer_id", "name email mobile")
+      .populate({
+        path: "order_items",
+        populate: {
+          path: "product_id",
+          select: "name thumbnail",
+        },
+      });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ status: false, message: "Order not found" });
+    }
+console.log("Fetched order:", order);
+
+    return res.status(200).json({
+      status: true,
+      message: "Order fetched successfully",
+      data: order,
+    });
+  } catch (err) {
+    nlogger.error("Error fetching order by ID", err);
+    return res.status(500).json({ status: false, message: "Server error" });
+  }
+}
+
+module.exports = {
+  placeOrder,
+  getOrders,
+  getOrderById,
+};

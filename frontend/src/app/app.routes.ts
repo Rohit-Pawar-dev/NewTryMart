@@ -21,6 +21,13 @@ export const routes: Routes = [
       },
 
       {
+        path: 'orders',
+        loadChildren: () =>
+          import('./views/orders/orders.module').then(m => m.OrdersModule),
+      },
+
+
+      {
         path: 'users',
         loadChildren: () =>
           import('./views/users/users.module').then((m) => m.UsersModule),
@@ -32,19 +39,26 @@ export const routes: Routes = [
           import('./views/sellers/sellers.module').then((m) => m.SellersModule),
       },
 
-      // {
-      //   path: 'delivery-men',
-      //   loadChildren: () =>
-      //     import('./views/delivery-men/delivery-men.module').then(
-      //       (m) => m.DeliveryMenModule
-      //     ),
-      // },
+      {
+        path: 'delivery-men',
+        loadChildren: () =>
+          import('./views/delivery-men/delivery-men.module').then(
+            (m) => m.DeliveryMenModule
+          ),
+      },
 
       {
         path: 'banners',
         loadChildren: () =>
           import('./views/banners/banners.module').then((m) => m.BannersModule),
       },
+
+      {
+        path: 'coupons',
+        loadChildren: () =>
+          import('./views/coupons/coupons.module').then((m) => m.CouponsModule),
+      },
+
 
       {
         path: 'categories',

@@ -7,7 +7,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
 import { CategoryService } from '../../../../app/services/category.service';
 import { SubCategoryService } from '../../../../app/services/sub-category.service';
-  import { forkJoin } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -24,6 +24,7 @@ export class SubCategoryEditComponent implements OnInit {
   imagePreview: string | null = null;
   isUploading = false;
   uploadError: string | null = null;
+  selectedFile: File | null = null;
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
@@ -43,41 +44,27 @@ export class SubCategoryEditComponent implements OnInit {
     });
   }
 
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
 
-ngOnInit(): void {
-  this.id = this.route.snapshot.params['id'];
+    forkJoin({
+      subCategory: this.subCategoryService.getSubCategory(this.id),
+      categories: this.categoryService.getCategories({ all: true }),
+    }).subscribe(({ subCategory, categories }) => {
+      this.categories = categories;
 
-  forkJoin({
-    subCategory: this.subCategoryService.getSubCategory(this.id),
-    categories: this.categoryService.getCategories({ all: true }),
-  }).subscribe(({ subCategory, categories }) => {
-    this.categories = categories;
+      const categoryId =
+        typeof subCategory.category_id === 'string'
+          ? subCategory.category_id
+          : subCategory.category_id?._id;
 
-    const categoryId =
-      typeof subCategory.category_id === 'string'
-        ? subCategory.category_id
-        : subCategory.category_id?._id;
+      this.form.patchValue({
+        ...subCategory,
+        category_id: categoryId,
+        image: subCategory.image || 'existing', // keep it non-empty
+      });
 
-    this.form.patchValue({
-      ...subCategory,
-      category_id: categoryId,
-    });
-
-    this.imagePreview = subCategory.image;
-  });
-}
-
-
-  submit(): void {
-    if (this.form.invalid || this.isSubmitting) return;
-
-    this.isSubmitting = true;
-
-    this.subCategoryService.updateSubCategory(this.id, this.form.value).subscribe({
-      next: () => this.router.navigate(['/subcategories']),
-      error: () => {
-        this.isSubmitting = false;
-      },
+      this.imagePreview = subCategory.image;
     });
   }
 
@@ -85,23 +72,51 @@ ngOnInit(): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    this.isUploading = true;
-    const formData = new FormData();
-    formData.append('type', 'subcategory');
-    formData.append('file', file);
+    this.selectedFile = file;
+    this.form.patchValue({ image: 'selected' }); // pass validation
 
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.form.patchValue({ image: normalizedUrl });
-        this.imagePreview = normalizedUrl;
-        this.uploadError = null;
-        this.isUploading = false;
-      },
-      error: () => {
-        this.uploadError = 'Failed to upload image. Please try again.';
-        this.isUploading = false;
-      },
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  submit(): void {
+    if (this.form.invalid || this.isSubmitting) return;
+
+    this.isSubmitting = true;
+
+    const finalizeSubmit = () => {
+      this.subCategoryService.updateSubCategory(this.id, this.form.value).subscribe({
+        next: () => this.router.navigate(['/sub-categories']),
+        error: () => {
+          this.isSubmitting = false;
+        },
+      });
+    };
+
+    if (this.selectedFile) {
+      this.isUploading = true;
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      formData.append('type', 'subcategory');
+
+      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+        next: (res) => {
+          const normalizedUrl = res.file.replace(/\\/g, '/');
+          this.form.patchValue({ image: normalizedUrl });
+          this.isUploading = false;
+          finalizeSubmit();
+        },
+        error: () => {
+          this.uploadError = 'Image upload failed';
+          this.isUploading = false;
+          this.isSubmitting = false;
+        },
+      });
+    } else {
+      finalizeSubmit();
+    }
   }
 }

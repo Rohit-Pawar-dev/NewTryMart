@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
@@ -11,13 +16,10 @@ import { environment } from '../../../../environments/environment'; // update pa
   standalone: true,
   selector: 'app-user-add',
   templateUrl: './user-add.component.html',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-  ]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
 })
 export class UserAddComponent implements OnInit {
+  selectedFile: File | null = null;
   userForm: FormGroup;
   isSubmitting = false;
   isUploading = false;
@@ -35,9 +37,8 @@ export class UserAddComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(8)]],
       status: ['active', Validators.required],
-      profilePicture: ['']
+      profilePicture: [''],
     });
   }
 
@@ -47,40 +48,58 @@ export class UserAddComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('type', 'profile');
-    formData.append('file', file);
+    this.selectedFile = file;
 
-    this.isUploading = true;
-    this.uploadError = null;
+    // Patch placeholder to satisfy validation (optional)
+    this.userForm.patchValue({ profilePicture: 'selected' });
 
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.userForm.patchValue({ profilePicture: normalizedUrl });
-        this.imagePreview = normalizedUrl;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
-        this.uploadError = 'Image upload failed';
-        this.isUploading = false;
-      }
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   onSubmit(): void {
-    if (this.userForm.valid) {
-      this.isSubmitting = true;
-      const newUser: User = this.userForm.value;
+    if (this.userForm.invalid || this.isSubmitting) return;
 
+    this.isSubmitting = true;
+    this.uploadError = null;
+
+    const createUser = () => {
+      const newUser: User = this.userForm.value;
       this.userService.createUser(newUser).subscribe({
         next: () => this.router.navigate(['/users']),
         error: (error) => {
           console.error('Error creating user:', error);
           this.isSubmitting = false;
-        }
+        },
       });
+    };
+
+    if (this.selectedFile) {
+      const formData = new FormData();
+      formData.append('type', 'profile');
+      formData.append('file', this.selectedFile);
+
+      this.isUploading = true;
+
+      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+        next: (res) => {
+          const normalizedUrl = res.file.replace(/\\/g, '/');
+          this.userForm.patchValue({ profilePicture: normalizedUrl });
+          this.isUploading = false;
+          createUser(); // Create user after image upload
+        },
+        error: (err) => {
+          console.error('Upload failed', err);
+          this.uploadError = 'Image upload failed';
+          this.isUploading = false;
+          this.isSubmitting = false;
+        },
+      });
+    } else {
+      createUser(); // No image selected, just create the user
     }
   }
 }

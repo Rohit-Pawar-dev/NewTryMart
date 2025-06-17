@@ -16,7 +16,10 @@ export class CategoryListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
-  constructor(private categoryService: CategoryService, private router: Router) {}
+  constructor(
+    private categoryService: CategoryService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadCategories();
@@ -24,16 +27,18 @@ export class CategoryListComponent implements OnInit {
 
   loadCategories() {
     this.isLoading = true;
-    this.categoryService.getCategories({ search: this.searchTerm }).subscribe({
-      next: (data) => {
-        this.categories = data;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error loading categories:', err);
-        this.isLoading = false;
-      }
-    });
+    this.categoryService
+      .getCategories({ search: this.searchTerm, all: true })
+      .subscribe({
+        next: (data) => {
+          this.categories = data;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading categories:', err);
+          this.isLoading = false;
+        },
+      });
   }
 
   onSearchChange() {
@@ -42,12 +47,16 @@ export class CategoryListComponent implements OnInit {
 
   deleteCategory(id: string) {
     if (confirm('Are you sure to delete?')) {
-      this.categoryService.deleteCategory(id).subscribe(() => this.loadCategories());
+      this.categoryService
+        .deleteCategory(id)
+        .subscribe(() => this.loadCategories());
     }
   }
 
   toggleStatus(category: Category) {
     const newStatus = category.status === 'active' ? 'inactive' : 'active';
-    this.categoryService.updateCategory(category._id!, { status: newStatus }).subscribe(() => this.loadCategories());
+    this.categoryService
+      .updateCategory(category._id!, { status: newStatus })
+      .subscribe(() => this.loadCategories());
   }
 }
