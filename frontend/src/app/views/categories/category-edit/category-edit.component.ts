@@ -21,6 +21,7 @@ export class CategoryEditComponent implements OnInit {
   imagePreview: string | null = null;
   isUploading = false;
   uploadError: string | null = null;
+  selectedFile: File | null = null; // ✅ Temporarily hold selected image
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
@@ -46,40 +47,55 @@ export class CategoryEditComponent implements OnInit {
     });
   }
 
+  onImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.selectedFile = file;
+    this.form.patchValue({ image: 'selected' }); // Satisfy validation
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
 
-    this.categoryService.updateCategory(this.id, this.form.value).subscribe({
-      next: () => this.router.navigate(['/categories']),
-      error: () => {
-        this.isSubmitting = false;
-      },
-    });
-  }
+    const finalizeSubmit = () => {
+      this.categoryService.updateCategory(this.id, this.form.value).subscribe({
+        next: () => this.router.navigate(['/categories']),
+        error: () => {
+          this.isSubmitting = false;
+        },
+      });
+    };
 
-  onImageSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+    if (this.selectedFile) {
+      this.isUploading = true;
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      formData.append('type', 'category');
 
-    this.isUploading = true;
-    const formData = new FormData();
-    formData.append('type', 'category');
-    formData.append('file', file);
-
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.form.patchValue({ image: normalizedUrl });
-        this.imagePreview = normalizedUrl;
-        this.uploadError = null;
-        this.isUploading = false;
-      },
-      error: () => {
-        this.uploadError = 'Failed to upload image. Please try again.';
-        this.isUploading = false;
-      },
-    });
+      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+        next: (res) => {
+          const normalizedUrl = res.file.replace(/\\/g, '/');
+          this.form.patchValue({ image: normalizedUrl });
+          this.isUploading = false;
+          finalizeSubmit();
+        },
+        error: () => {
+          this.uploadError = 'Failed to upload image. Please try again.';
+          this.isUploading = false;
+          this.isSubmitting = false;
+        },
+      });
+    } else {
+      finalizeSubmit();
+    }
   }
 }

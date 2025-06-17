@@ -20,7 +20,7 @@ const productRoutes = require('./routes/products');
 const reviewRoutes = require('./routes/reviews');
 const cartRoutes = require("./routes/CartRoutes");
 const addressRoutes = require("./routes/AddressRoutes");
-const PlaceOrderRoutes = require("./routes/PlaceOrderRoutes.js");
+const OrderRoutes = require("./routes/OrderRoutes.js");
 const CouponRoutes = require("./routes/couponRoutes.js");
 const deliveryManRoutes = require('./routes/DeliverManRoutes.js');
 
@@ -62,10 +62,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // COUPON ROUTES
-app.use('/api/coupons',CouponRoutes);
+app.use('/api/coupons', CouponRoutes);
 
 // PLACEORDER ROUTES
-app.use('/api/orders',PlaceOrderRoutes);
+app.use('/api/orders', OrderRoutes);
 
 //Delivery Routes
 app.use('/api/delivery-men', deliveryManRoutes);

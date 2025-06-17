@@ -309,3 +309,67 @@
 2025-06-16T12:04:37.818Z [info]: Retrieving Users List 
 2025-06-16T12:04:40.334Z [info]: Retrieving Users List 
 >>>>>>> 72f38fa7936c10fd0d2c7bc43b7ecc50112a49cc
+2025-06-16T14:07:41.282Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:07:43.592Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:07:57.426Z [info]: Retrieving Users List 
+2025-06-16T14:08:13.133Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:24:41.922Z [info]: Retrieving Users List 
+2025-06-16T14:24:45.858Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:24:46.821Z [info]: Retrieving Users List 
+2025-06-16T14:25:11.063Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:27:45.922Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:28:05.872Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:28:08.317Z [info]: Retrieving Users List 
+2025-06-16T14:28:09.119Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:31:34.995Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:31:39.157Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:34:51.391Z [info]: Retrieving Users List 
+2025-06-16T14:37:12.242Z [info]: Retrieving Users List 
+2025-06-16T14:37:12.776Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:47:59.036Z [info]: Retrieving Sellers. Search: ""
+2025-06-16T14:47:59.753Z [info]: Retrieving Users List 
+2025-06-17T04:52:18.850Z [info]: Retrieving Users List 
+2025-06-17T04:52:20.187Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T04:52:25.218Z [info]: Retrieving Users List 
+2025-06-17T05:11:07.973Z [info]: Retrieving Users List r
+2025-06-17T05:11:08.238Z [info]: Retrieving Users List ra
+2025-06-17T05:11:09.569Z [info]: Retrieving Users List r
+2025-06-17T05:11:09.769Z [info]: Retrieving Users List 
+2025-06-17T05:11:14.553Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T07:23:22.609Z [info]: Retrieving Users List 
+2025-06-17T07:31:10.584Z [info]: Retrieving Users List 
+2025-06-17T07:31:11.654Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T07:31:15.796Z [info]: Retrieving Users List 
+2025-06-17T07:31:17.312Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T07:31:19.051Z [info]: Retrieving Users List 
+2025-06-17T07:31:23.348Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T07:31:24.015Z [info]: Retrieving Users List 
+2025-06-17T08:01:41.801Z [info]: Retrieving Users List 
+2025-06-17T08:01:42.812Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T08:01:43.735Z [info]: Retrieving Users List 
+2025-06-17T09:24:08.487Z [info]: Retrieving Users List 
+2025-06-17T09:24:14.378Z [info]: Retrieving Users List 
+2025-06-17T09:27:27.366Z [info]: Retrieving Users List 
+2025-06-17T09:27:55.845Z [info]: Create User
+2025-06-17T09:27:56.087Z [info]: Retrieving Users List 
+2025-06-17T09:28:50.354Z [info]: Create User
+2025-06-17T09:28:50.380Z [info]: Create User Error: MongoServerError: E11000 duplicate key error collection: admin_vendor_db.users index: email_1 dup key: { email: "admin@gmail.com" }
+2025-06-17T09:29:17.433Z [info]: Create User
+2025-06-17T09:29:17.444Z [info]: Create User Error: MongoServerError: E11000 duplicate key error collection: admin_vendor_db.users index: mobile_1 dup key: { mobile: "6261730028" }
+2025-06-17T09:29:28.925Z [info]: Create User
+2025-06-17T09:29:29.014Z [info]: Retrieving Users List 
+2025-06-17T09:31:14.902Z [info]: Retrieving Users List 
+2025-06-17T09:31:23.547Z [info]: Retrieving Users List 
+2025-06-17T09:33:37.762Z [info]: Retrieving Users List 
+2025-06-17T09:34:46.279Z [info]: Retrieving Users List 
+2025-06-17T09:34:48.965Z [info]: Retrieving Users List 
+2025-06-17T09:52:58.262Z [info]: Retrieving Users List 
+2025-06-17T09:53:00.605Z [info]: Retrieving Users List 
+2025-06-17T09:53:04.429Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T09:53:08.875Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T09:55:38.945Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T09:56:17.082Z [info]: Retrieving Sellers. Search: ""
+2025-06-17T11:51:25.672Z [error]: Error fetching order by ID Cast to ObjectId failed for value "orders" (type string) at path "_id" for model "Order"
+2025-06-17T11:52:47.707Z [error]: Error fetching order by ID Cast to ObjectId failed for value "orders" (type string) at path "_id" for model "Order"
+2025-06-17T11:52:54.014Z [error]: Error fetching order by ID Cast to ObjectId failed for value "orders" (type string) at path "_id" for model "Order"
+2025-06-17T12:11:49.278Z [info]: Retrieving Users List 

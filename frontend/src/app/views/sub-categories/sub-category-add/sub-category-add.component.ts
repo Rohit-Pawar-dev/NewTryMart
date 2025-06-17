@@ -21,6 +21,7 @@ export class SubCategoryAddComponent implements OnInit {
   isUploading = false;
   uploadError: string | null = null;
   imagePreview: string | null = null;
+  selectedFile: File | null = null;
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
@@ -34,7 +35,7 @@ export class SubCategoryAddComponent implements OnInit {
     this.form = this.fb.group({
       name: ['', Validators.required],
       category_id: ['', Validators.required],
-      image: ['', Validators.required],
+      image: ['', Validators.required], // keep for validation
       status: ['active', Validators.required],
     });
   }
@@ -50,26 +51,14 @@ export class SubCategoryAddComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('type', 'subcategory');
-    formData.append('file', file);
+    this.selectedFile = file;
+    this.form.patchValue({ image: 'selected' }); // pass validation
 
-    this.isUploading = true;
-    this.uploadError = null;
-
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.form.patchValue({ image: normalizedUrl });
-        this.imagePreview = normalizedUrl;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Upload failed', err);
-        this.uploadError = 'Image upload failed';
-        this.isUploading = false;
-      },
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   submit(): void {
@@ -77,11 +66,37 @@ export class SubCategoryAddComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    this.subCategoryService.createSubCategory(this.form.value).subscribe({
-      next: () => this.router.navigate(['/sub-categories']),
-      error: () => {
-        this.isSubmitting = false;
-      },
-    });
+    const finalizeSubmit = () => {
+      this.subCategoryService.createSubCategory(this.form.value).subscribe({
+        next: () => this.router.navigate(['/sub-categories']),
+        error: () => {
+          this.isSubmitting = false;
+        },
+      });
+    };
+
+    if (this.selectedFile) {
+      this.isUploading = true;
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      formData.append('type', 'subcategory');
+
+      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+        next: (res) => {
+          const normalizedUrl = res.file.replace(/\\/g, '/');
+          this.form.patchValue({ image: normalizedUrl });
+          this.isUploading = false;
+          finalizeSubmit();
+        },
+        error: (err) => {
+          console.error('Upload failed', err);
+          this.uploadError = 'Image upload failed';
+          this.isUploading = false;
+          this.isSubmitting = false;
+        },
+      });
+    } else {
+      finalizeSubmit();
+    }
   }
 }
