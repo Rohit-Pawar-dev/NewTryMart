@@ -1,41 +1,73 @@
-<h2>Reviews</h2>
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h3>Review Management</h3>
+    <!-- Optionally, you can add a button or search bar here -->
+  </div>
 
-<div *ngIf="isLoading">Loading reviews...</div>
-<div *ngIf="error" style="color: red;">{{ error }}</div>
+  <div class="card-body">
+    <div *ngIf="isLoading" class="text-muted">Loading reviews...</div>
+    <div *ngIf="error" class="text-danger">{{ error }}</div>
 
-<table border="1" cellpadding="8" cellspacing="0" *ngIf="!isLoading && reviews.length">
-  <thead>
-    <tr>
-      <th>Customer Name</th>
-      <th>Mobile</th>
-      <th>Product</th>
-      <th>Rating</th>
-      <th>Comment</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let review of reviews">
-      <td>{{ review.user_id?.name || 'N/A' }}</td>
-      <td>{{ review.user_id?.mobile || 'N/A' }}</td>
-      <td>{{ review.product_id?.name || 'N/A' }}</td>
-      <td>{{ review.rating }}</td>
-      <td>{{ review.comment | slice:0:30 }}{{ review.comment.length > 30 ? '...' : '' }}</td>
-      <td><button (click)="selectReview(review)">View</button></td>
-    </tr>
-  </tbody>
-</table>
+    <div class="table-responsive" *ngIf="!isLoading && reviews.length">
+      <table class="table table-striped table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Product</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <!-- <th>Action</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let review of reviews; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ review.user_id?.name || 'N/A' }}</td>
+            <td>{{ review.user_id?.mobile || 'N/A' }}</td>
+            <td>{{ review.product_id?.name || 'N/A' }}</td>
+            <td>{{ review.rating }}</td>
+            <td>
+              {{ review.comment | slice: 0:30 }}
+              <span *ngIf="review.comment.length > 30">...</span>
+            </td>
+            <!-- <td>
+              <button class="btn btn-sm btn-info" (click)="selectReview(review)">
+                View
+              </button>
+            </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-<div *ngIf="!isLoading && !reviews.length">No reviews found.</div>
+    <div *ngIf="!isLoading && reviews.length === 0" class="text-center text-muted">
+      No reviews found.
+    </div>
+  </div>
+</div>
 
-<!-- Review Details -->
-<div *ngIf="selectedReview" style="margin-top:20px; border-top:1px solid #ccc; padding-top:10px;">
-  <h3>Review Details</h3>
-  <p><strong>Customer Name:</strong> {{ selectedReview.user_id?.name || 'N/A' }}</p>
-  <p><strong>Mobile:</strong> {{ selectedReview.user_id?.mobile || 'N/A' }}</p>
-  <p><strong>Product:</strong> {{ selectedReview.product_id?.name || 'N/A' }}</p>
-  <p><strong>Rating:</strong> {{ selectedReview.rating }}</p>
-  <p><strong>Comment:</strong> {{ selectedReview.comment }}</p>
-  <p><strong>Status:</strong> {{ selectedReview.status }}</p>
-  <!-- <p><strong>Created At:</strong> {{ selectedReview.createdAt | date:'medium' }}</p> -->
+<!-- Review Detail Section -->
+<div *ngIf="selectedReview" class="card mt-4">
+  <div class="card-header">
+    <h4>Review Details</h4>
+  </div>
+  <div class="card-body">
+    <p><strong>Customer Name:</strong> {{ selectedReview.user_id?.name || 'N/A' }}</p>
+    <p><strong>Mobile:</strong> {{ selectedReview.user_id?.mobile || 'N/A' }}</p>
+    <p><strong>Product:</strong> {{ selectedReview.product_id?.name || 'N/A' }}</p>
+    <p><strong>Rating:</strong> {{ selectedReview.rating }}</p>
+    <p><strong>Comment:</strong> {{ selectedReview.comment }}</p>
+    <p>
+      <strong>Status:</strong>
+      <span class="badge" 
+        [ngClass]="{
+          'bg-success': selectedReview.status === 'active',
+          'bg-danger': selectedReview.status === 'inactive'
+        }">
+        {{ selectedReview.status || 'N/A' }}
+      </span>
+    </p>
+  </div>
 </div>
