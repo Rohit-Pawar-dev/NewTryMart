@@ -23,9 +23,8 @@ export const routes: Routes = [
       {
         path: 'orders',
         loadChildren: () =>
-          import('./views/orders/orders.module').then(m => m.OrdersModule),
+          import('./views/orders/orders.module').then((m) => m.OrdersModule),
       },
-
 
       {
         path: 'users',
@@ -59,7 +58,6 @@ export const routes: Routes = [
           import('./views/coupons/coupons.module').then((m) => m.CouponsModule),
       },
 
-
       {
         path: 'categories',
         loadChildren: () =>
@@ -67,17 +65,19 @@ export const routes: Routes = [
             (m) => m.CategoriesModule
           ),
       },
-       {
-    path: 'products',
-    loadChildren: () =>
-      import('./views/products/product.module').then((m) => m.ProductModule),
-  },
+      {
+        path: 'products',
+        loadChildren: () =>
+          import('./views/products/product.module').then(
+            (m) => m.ProductModule
+          ),
+      },
 
-{
-loadChildren: () =>
-  import('./views/reviews/reviews.module').then((m) => m.ReviewsModule),
-
-},
+      {
+        path: 'reviews',
+        loadChildren: () =>
+          import('./views/reviews/reviews.module').then((m) => m.ReviewsModule),
+      },
       {
         path: 'sub-categories',
         loadChildren: () =>
