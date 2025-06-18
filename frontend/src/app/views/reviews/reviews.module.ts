@@ -1,17 +1,21 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { ReviewListComponent } from './review-list/review-list.component';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
+import { ReviewListComponent } from './review-list/review-list.component';
+// import { ReviewDetailComponent } from './review-details/review-detail.component';
+import { routes } from './routes';
 
 @NgModule({
   imports: [
     CommonModule,
     HttpClientModule,
     FormsModule,
-    RouterModule,
-    ReviewListComponent // ✅ Import it, don't declare it
+    RouterModule.forChild(routes),
+    ReviewListComponent,       // ✅ Standalone Component imported here
+    // ReviewDetailComponent      // ✅ Standalone Component imported here
   ]
 })
 export class ReviewsModule {}
