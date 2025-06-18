@@ -80,6 +80,7 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/reviews/reviews.module').then((m) => m.ReviewsModule),
       },
+      
       {
         path: 'sub-categories',
         loadChildren: () =>
@@ -87,6 +88,13 @@ export const routes: Routes = [
             (m) => m.SubCategoriesModule
           ),
       },
+
+    //  {
+    //     path: 'static-pages',
+    //     loadChildren: () =>
+    //       import('./views/static-pages/staicPages.module').then((m) => m.StaticPagesModule),
+    //   },
+
       {
         path: 'pages',
         loadChildren: () =>

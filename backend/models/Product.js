@@ -48,8 +48,9 @@ const productSchema = new Schema(
     request_status: { type: Number, enum: [0, 1], default: 0 },
     variants: [variantSchema],
 
-    sku_code: { type: String }, // SKU code field
-    unit: { type: String, required: true }, // Unit field (e.g., pcs, kg)
+    sku_code: { type: String },
+    unit: { type: String, required: true },
+    is_offers: { type: Boolean, default: 0 },
   },
   {
     timestamps: {
