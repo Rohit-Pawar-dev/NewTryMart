@@ -75,6 +75,16 @@ export const navItems: INavData[] = [
     url: '/reviews',
     iconComponent: { name: 'cil-star' },
   },
+
+  {
+    title: true,
+    name: 'System settings',
+  },
+  // {
+  //   name: 'Static Pages',
+  //   url: '/static-pages',
+  //   iconComponent: { name: 'cil-star' },
+  // },
   // {
   //   name: 'Delivery Men',
   //   url: '/delivery-men',
