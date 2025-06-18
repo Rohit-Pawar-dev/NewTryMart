@@ -23,7 +23,7 @@
         <th>Qty</th>
         <th>Unit Price</th>
         <th>Total Price</th>
-        <th>Variant</th>
+        <!-- <th>Variant</th> -->
         <th>Seller</th>
       </tr>
     </thead>
@@ -42,8 +42,8 @@
         <td>{{ item.quantity }}</td>
         <td>₹{{ item.unit_price }}</td>
         <td>₹{{ item.total_price }}</td>
-        <td>{{ item.selected_variant || '-' }}</td>
-        <td>{{ item.seller_id?.shop_name || 'Admin' }}</td>
+        <!-- <td>{{ item.selected_variant || '-' }}</td> -->
+        <td>{{ item.seller_id?.shop_name || 'In_house' }}</td>
       </tr>
     </tbody>
   </table>

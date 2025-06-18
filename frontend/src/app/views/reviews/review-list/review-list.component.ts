@@ -1,15 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReviewsService, Review } from '../../../services/reviews.service';
 
 @Component({
   selector: 'app-review-list',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './review-list.component.html',
 })
 export class ReviewListComponent implements OnInit {
   reviews: Review[] = [];
   isLoading = false;
   error: string | null = null;
-  selectedReview: Review | null = null;  // <-- allow null
+  selectedReview: Review | null = null;
 
   constructor(private reviewsService: ReviewsService) {}
 
@@ -24,6 +27,8 @@ export class ReviewListComponent implements OnInit {
     this.reviewsService.getReviews().subscribe({
       next: (res) => {
         this.reviews = res;
+        console.log('Fetched reviews:', this.reviews);
+        
         this.isLoading = false;
       },
       error: (err) => {
