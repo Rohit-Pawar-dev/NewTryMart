@@ -4,16 +4,26 @@ const { Schema } = mongoose;
 const bannerSchema = new Schema({
   title: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   image: {
     type: String,
-    required: true
+    // required: true
+  },
+  video: {
+    type: String,
+    default: null
   },
   status: {
     type: String,
-    default: 'active',
-    enum: ['active', 'inactive']
+    enum: ['active', 'inactive'],
+    default: 'active'
+  },
+  banner_type: {
+    type: String,
+    enum: ['main', 'popup', 'advertisementImage', 'advertisementVideo'],
+    default: 'main'
   }
 }, {
   timestamps: {

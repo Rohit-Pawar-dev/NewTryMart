@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-banner-list',
@@ -32,6 +33,7 @@ export class BannerListComponent implements OnInit {
       error: (err) => {
         console.error('Error loading banners:', err);
         this.isLoading = false;
+        Swal.fire('Error', 'Failed to load banners', 'error');
       }
     });
   }
@@ -41,13 +43,39 @@ export class BannerListComponent implements OnInit {
   }
 
   deleteBanner(id: string) {
-    if (confirm('Are you sure to delete?')) {
-      this.bannerService.deleteBanner(id).subscribe(() => this.loadBanners());
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.bannerService.deleteBanner(id).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'Banner has been deleted.', 'success');
+            this.loadBanners();
+          },
+          error: () => {
+            Swal.fire('Error', 'Failed to delete banner', 'error');
+          }
+        });
+      }
+    });
   }
 
   toggleStatus(banner: Banner) {
     const newStatus = banner.status === 'active' ? 'inactive' : 'active';
-    this.bannerService.updateBanner(banner._id!, { status: newStatus }).subscribe(() => this.loadBanners());
+    this.bannerService.updateBanner(banner._id!, { status: newStatus }).subscribe({
+      next: () => {
+        Swal.fire('Updated', `Status changed to ${newStatus}`, 'success');
+        this.loadBanners();
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to update status', 'error');
+      }
+    });
   }
 }

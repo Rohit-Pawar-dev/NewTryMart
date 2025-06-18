@@ -8,6 +8,8 @@ export interface Banner {
   _id?: string;
   title: string;
   image: string;
+  banner_type: string
+  video: string
   status: 'active' | 'inactive';
   created_at?: string;
   updated_at?: string;

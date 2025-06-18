@@ -3,13 +3,36 @@ const Banner = require("../models/Banner");
 // Create
 exports.createBanner = async (req, res) => {
   try {
-    const post = req.body;
-    const banner = await Banner.create(post);
+    const { title, status, banner_type, video } = req.body;
+    let image = req.body.image;
+
+    // Handle uploaded image file if exists (in case using multer)
+    if (req.file) {
+      image = req.file.path; // or req.file.filename based on your setup
+    }
+
+    // ✅ Validate title and at least one of image or video
+    if (!title || (!image && !video)) {
+      return res.status(400).json({
+        error: 'Title and either Image or Video is required.',
+      });
+    }
+
+    const banner = await Banner.create({
+      title,
+      image: image || null,
+      status: status || 'active',
+      banner_type: banner_type || 'main',
+      video: video || null,
+    });
+
     res.status(201).json(banner);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('Banner creation error:', err);
+    res.status(500).json({ error: 'Server error. Please try again.' });
   }
 };
+
 
 // Get All with filters and pagination
 exports.getAllBanners = async (req, res) => {
