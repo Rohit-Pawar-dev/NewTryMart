@@ -1,30 +1,45 @@
 const multer = require('multer');
 const path = require('path');
 
-// Storage config
+// Allowed MIME types for images and videos
+const allowedTypes = [
+  'image/jpeg',
+  'image/png',
+  'image/jpg',
+  'image/gif',
+  'video/mp4',
+  'video/quicktime', // .mov
+  'video/x-msvideo', // .avi
+  'video/webm'
+];
+
+// Storage configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // directory to save files
+    cb(null, 'uploads/'); // Save everything in 'uploads' directory
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, file.fieldname + '-' + uniqueSuffix + ext);
   }
 });
 
-// Filter (optional: restrict to image types)
+// File filter to allow only supported formats
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-  if (allowedTypes.includes(file.mimetype)) cb(null, true);
-  else cb(new Error('Unsupported file type'), false);
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Unsupported file type'), false);
+  }
 };
 
+// Multer configuration
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // Max 5MB
+    fileSize: 50 * 1024 * 1024 // Max 50MB file size
   }
 });
 

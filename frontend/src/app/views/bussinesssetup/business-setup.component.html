@@ -1,0 +1,46 @@
+<div class="card" *ngIf="!isLoading; else loadingOrError">
+  <div class="card-header">
+    <h3>Company Information</h3>
+  </div>
+  <div class="card-body">
+    <form (ngSubmit)="onSubmit()" #businessForm="ngForm">
+      <div class="mb-3">
+        <label class="form-label"><strong>Company Name:</strong></label>
+        <input type="text" class="form-control" name="name" [(ngModel)]="business.name" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label"><strong>Phone:</strong></label>
+        <input type="text" class="form-control" name="phone" [(ngModel)]="business.phone" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label"><strong>Company Email:</strong></label>
+        <input type="email" class="form-control" name="email" [(ngModel)]="business.email" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label"><strong>Company Address:</strong></label>
+        <textarea class="form-control" name="address" [(ngModel)]="business.address" required></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label"><strong>Country:</strong></label>
+        <input type="text" class="form-control" name="country" [(ngModel)]="business.country" required />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label"><strong>Timezone:</strong></label>
+        <input type="text" class="form-control" name="timezone" [(ngModel)]="business.timezone" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div class="text-center p-4">
+    <p>Loading company data...</p>
+  </div>
+</ng-template>

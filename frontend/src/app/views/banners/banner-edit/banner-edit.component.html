@@ -4,6 +4,7 @@
   </div>
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="submit()">
+      
       <!-- Title -->
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
@@ -12,48 +13,74 @@
           id="title"
           class="form-control"
           formControlName="title"
-          [class.is-invalid]="
-            form.get('title')?.invalid && form.get('title')?.touched
-          "
+          [class.is-invalid]="form.get('title')?.invalid && form.get('title')?.touched"
         />
-        <div
-          class="invalid-feedback"
-          *ngIf="form.get('title')?.errors?.['required']"
-        >
+        <div class="invalid-feedback" *ngIf="form.get('title')?.errors?.['required']">
           Title is required.
         </div>
       </div>
 
-      <!-- Image URL -->
-      <!-- Image Upload -->
+      <!-- Banner Type -->
       <div class="mb-3">
-        <label for="imageUpload" class="form-label">Upload Image</label>
+        <label for="bannerType" class="form-label">Advertisement Type</label>
+        <select
+          id="bannerType"
+          class="form-select"
+          formControlName="banner_type"
+          [class.is-invalid]="form.get('banner_type')?.invalid && form.get('banner_type')?.touched">
+          <option value="">Select Advertisement Banner Type</option>
+          <option value="main">Main Banner</option>
+          <option value="popup">Popup Banner</option>
+          <option value="advertisementImage">Advertisement Image</option>
+          <option value="advertisementVideo">Advertisement Video</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="form.get('banner_type')?.errors?.['required']">
+          Advertisement type is required.
+        </div>
+      </div>
+
+      <!-- File Upload -->
+      <div class="mb-3">
+        <label for="mediaUpload" class="form-label">
+          {{ form.get('banner_type')?.value === 'advertisementVideo' ? 'Upload Video' : 'Upload Image' }}
+        </label>
         <input
           type="file"
-          id="imageUpload"
+          id="mediaUpload"
           class="form-control"
-          accept="image/*"
-          (change)="onImageSelected($event)"
+          [accept]="form.get('banner_type')?.value === 'advertisementVideo' ? 'video/*' : 'image/*'"
+          (change)="onFileSelected($event)"
           [disabled]="isUploading"
         />
 
-        <!-- Preview newly selected image -->
-        <div *ngIf="imagePreview" class="mt-2">
+        <!-- Preview newly selected media -->
+        <div class="mt-2" *ngIf="preview">
+          <video
+            *ngIf="form.get('banner_type')?.value === 'advertisementVideo'"
+            [src]="preview"
+            controls
+            style="max-height: 200px; max-width: 100%;">
+          </video>
           <img
-            [src]="imagePreview"
-            alt="New Preview"
-            style="max-height: 150px"
-          />
+            *ngIf="form.get('banner_type')?.value !== 'advertisementVideo'"
+            [src]="preview"
+            alt="Preview"
+            style="max-height: 150px;" />
         </div>
 
-        <!-- Preview existing image if no new image is selected -->
-        <div *ngIf="!imagePreview && form.get('image')?.value" class="mt-2">
+        <!-- Preview existing media if no new one is selected -->
+        <div class="mt-2" *ngIf="!preview">
+          <video
+            *ngIf="form.get('banner_type')?.value === 'advertisementVideo' && form.get('video')?.value"
+            [src]="form.get('video')?.value"
+            controls
+            style="max-height: 200px; max-width: 100%;">
+          </video>
           <img
+            *ngIf="form.get('banner_type')?.value !== 'advertisementVideo' && form.get('image')?.value"
             [src]="form.get('image')?.value"
             alt="Existing Image"
-            style="max-height: 150px"
-            class="rounded border"
-          />
+            style="max-height: 150px;" />
         </div>
 
         <div class="invalid-feedback d-block" *ngIf="uploadError">
@@ -68,29 +95,19 @@
           id="status"
           class="form-select"
           formControlName="status"
-          [class.is-invalid]="
-            form.get('status')?.invalid && form.get('status')?.touched
-          "
-        >
-          <option value="">Select status</option>
+          [class.is-invalid]="form.get('status')?.invalid && form.get('status')?.touched">
+          <option value="">Select Status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        <div
-          class="invalid-feedback"
-          *ngIf="form.get('status')?.errors?.['required']"
-        >
+        <div class="invalid-feedback" *ngIf="form.get('status')?.errors?.['required']">
           Status is required.
         </div>
       </div>
 
       <!-- Submit Button -->
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="isSubmitting || form.invalid"
-      >
-        {{ isSubmitting ? "Saving..." : "Update Banner" }}
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || form.invalid">
+        {{ isSubmitting ? 'Saving...' : 'Update Banner' }}
       </button>
     </form>
   </div>

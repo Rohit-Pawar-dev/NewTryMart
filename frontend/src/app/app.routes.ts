@@ -19,25 +19,21 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/dashboard/routes').then((m) => m.routes),
       },
-
       {
         path: 'orders',
         loadChildren: () =>
           import('./views/orders/orders.module').then((m) => m.OrdersModule),
       },
-
       {
         path: 'users',
         loadChildren: () =>
           import('./views/users/users.module').then((m) => m.UsersModule),
       },
-
       {
         path: 'sellers',
         loadChildren: () =>
           import('./views/sellers/sellers.module').then((m) => m.SellersModule),
       },
-
       {
         path: 'delivery-men',
         loadChildren: () =>
@@ -45,19 +41,16 @@ export const routes: Routes = [
             (m) => m.DeliveryMenModule
           ),
       },
-
       {
         path: 'banners',
         loadChildren: () =>
           import('./views/banners/banners.module').then((m) => m.BannersModule),
       },
-
       {
         path: 'coupons',
         loadChildren: () =>
           import('./views/coupons/coupons.module').then((m) => m.CouponsModule),
       },
-
       {
         path: 'categories',
         loadChildren: () =>
@@ -72,7 +65,16 @@ export const routes: Routes = [
             (m) => m.ProductModule
           ),
       },
-
+      {
+        path: 'business-setup',
+        loadComponent: () =>
+          import('././views/bussinesssetup/business-setup.component').then(
+            (m) => m.BusinessSetupComponent
+          ),
+        data: {
+          title: 'Business Setup Page',
+        },
+      },
       {
         path: 'reviews',
         loadChildren: () =>
@@ -85,7 +87,6 @@ export const routes: Routes = [
             (m) => m.SubCategoriesModule
           ),
       },
-
       {
         path: 'pages',
         loadChildren: () =>

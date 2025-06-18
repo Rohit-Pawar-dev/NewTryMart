@@ -5,13 +5,8 @@
   <div class="card-body">
     <div class="table-responsive">
       <div class="mb-3 d-flex justify-content-between align-items-center">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="onSearchChange()"
-          class="form-control w-25"
-          placeholder="Search by title"
-        />
+        <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()" class="form-control w-25"
+          placeholder="Search by title" />
         <button class="btn btn-primary" routerLink="/banners/add">
           Add New Banner
         </button>
@@ -22,7 +17,8 @@
           <tr>
             <th>#</th>
             <th>Title</th>
-            <th>Image</th>
+            <th>Type</th>
+            <th>Content</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -31,50 +27,42 @@
           <tr *ngFor="let banner of banners; let i = index">
             <td>{{ i + 1 }}</td>
             <td>{{ banner.title }}</td>
+            <td class="text-capitalize">{{ banner.banner_type }}</td>
             <td>
-              <img [src]="banner.image" width="100" class="img-thumbnail" />
+              <ng-container *ngIf="banner.image; else showVideo">
+                <img [src]="banner.image" width="150" class="img-thumbnail" alt="Banner Image" />
+              </ng-container>
+              <ng-template #showVideo>
+                <video *ngIf="banner.video" [src]="banner.video" width="150" controls></video>
+              </ng-template>
             </td>
             <td>
-              <span
-                class="badge"
-                [ngClass]="{
+              <span class="badge" [ngClass]="{
                   'bg-success': banner.status === 'active',
                   'bg-danger': banner.status === 'inactive'
-                }"
-                >{{ banner.status | titlecase }}</span
-              >
+                }">
+                {{ banner.status | titlecase }}
+              </span>
             </td>
             <td>
               <div class="btn-group" role="group">
-                <button
-                  class="btn btn-sm btn-secondary"
-                  (click)="toggleStatus(banner)"
-                >
+                <button class="btn btn-sm btn-secondary" (click)="toggleStatus(banner)">
                   <i class="cil-sync"></i>
                 </button>
-                <button
-                  class="btn btn-sm btn-info"
-                  [routerLink]="['/banners/view', banner._id]"
-                >
+                <button class="btn btn-sm btn-info" [routerLink]="['/banners/view', banner._id]">
                   <i class="cil-magnifying-glass"></i>
                 </button>
-                <button
-                  class="btn btn-sm btn-warning"
-                  [routerLink]="['/banners/edit', banner._id]"
-                >
+                <button class="btn btn-sm btn-warning" [routerLink]="['/banners/edit', banner._id]">
                   <i class="cil-pencil"></i>
                 </button>
-                <button
-                  class="btn btn-sm btn-danger"
-                  (click)="deleteBanner(banner._id!)"
-                >
+                <button class="btn btn-sm btn-danger" (click)="deleteBanner(banner._id!)">
                   <i class="cil-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
           <tr *ngIf="banners.length === 0 && !isLoading">
-            <td colspan="5" class="text-center">No banners found</td>
+            <td colspan="6" class="text-center">No banners found</td>
           </tr>
         </tbody>
       </table>

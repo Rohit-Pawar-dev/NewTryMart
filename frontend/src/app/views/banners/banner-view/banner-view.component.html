@@ -4,11 +4,32 @@
   </div>
   <div class="card-body">
     <p><strong>Title:</strong> {{ banner.title }}</p>
+
+    <p><strong>Type:</strong> {{ banner.banner_type | titlecase }}</p>
+
+    <p><strong>Content:</strong></p>
+    <div *ngIf="banner.image; else showVideo">
+      <img [src]="banner.image" [alt]="banner.title" width="300" class="img-thumbnail" />
+    </div>
+
+    <ng-template #showVideo>
+      <video *ngIf="banner.video" width="300" controls>
+        <source [src]="banner.video" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <p *ngIf="!banner.video">No image or video available</p>
+    </ng-template>
+
     <p>
-      <strong>Image:</strong><br />
-      <img [src]="banner.image" alt="{{ banner.title }}" width="300" />
+      <strong>Status:</strong>
+      <span class="badge"
+            [ngClass]="{
+              'bg-success': banner.status === 'active',
+              'bg-danger': banner.status === 'inactive'
+            }">
+        {{ banner.status | titlecase }}
+      </span>
     </p>
-    <p><strong>Status:</strong> {{ banner.status }}</p>
   </div>
 </div>
 
