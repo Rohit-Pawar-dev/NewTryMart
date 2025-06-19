@@ -50,7 +50,9 @@ const productSchema = new Schema(
 
     sku_code: { type: String },
     unit: { type: String, required: true },
-    is_offers: { type: Boolean, default: 0 },
+    is_offers: { type: Boolean, default: false },
+    is_trending: { type: Boolean, default: false },
+
   },
   {
     timestamps: {
