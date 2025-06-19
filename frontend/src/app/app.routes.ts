@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -10,6 +11,7 @@ export const routes: Routes = [
   {
     path: '',
     component: DefaultLayoutComponent,
+    canActivate: [AuthGuard], 
     data: {
       title: 'Home',
     },
@@ -67,6 +69,7 @@ export const routes: Routes = [
       },
       {
         path: 'business-setup',
+        canActivate: [AuthGuard], // <-- also protect standalone ones
         loadComponent: () =>
           import('././views/bussinesssetup/business-setup.component').then(
             (m) => m.BusinessSetupComponent
@@ -75,12 +78,17 @@ export const routes: Routes = [
           title: 'Business Setup Page',
         },
       },
+
+        //  {
+    //     path: 'static-pages',
+    //     loadChildren: () =>
+    //       import('./views/static-pages/staicPages.module').then((m) => m.StaticPagesModule),
+    //   },
       {
         path: 'reviews',
         loadChildren: () =>
           import('./views/reviews/reviews.module').then((m) => m.ReviewsModule),
       },
-      
       {
         path: 'sub-categories',
         loadChildren: () =>
@@ -88,13 +96,6 @@ export const routes: Routes = [
             (m) => m.SubCategoriesModule
           ),
       },
-
-    //  {
-    //     path: 'static-pages',
-    //     loadChildren: () =>
-    //       import('./views/static-pages/staicPages.module').then((m) => m.StaticPagesModule),
-    //   },
-
       {
         path: 'pages',
         loadChildren: () =>
@@ -102,6 +103,8 @@ export const routes: Routes = [
       },
     ],
   },
+
+  // Public Pages
   {
     path: '404',
     loadComponent: () =>
@@ -142,5 +145,8 @@ export const routes: Routes = [
       title: 'Register Page',
     },
   },
-  { path: '**', redirectTo: 'dashboard' },
+  {
+    path: '**',
+    redirectTo: 'dashboard',
+  },
 ];

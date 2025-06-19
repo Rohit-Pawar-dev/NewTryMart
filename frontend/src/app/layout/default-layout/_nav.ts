@@ -87,10 +87,10 @@ export const navItems: INavData[] = [
 
 
 
-  {
-    title: true,
-    name: 'System settings',
-  },
+  // {
+  //   title: true,
+  //   name: 'System settings',
+  // },
   // {
   //   name: 'Static Pages',
   //   url: '/static-pages',

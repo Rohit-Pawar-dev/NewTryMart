@@ -26,11 +26,10 @@
           class="form-select"
           formControlName="banner_type"
           [class.is-invalid]="form.get('banner_type')?.invalid && form.get('banner_type')?.touched">
-          <option value="">Select Advertisement Banner Type</option>
-          <option value="main">Main Banner</option>
-          <option value="popup">Popup Banner</option>
-          <option value="advertisementImage">Advertisement Image</option>
-          <option value="advertisementVideo">Advertisement Video</option>
+          <option value="main_banner">Main Banner</option>
+          <option value="popup_banner">Popup Banner</option>
+          <option value="ads_img_banner">Advertisement Image</option>
+          <option value="ads_video_banner">Advertisement Video</option>
         </select>
         <div class="invalid-feedback" *ngIf="form.get('banner_type')?.errors?.['required']">
           Advertisement type is required.
@@ -40,26 +39,26 @@
       <!-- File Upload (Image or Video) -->
       <div class="mb-3">
         <label for="fileUpload" class="form-label">
-          {{ form.get('banner_type')?.value === 'advertisementVideo' ? 'Upload Video' : 'Upload Image' }}
+          {{ form.get('banner_type')?.value === 'ads_video_banner' ? 'Upload Video' : 'Upload Image' }}
         </label>
         <input
           type="file"
           id="fileUpload"
           class="form-control"
-          [accept]="form.get('banner_type')?.value === 'advertisementVideo' ? 'video/*' : 'image/*'"
+          [accept]="form.get('banner_type')?.value === 'ads_video_banner' ? 'video/*' : 'image/*'"
           (change)="onFileSelected($event)"
           [disabled]="isUploading" />
 
         <!-- Preview -->
         <div class="mt-2" *ngIf="preview">
           <video
-            *ngIf="form.get('banner_type')?.value === 'advertisementVideo'"
+            *ngIf="form.get('banner_type')?.value === 'ads_video_banner'"
             [src]="preview"
             controls
             style="max-height: 200px; max-width: 100%;">
           </video>
           <img
-            *ngIf="form.get('banner_type')?.value !== 'advertisementVideo'"
+            *ngIf="form.get('banner_type')?.value !== 'ads_video_banner'"
             [src]="preview"
             alt="Preview"
             style="max-height: 150px;" />
