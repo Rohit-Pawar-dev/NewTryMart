@@ -1,42 +1,49 @@
+<!-- Row for 3 Big Stats -->
 <c-row class="g-4">
-  <c-col sm="6" xl="3">
+  <c-col sm="12" md="4" xl="4" >
     <c-widget-stat-a color="primary" [title]="'Users'" [value]="(userCount ?? '...') + ''"></c-widget-stat-a>
   </c-col>
 
-  <c-col sm="6" xl="3">
+  <c-col sm="12" md="4" xl="4" >
     <c-widget-stat-a color="info" [title]="'Sellers'" [value]="(sellerCount ?? '...') + ''"></c-widget-stat-a>
   </c-col>
 
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="success" [title]="'Orders'" [value]="(allOrderCount ?? '...') + ''"></c-widget-stat-a>
-  </c-col>
-
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="warning" [title]="'Pending Orders'" [value]="(pendingOrderCount ?? '...') + ''"></c-widget-stat-a>
-  </c-col>
-
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="secondary" [title]="'Delivered Orders'" [value]="(deliveredOrderCount ?? '...') + ''"></c-widget-stat-a>
-  </c-col>
-
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="danger" [title]="'Cancelled Orders'" [value]="(cancelledOrderCount ?? '...') + ''"></c-widget-stat-a>
-  </c-col>
-
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="dark" [title]="'Returned Orders'" [value]="(returnOrderCount ?? '...') + ''"></c-widget-stat-a>
-  </c-col>
-
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="info" [title]="'Packaging Orders'" [value]="(packagingOrderCount ?? '...') + ''"></c-widget-stat-a>
-  </c-col>
-
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="primary" [title]="'Confirmed Orders'" [value]="(confirmedOrderCount ?? '...') + ''"></c-widget-stat-a>
-  </c-col>
-
-  <c-col sm="6" xl="3">
-    <c-widget-stat-a color="info" [title]="'Out For Delivery'" [value]="(outOfDeliveryCount ?? '...') + ''"></c-widget-stat-a>
+  <c-col sm="12" md="4" xl="4"  >
+    <c-widget-stat-a color="success" [title]="'Products'" [value]="(allProductCount ?? '...') + ''"></c-widget-stat-a>
   </c-col>
 </c-row>
 
+<!-- Row for 8 Smaller Stats -->
+<c-row class="g-4 mt-2">
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="success" [title]="'Total Orders'" [value]="(allOrderCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="warning" [title]="'Pending Orders'" [value]="(pendingOrderCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="secondary" [title]="'Delivered Orders'" [value]="(deliveredOrderCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="danger" [title]="'Cancelled Orders'" [value]="(cancelledOrderCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="dark" [title]="'Returned Orders'" [value]="(returnOrderCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="info" [title]="'Packaging Orders'" [value]="(packagingOrderCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="primary" [title]="'Confirmed Orders'" [value]="(confirmedOrderCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+
+  <c-col sm="6" md="3" xl="3">
+    <c-widget-stat-a color="info" [title]="'Out For Delivery'" [value]="(outOfDeliveryCount ?? '...') + ''"></c-widget-stat-a>
+  </c-col>
+</c-row>
