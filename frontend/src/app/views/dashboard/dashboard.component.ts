@@ -12,7 +12,7 @@ import {
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ChartOptions } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment'; // Adjust path if needed
+import { environment } from '../../../environments/environment';
 
 import {
   AvatarComponent,
@@ -31,6 +31,7 @@ import {
   TableDirective,
   TextColorDirective,
 } from '@coreui/angular';
+
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -38,24 +39,15 @@ import { WidgetsBrandComponent } from '../widgets/widgets-brand/widgets-brand.co
 import { WidgetsDropdownComponent } from '../widgets/widgets-dropdown/widgets-dropdown.component';
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
 
-interface IUser {
-  name: string;
-  state: string;
-  registered: string;
-  country: string;
-  usage: number;
-  period: string;
-  payment: string;
-  activity: string;
-  avatar: string;
-  status: string;
-  color: string;
-}
+// ✅ FIXED: Correct import name for OrderListComponent
+import { OrderListComponent } from '../orders/order-list/order-list.component';
 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
+  standalone: true,
   imports: [
+    OrderListComponent, // ✅ Make sure this is standalone
     WidgetsDropdownComponent,
     TextColorDirective,
     CardComponent,
@@ -86,99 +78,30 @@ export class DashboardComponent implements OnInit {
   readonly #document: Document = inject(DOCUMENT);
   readonly #renderer: Renderer2 = inject(Renderer2);
   readonly #chartsData: DashboardChartsData = inject(DashboardChartsData);
-  readonly #http = inject(HttpClient);
 
   public userCount: number | null = null;
-
-  public users: IUser[] = [
-    {
-      name: 'Yiorgos Avraamu',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Us',
-      usage: 50,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Mastercard',
-      activity: '10 sec ago',
-      avatar: './assets/images/avatars/1.jpg',
-      status: 'success',
-      color: 'success',
-    },
-    {
-      name: 'Avram Tarasios',
-      state: 'Recurring ',
-      registered: 'Jan 1, 2021',
-      country: 'Br',
-      usage: 10,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Visa',
-      activity: '5 minutes ago',
-      avatar: './assets/images/avatars/2.jpg',
-      status: 'danger',
-      color: 'info',
-    },
-    {
-      name: 'Quintin Ed',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'In',
-      usage: 74,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Stripe',
-      activity: '1 hour ago',
-      avatar: './assets/images/avatars/3.jpg',
-      status: 'warning',
-      color: 'warning',
-    },
-    {
-      name: 'Enéas Kwadwo',
-      state: 'Sleep',
-      registered: 'Jan 1, 2021',
-      country: 'Fr',
-      usage: 98,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Paypal',
-      activity: 'Last month',
-      avatar: './assets/images/avatars/4.jpg',
-      status: 'secondary',
-      color: 'danger',
-    },
-    {
-      name: 'Agapetus Tadeáš',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Es',
-      usage: 22,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'ApplePay',
-      activity: 'Last week',
-      avatar: './assets/images/avatars/5.jpg',
-      status: 'success',
-      color: 'primary',
-    },
-    {
-      name: 'Friderik Dávid',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Pl',
-      usage: 43,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Amex',
-      activity: 'Yesterday',
-      avatar: './assets/images/avatars/6.jpg',
-      status: 'info',
-      color: 'dark',
-    },
-  ];
+  public sellerCount: number | null = null;
+  public allOrderCount: number | null = null;
+  public allProductCount: number | null = null;
+  public pendingOrderCount: number | null = null;
+  public deliveredOrderCount: number | null = null;
+  public cancelledOrderCount: number | null = null;
+  public returnOrderCount: number | null = null;
+  public packagingOrderCount: number | null = null;
+  public confirmedOrdeCount: number | null = null;
+  public outOfdeliveryCount: number | null = null;
 
   public mainChart: IChartProps = { type: 'line' };
   public mainChartRef: WritableSignal<any> = signal(undefined);
+
   #mainChartRefEffect = effect(() => {
     if (this.mainChartRef()) {
       this.setChartStyles();
     }
   });
+
   public chart: Array<IChartProps> = [];
+
   public trafficRadioGroup = new FormGroup({
     trafficRadio: new FormControl('Month'),
   });
@@ -232,13 +155,40 @@ export class DashboardComponent implements OnInit {
 
   fetchDashboardData(): void {
     const apiUrl = `${environment.apiUrl}/dashboard`;
+
     this.http.get<any>(apiUrl).subscribe({
       next: (res) => {
-        this.userCount = res?.data?.[0]?.user ? +res.data[0].user : 0;
+        const data = res?.data ?? {};
+
+        this.userCount = data.users?.total ?? 0;
+        this.sellerCount = data.sellers?.total ?? 0;
+
+        this.allOrderCount = data.orders?.total ?? 0;
+        this.allProductCount = data.orders?.total ??0;
+        this.pendingOrderCount = data.orders?.pending ?? 0;
+        this.deliveredOrderCount = data.orders?.delivered ?? 0;
+        this.cancelledOrderCount = data.orders?.cancelled ?? 0;
+
+        this.returnOrderCount = data.orders?.returned ?? 0;
+        this.packagingOrderCount = data.orders?.packaging ?? 0;
+        this.confirmedOrdeCount = data.orders?.confirmed ?? 0;
+        this.outOfdeliveryCount = data.orders?.outForDelivery ?? 0;
+
+        console.log('Dashboard Data:', data);
       },
       error: (err) => {
         console.error('Failed to load dashboard data', err);
         this.userCount = null;
+        this.sellerCount = null;
+        this.allOrderCount = null;
+        this.allProductCount = null;
+        this.pendingOrderCount = null;
+        this.deliveredOrderCount = null;
+        this.cancelledOrderCount = null;
+        this.returnOrderCount = null;
+        this.packagingOrderCount = null;
+        this.confirmedOrdeCount = null;
+        this.outOfdeliveryCount = null;
       },
     });
   }

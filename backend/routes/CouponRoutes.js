@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const couponController = require('../controllers/couponController');
+const couponController = require('../controllers/AdminsController/couponController');
 
 // GENERATE coupon code (place before :id to avoid conflict)
 router.get("/generate/code", couponController.generateCouponCode);

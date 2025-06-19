@@ -228,26 +228,6 @@ exports.getProductsBySubCategory = async (req, res) => {
   }
 };
 
-// Product Detail (Frontend)
-// exports.getProductDetails = async (req, res) => {
-//   try {
-//     const product = await Product.findOne({
-//       _id: req.params.id,
-//       status: 1,
-//       request_status: 1,
-//     }).populate("category_id sub_category_id seller_id");
-
-//     if (!product)
-//       return res
-//         .status(404)
-//         .json({ status: false, message: "Product not found or inactive" });
-
-//     res.json({ status: true, product });
-//   } catch (err) {
-//     res.status(400).json({ status: false, message: err.message });
-//   }
-// };
-
 exports.getProductDetails = async (req, res) => {
   try {
     const product = await Product.findOne({
