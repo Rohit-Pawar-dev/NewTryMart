@@ -1,4 +1,30 @@
-<app-widgets-dropdown [userCount]="userCount" />
+<!-- <app-widgets-dropdown [userCount]="userCount" , [sellerCount] ="sellerCount"/> -->
+<!-- <app-widgets-dropdown [sellerCount]="sellerCount" />  -->
+
+<!-- <app-widgets-dropdown
+  [userCount]="userCount"
+  [sellerCount]="sellerCount"
+></app-widgets-dropdown> -->
+
+
+<app-widgets-dropdown
+  [userCount]="userCount"
+  [sellerCount]="sellerCount"
+  [allOrderCount]="allOrderCount"
+  [pendingOrderCount]="pendingOrderCount"
+  [deliveredOrderCount]="deliveredOrderCount"
+  [cancelledOrderCount]="cancelledOrderCount"
+  [returnOrderCount]="returnOrderCount"
+  [packagingOrderCount]="packagingOrderCount"
+  [confirmedOrderCount]="confirmedOrdeCount"
+  [outOfDeliveryCount]="outOfdeliveryCount"
+></app-widgets-dropdown>
+
+
+<section class="order-list-wrapper">
+  <app-order-list></app-order-list>
+</section>
+
 
 <!-- <c-card class="my-4">
   <c-card-body>

@@ -27,7 +27,17 @@ export class WidgetsDropdownComponent implements OnInit, AfterContentInit {
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
-  @Input() userCount: number | null = null;
+@Input() userCount: number | null = null;
+@Input() sellerCount: number | null = null;
+@Input() allOrderCount: number | null = null;
+@Input() pendingOrderCount: number | null = null;
+@Input() deliveredOrderCount: number | null = null;
+@Input() cancelledOrderCount: number | null = null;
+@Input() returnOrderCount: number | null = null;
+@Input() packagingOrderCount: number | null = null;
+@Input() confirmedOrderCount: number | null = null;
+@Input() outOfDeliveryCount: number | null = null;
+
 
   data: any[] = [];
   options: any[] = [];
