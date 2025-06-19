@@ -1,4 +1,3 @@
-// product-add.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
 import { ProductService, Category, SubCategory } from '../../../services/product.service';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
@@ -98,6 +98,7 @@ export class ProductAddComponent implements OnInit {
         console.error('Thumbnail upload error:', err);
         this.uploadError = 'Failed to upload thumbnail';
         this.isUploading = false;
+        Swal.fire('Upload Failed', 'Failed to upload thumbnail. Please try again.', 'error');
       }
     });
   }
@@ -127,6 +128,7 @@ export class ProductAddComponent implements OnInit {
       error: (err) => {
         console.error('Photo upload error:', err);
         this.isPhotosUploading = false;
+        Swal.fire('Upload Failed', 'Failed to upload photo. Please try again.', 'error');
       }
     });
   }
@@ -141,7 +143,7 @@ export class ProductAddComponent implements OnInit {
 
   submit(): void {
     if (this.isSubmitting || this.isUploading || this.isPhotosUploading) {
-      console.warn('Upload or submission in progress.');
+      Swal.fire('Please wait', 'Upload or submission in progress.', 'info');
       return;
     }
 
@@ -150,16 +152,39 @@ export class ProductAddComponent implements OnInit {
       this.form.patchValue({ slug: this.generateSlug(name) });
     }
 
+    Swal.fire({
+      title: 'Confirm Product Creation',
+      text: 'Are you sure you want to create this product?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, create it',
+      cancelButtonText: 'Cancel',
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.executeSubmit();
+      }
+    });
+  }
+
+  private executeSubmit(): void {
     this.isSubmitting = true;
 
     this.productService.createProduct(this.form.value).subscribe({
       next: (res) => {
-        console.log('Product created:', res);
-        this.router.navigate(['/products']);
+        Swal.fire({
+          icon: 'success',
+          title: 'Product Created',
+          text: 'The product has been successfully created.',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#3085d6',
+        }).then(() => {
+          this.router.navigate(['/products']);
+        });
       },
       error: (err) => {
         console.error('Product creation error:', err);
         this.isSubmitting = false;
+        Swal.fire('Creation Failed', 'Failed to create product. Please try again.', 'error');
       }
     });
   }

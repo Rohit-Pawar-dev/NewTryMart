@@ -169,7 +169,7 @@ export class DashboardComponent implements OnInit {
         this.deliveredOrderCount = data.orders?.delivered ?? 0;
         this.cancelledOrderCount = data.orders?.cancelled ?? 0;
         this.returnOrderCount = data.orders?.returned ?? 0;
-        this.packagingOrderCount = data.orders?.packaging ?? 0;
+        this.packagingOrderCount = data.orders?.processing ?? 0;
         this.confirmedOrdeCount = data.orders?.confirmed ?? 0;
         this.outOfdeliveryCount = data.orders?.outForDelivery ?? 0;
 

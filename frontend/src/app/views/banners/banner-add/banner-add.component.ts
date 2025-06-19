@@ -1,4 +1,3 @@
-// banner-add.component.ts
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BannerService } from '../../../../app/services/banner.service';
@@ -7,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
@@ -73,15 +73,44 @@ export class BannerAddComponent implements OnDestroy {
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
+    // SweetAlert2 confirmation
+    Swal.fire({
+      title: 'Confirm Submission',
+      text: 'Are you sure you want to add this banner?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeSubmit();
+      }
+    });
+  }
+
+  private executeSubmit(): void {
     this.isSubmitting = true;
     this.uploadError = null;
 
     const createBanner = () => {
       this.bannerService.createBanner(this.form.value).subscribe({
-        next: () => this.router.navigate(['/banners']),
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Banner created successfully!',
+          }).then(() => {
+            this.router.navigate(['/banners']);
+          });
+        },
         error: (err) => {
           console.error('Banner creation failed', err);
           this.isSubmitting = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to create banner. Please try again.',
+          });
         },
       });
     };
@@ -112,11 +141,21 @@ export class BannerAddComponent implements OnDestroy {
           this.uploadError = 'Upload failed';
           this.isUploading = false;
           this.isSubmitting = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Upload Failed',
+            text: 'Failed to upload the file. Please try again.',
+          });
         },
       });
     } else {
       this.uploadError = 'Please select a file';
       this.isSubmitting = false;
+      Swal.fire({
+        icon: 'warning',
+        title: 'No File Selected',
+        text: 'Please select a file before submitting.',
+      });
     }
   }
 

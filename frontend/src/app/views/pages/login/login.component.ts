@@ -44,7 +44,8 @@ import {
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  username = '';
+  emailOrMobile = '';
+
   password = '';
   error = '';
 
@@ -52,23 +53,23 @@ export class LoginComponent {
 
   onLogin() {
     this.error = '';
-    this.http.post<any>(`${environment.apiUrl}/auth/login`,
-    {
-      email: this.username,
+
+    this.http.post<any>(`${environment.apiUrl}/admin/login`, {
+      emailOrMobile: this.emailOrMobile,
       password: this.password,
     }).subscribe({
       next: (res) => {
-        if (!res.user || res.user.role !== 'admin') {
-          this.error = 'Access denied. Admins only.';
+        if (!res.status || !res.data) {
+          this.error = 'Invalid login response';
           return;
         }
 
         localStorage.setItem('token', res.token);
-        localStorage.setItem('profile', JSON.stringify(res.user));
+        localStorage.setItem('profile', JSON.stringify(res.data));
         this.router.navigate(['/admin/dashboard']);
       },
       error: (err) => {
-        this.error = err.error?.msg || 'Login failed';
+        this.error = err.error?.message || 'Login failed';
       }
     });
   }
