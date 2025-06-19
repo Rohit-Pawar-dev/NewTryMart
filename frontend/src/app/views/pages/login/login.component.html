@@ -6,19 +6,18 @@
           <c-card-body>
             <form cForm (ngSubmit)="onLogin()">
               <h1 class="text-center pb-2">Admin Login</h1>
-              <!-- <p class="text-body-secondary">Sign in</p> -->
 
               <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <c-icon name="cilUser"></c-icon>
                 </span>
                 <input
-                  type="email"
-                  placeholder="Email"
+                  type="text"
+                  placeholder="Email or Mobile"
                   cFormControl
                   autocomplete="username"
-                  [(ngModel)]="username"
-                  name="username"
+                  [(ngModel)]="emailOrMobile"
+                  name="emailOrMobile"
                   required
                 />
               </c-input-group>

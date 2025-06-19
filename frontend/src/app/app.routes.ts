@@ -103,8 +103,17 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/pages/routes').then((m) => m.routes),
       },
+       {
+      path: 'admin-profile',
+      loadChildren: () =>
+        import('./views/adminProfile/admin-profile.module').then(m => m.AdminProfileModule),
+      data: {
+        title: 'Admin Profile'
+      }
+    }
     ],
   },
+
 
   // Public Pages
   {

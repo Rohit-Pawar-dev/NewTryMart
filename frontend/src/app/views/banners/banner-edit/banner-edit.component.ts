@@ -24,6 +24,9 @@ export class BannerEditComponent implements OnInit, OnDestroy {
   preview: string | null = null;
   selectedFile: File | null = null;
 
+  originalImage: string | null = null;
+  originalVideo: string | null = null;
+
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
   constructor(
@@ -46,11 +49,18 @@ export class BannerEditComponent implements OnInit, OnDestroy {
         this.form.get('video')?.setValidators([Validators.required]);
         this.form.get('image')?.clearValidators();
         this.form.get('image')?.setValue('');
+        if (!this.preview && this.originalVideo) {
+          this.form.get('video')?.setValue(this.originalVideo);
+        }
       } else {
         this.form.get('image')?.setValidators([Validators.required]);
         this.form.get('video')?.clearValidators();
         this.form.get('video')?.setValue('');
+        if (!this.preview && this.originalImage) {
+          this.form.get('image')?.setValue(this.originalImage);
+        }
       }
+
       this.form.get('image')?.updateValueAndValidity();
       this.form.get('video')?.updateValueAndValidity();
     });
@@ -61,6 +71,8 @@ export class BannerEditComponent implements OnInit, OnDestroy {
     this.bannerService.getBanner(this.id).subscribe({
       next: (banner) => {
         this.form.patchValue(banner);
+        this.originalImage = banner.image || null;
+        this.originalVideo = banner.video || null;
         this.preview = null;
       },
       error: () => {
@@ -85,6 +97,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
       Swal.fire('Invalid File', 'Please select a valid video.', 'error');
       return;
     }
+
     if (!isVideo && !file.type.startsWith('image/')) {
       this.uploadError = 'Please select a valid image file.';
       Swal.fire('Invalid File', 'Please select a valid image.', 'error');
@@ -107,6 +120,21 @@ export class BannerEditComponent implements OnInit, OnDestroy {
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
+    Swal.fire({
+      title: 'Confirm Update',
+      text: 'Are you sure you want to update this banner?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeSubmit();
+      }
+    });
+  }
+
+  private executeSubmit(): void {
     this.isSubmitting = true;
     this.uploadError = null;
 
@@ -145,8 +173,10 @@ export class BannerEditComponent implements OnInit, OnDestroy {
 
           if (type === 'ads_video_banner') {
             this.form.patchValue({ video: normalizedPath });
+            this.originalVideo = normalizedPath;
           } else {
             this.form.patchValue({ image: normalizedPath });
+            this.originalImage = normalizedPath;
           }
 
           this.isUploading = false;
