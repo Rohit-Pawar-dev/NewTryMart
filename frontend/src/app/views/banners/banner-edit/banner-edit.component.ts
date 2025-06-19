@@ -120,6 +120,21 @@ export class BannerEditComponent implements OnInit, OnDestroy {
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
+    Swal.fire({
+      title: 'Confirm Update',
+      text: 'Are you sure you want to update this banner?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeSubmit();
+      }
+    });
+  }
+
+  private executeSubmit(): void {
     this.isSubmitting = true;
     this.uploadError = null;
 

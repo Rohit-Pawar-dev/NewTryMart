@@ -11,6 +11,7 @@ import {
   SubCategory,
   Product,
 } from '../../../services/product.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-edit',
@@ -63,7 +64,6 @@ export class ProductEditComponent implements OnInit {
       added_by: ['admin'],
     });
 
-    // Generate slug on name changes only if slug is empty
     this.form.get('name')?.valueChanges.subscribe((name) => {
       if (!this.form.get('slug')?.value) {
         this.form.patchValue({ slug: this.generateSlug(name) }, { emitEvent: false });
@@ -93,11 +93,10 @@ export class ProductEditComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load product', err);
-        alert('Could not load product details');
+        Swal.fire('Error', 'Could not load product details', 'error');
       },
     });
   }
-
 
   loadCategories(): void {
     this.productService.getAllCategories().subscribe({
@@ -135,6 +134,7 @@ export class ProductEditComponent implements OnInit {
         console.error('Thumbnail upload error:', err);
         this.uploadError = 'Failed to upload thumbnail';
         this.isUploading = false;
+        Swal.fire('Upload Failed', 'Failed to upload thumbnail. Please try again.', 'error');
       },
     });
   }
@@ -144,15 +144,15 @@ export class ProductEditComponent implements OnInit {
   }
 
   disableScroll(event: WheelEvent): void {
-  event.preventDefault();
-}
-
-disableArrowKeys(event: KeyboardEvent): void {
-  // Prevent up/down arrow keys from changing the number
-  if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
     event.preventDefault();
   }
-}
+
+  disableArrowKeys(event: KeyboardEvent): void {
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      event.preventDefault();
+    }
+  }
+
   onSinglePhotoSelected(event: Event, index: number): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -179,6 +179,7 @@ disableArrowKeys(event: KeyboardEvent): void {
       error: (err) => {
         console.error('Photo upload error:', err);
         this.isPhotosUploading = false;
+        Swal.fire('Upload Failed', 'Failed to upload photo. Please try again.', 'error');
       },
     });
   }
@@ -189,7 +190,6 @@ disableArrowKeys(event: KeyboardEvent): void {
     this.photoPreviews.splice(index, 1);
     this.form.patchValue({ images: this.photoPreviews });
 
-    // Keep photoInputs aligned with previews length
     if (this.photoInputs.length > this.photoPreviews.length + 1) {
       this.photoInputs.pop();
     }
@@ -224,12 +224,12 @@ disableArrowKeys(event: KeyboardEvent): void {
 
   submit(): void {
     if (this.isSubmitting || this.isUploading || this.isPhotosUploading) {
-      console.warn('Upload or submission in progress.');
+      Swal.fire('Please wait', 'Upload or submission in progress.', 'info');
       return;
     }
 
     if (this.form.invalid) {
-      alert('Please fill in all required fields correctly.');
+      Swal.fire('Invalid', 'Please fill in all required fields correctly.', 'warning');
       return;
     }
 
@@ -239,21 +239,42 @@ disableArrowKeys(event: KeyboardEvent): void {
     }
 
     let formData = { ...this.form.value };
-
     formData = this.cleanObjectIdFields(formData);
 
+    Swal.fire({
+      title: 'Confirm Product Update',
+      text: 'Are you sure you want to update this product?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.executeSubmit(formData);
+      }
+    });
+  }
+
+  private executeSubmit(formData: any): void {
     this.isSubmitting = true;
 
     this.productService.updateProduct(this.productId, formData).subscribe({
       next: (res) => {
-        console.log('Product updated:', res);
         this.isSubmitting = false;
-        this.router.navigate(['/products']);
+        Swal.fire({
+          icon: 'success',
+          title: 'Product Updated',
+          text: 'The product has been successfully updated.',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#3085d6',
+        }).then(() => {
+          this.router.navigate(['/products']);
+        });
       },
       error: (err) => {
         console.error('Product update error:', err);
         this.isSubmitting = false;
-        alert('Failed to update product');
+        Swal.fire('Update Failed', 'Failed to update product. Please try again.', 'error');
       },
     });
   }
