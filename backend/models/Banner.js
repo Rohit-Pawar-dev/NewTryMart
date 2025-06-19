@@ -22,7 +22,7 @@ const bannerSchema = new Schema({
   },
   banner_type: {
     type: String,
-    enum: ['main', 'popup', 'advertisementImage', 'advertisementVideo'],
+    enum: ['main_banner', 'popup_banner', 'ads_img_banner', 'ads_video_banner'],
     default: 'main'
   }
 }, {

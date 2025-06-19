@@ -22,7 +22,7 @@ exports.createBanner = async (req, res) => {
       title,
       image: image || null,
       status: status || 'active',
-      banner_type: banner_type || 'main',
+      banner_type: banner_type || 'main_banner',
       video: video || null,
     });
 
@@ -35,14 +35,16 @@ exports.createBanner = async (req, res) => {
 
 
 // Get All with filters and pagination
+
 exports.getAllBanners = async (req, res) => {
   try {
-    const { search = "", all = "false" } = req.query;
+    const { search = "", all = "false", banner_type } = req.query;
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
 
     const filter = {
       ...(all === "true" ? {} : { status: "active" }),
+      ...(banner_type ? { banner_type } : {}),
       title: { $regex: search, $options: "i" },
     };
 
@@ -66,6 +68,38 @@ exports.getAllBanners = async (req, res) => {
     res.status(500).json({ status: false, message: "Internal server error" });
   }
 };
+
+// exports.getAllBanners = async (req, res) => {
+//   try {
+//     const { search = "", all = "false" } = req.query;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const offset = parseInt(req.query.offset) || 0;
+
+//     const filter = {
+//       ...(all === "true" ? {} : { status: "active" }),
+//       title: { $regex: search, $options: "i" },
+//     };
+
+//     const total = await Banner.countDocuments(filter);
+
+//     const banners = await Banner.find(filter)
+//       .sort({ createdAt: -1 })
+//       .skip(offset)
+//       .limit(limit);
+
+//     res.json({
+//       status: true,
+//       message: "Banners fetched successfully",
+//       data: banners,
+//       total,
+//       limit,
+//       offset,
+//       totalPages: Math.ceil(total / limit),
+//     });
+//   } catch (err) {
+//     res.status(500).json({ status: false, message: "Internal server error" });
+//   }
+// };
 
 // Get One
 exports.getBannerById = async (req, res) => {

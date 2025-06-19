@@ -36,15 +36,15 @@ export class UserService {
     params.append('page', page.toString());
     params.append('pageSize', pageSize.toString());
 
-    return this.http.get<any>(`${this.apiUrl}?${params.toString()}`);
+    return this.http.get<any>(`${this.apiUrl}/list?${params.toString()}`);
   }
 
   getUser(id: string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`);
+    return this.http.get<User>(`${this.apiUrl}/view/${id}`);
   }
 
   createUser(user: User): Observable<User> {
-    return this.http.post<User>(this.apiUrl, user);
+    return this.http.post<User>(`${this.apiUrl}/add`, user);
   }
 
   // updateUser(id: string, user: User): Observable<User> {
@@ -52,10 +52,10 @@ export class UserService {
   // }
 
   updateUser(userId: string, user: Partial<User>) {
-    return this.http.put(`${environment.apiUrl}/users/${userId}`, user);
+    return this.http.put(`${environment.apiUrl}/users/edit/${userId}`, user);
   }
 
   deleteUser(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.apiUrl}/delete/${id}`);
   }
 }
