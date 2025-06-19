@@ -30,6 +30,7 @@ export class WidgetsDropdownComponent implements OnInit, AfterContentInit {
 @Input() userCount: number | null = null;
 @Input() sellerCount: number | null = null;
 @Input() allOrderCount: number | null = null;
+@Input() allProductCount: number | null = null;
 @Input() pendingOrderCount: number | null = null;
 @Input() deliveredOrderCount: number | null = null;
 @Input() cancelledOrderCount: number | null = null;
