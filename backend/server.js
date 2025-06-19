@@ -23,6 +23,7 @@ const addressRoutes = require("./routes/AddressRoutes");
 const CouponRoutes = require("./routes/CouponRoutes.js");
 const OrderRoutes = require("./routes/OrderRoutes.js");
 const deliveryManRoutes = require('./routes/DeliverManRoutes.js');
+const adminRoutes = require('./routes/AdminRoutes.js');
 
 
 app.use(cors());
@@ -58,7 +59,7 @@ app.use('/api', accountRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
+app.use('/api', adminRoutes);
 
 
 // COUPON ROUTES
