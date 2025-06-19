@@ -164,17 +164,16 @@ export class DashboardComponent implements OnInit {
         this.sellerCount = data.sellers?.total ?? 0;
 
         this.allOrderCount = data.orders?.total ?? 0;
-        this.allProductCount = data.orders?.total ??0;
+        this.allProductCount = data.products?.total ?? 0;
         this.pendingOrderCount = data.orders?.pending ?? 0;
         this.deliveredOrderCount = data.orders?.delivered ?? 0;
         this.cancelledOrderCount = data.orders?.cancelled ?? 0;
-
         this.returnOrderCount = data.orders?.returned ?? 0;
         this.packagingOrderCount = data.orders?.packaging ?? 0;
         this.confirmedOrdeCount = data.orders?.confirmed ?? 0;
         this.outOfdeliveryCount = data.orders?.outForDelivery ?? 0;
 
-        console.log('Dashboard Data:', data);
+        console.log(data);
       },
       error: (err) => {
         console.error('Failed to load dashboard data', err);
@@ -191,5 +190,6 @@ export class DashboardComponent implements OnInit {
         this.outOfdeliveryCount = null;
       },
     });
+     
   }
 }
