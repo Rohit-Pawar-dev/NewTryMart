@@ -6,7 +6,7 @@ exports.getAllSellers = async (req, res) => {
     const parsedLimit = Math.max(1, parseInt(limit));
     const parsedOffset = Math.max(0, parseInt(offset));
 
-    const filter = { status: 1 }; // You can customize this if needed
+    const filter = { status: "active" }; // You can customize this if needed
 
     const total = await Seller.countDocuments(filter);
 

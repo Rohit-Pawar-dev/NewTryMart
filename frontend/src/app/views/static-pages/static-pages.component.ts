@@ -1,11 +1,11 @@
+// static-pages.component.ts
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { environment } from '../../../environments/environment';
-
 
 @Component({
   selector: 'app-static-pages',
@@ -15,6 +15,7 @@ import { environment } from '../../../environments/environment';
 })
 export class StaticPagesComponent {
   public Editor = ClassicEditor;
+  
   public pages: any[] = [];
   public loading = false;
 
