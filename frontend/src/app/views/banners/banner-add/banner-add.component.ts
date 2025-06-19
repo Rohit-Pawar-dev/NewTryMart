@@ -35,11 +35,11 @@ export class BannerAddComponent implements OnDestroy {
       image: [''],
       video: [''],
       status: ['active', Validators.required],
-      banner_type: ['main', Validators.required],
+      banner_type: ['main_banner', Validators.required],
     });
 
     this.form.get('banner_type')?.valueChanges.subscribe((type) => {
-      if (type === 'advertisementVideo') {
+      if (type === 'ads_video_banner') {
         this.form.get('video')?.setValidators([Validators.required]);
         this.form.get('image')?.clearValidators();
         this.form.get('image')?.setValue('');
@@ -63,7 +63,7 @@ export class BannerAddComponent implements OnDestroy {
     // Set preview as blob URL for image/video
     this.preview = URL.createObjectURL(file);
 
-    if (type === 'advertisementVideo') {
+    if (type === 'ads_video_banner') {
       this.form.patchValue({ video: 'selected' });
     } else {
       this.form.patchValue({ image: 'selected' });
@@ -98,7 +98,7 @@ export class BannerAddComponent implements OnDestroy {
           const normalizedUrl = res.file.replace(/\\/g, '/');
           const type = this.form.get('banner_type')?.value;
 
-          if (type === 'advertisementVideo') {
+          if (type === 'ads_video_banner') {
             this.form.patchValue({ video: normalizedUrl });
           } else {
             this.form.patchValue({ image: normalizedUrl });

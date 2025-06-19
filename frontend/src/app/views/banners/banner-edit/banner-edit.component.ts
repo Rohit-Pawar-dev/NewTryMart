@@ -42,7 +42,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
     });
 
     this.form.get('banner_type')?.valueChanges.subscribe((type) => {
-      if (type === 'advertisementVideo') {
+      if (type === 'ads_video_banner') {
         this.form.get('video')?.setValidators([Validators.required]);
         this.form.get('image')?.clearValidators();
         this.form.get('image')?.setValue('');
@@ -78,7 +78,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
     if (!file) return;
 
     const type = this.form.get('banner_type')?.value;
-    const isVideo = type === 'advertisementVideo';
+    const isVideo = type === 'ads_video_banner';
 
     if (isVideo && !file.type.startsWith('video/')) {
       this.uploadError = 'Please select a valid video file.';
@@ -143,7 +143,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
           const normalizedPath = res.file.replace(/\\/g, '/');
           const type = this.form.get('banner_type')?.value;
 
-          if (type === 'advertisementVideo') {
+          if (type === 'ads_video_banner') {
             this.form.patchValue({ video: normalizedPath });
           } else {
             this.form.patchValue({ image: normalizedPath });

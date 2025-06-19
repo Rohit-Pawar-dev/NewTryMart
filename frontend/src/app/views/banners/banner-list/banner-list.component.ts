@@ -17,6 +17,14 @@ export class BannerListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
+  bannerTypeMap: { [key: string]: string } = {
+  main_banner: 'Main Banner',
+  popup_banner: 'Popup Banner',
+  ads_img_banner: 'Advertisement Image',
+  ads_video_banner: 'Advertisement Video'
+};
+
+
   constructor(private bannerService: BannerService, private router: Router) {}
 
   ngOnInit() {

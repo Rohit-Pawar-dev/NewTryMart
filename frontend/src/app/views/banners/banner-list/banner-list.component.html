@@ -27,7 +27,8 @@
           <tr *ngFor="let banner of banners; let i = index">
             <td>{{ i + 1 }}</td>
             <td>{{ banner.title }}</td>
-            <td class="text-capitalize">{{ banner.banner_type }}</td>
+            <td>{{ bannerTypeMap[banner.banner_type] || banner.banner_type }}</td>
+
             <td>
               <ng-container *ngIf="banner.image; else showVideo">
                 <img [src]="banner.image" width="150" class="img-thumbnail" alt="Banner Image" />
