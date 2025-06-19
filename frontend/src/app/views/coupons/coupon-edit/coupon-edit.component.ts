@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CouponService } from '../../../../app/services/coupon.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
@@ -62,10 +63,40 @@ export class CouponEditComponent implements OnInit {
 
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
-    this.isSubmitting = true;
-    this.couponService.updateCoupon(this.id, this.form.value).subscribe({
-      next: () => this.router.navigate(['/coupons']),
-      error: () => (this.isSubmitting = false),
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to update this coupon?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isSubmitting = true;
+
+        this.couponService.updateCoupon(this.id, this.form.value).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Coupon Updated',
+              text: 'The coupon has been successfully updated!',
+              confirmButtonText: 'OK',
+            }).then(() => {
+              this.router.navigate(['/coupons']);
+            });
+          },
+          error: () => {
+            this.isSubmitting = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Something went wrong while updating the coupon.',
+              confirmButtonText: 'Try Again',
+            });
+          },
+        });
+      }
     });
   }
 

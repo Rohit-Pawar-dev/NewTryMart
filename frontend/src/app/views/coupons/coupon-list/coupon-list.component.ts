@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
@@ -32,7 +33,12 @@ export class CouponListComponent implements OnInit {
       error: (err) => {
         console.error('Error loading coupons:', err);
         this.isLoading = false;
-      }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load coupons.',
+        });
+      },
     });
   }
 
@@ -41,13 +47,55 @@ export class CouponListComponent implements OnInit {
   }
 
   deleteCoupon(id: string) {
-    if (confirm('Are you sure to delete?')) {
-      this.couponService.deleteCoupon(id).subscribe(() => this.loadCoupons());
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the coupon.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.couponService.deleteCoupon(id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'The coupon has been deleted.',
+            });
+            this.loadCoupons();
+          },
+          error: () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to delete the coupon.',
+            });
+          },
+        });
+      }
+    });
   }
 
   toggleStatus(coupon: Coupon) {
     const newStatus = coupon.status === 'active' ? 'inactive' : 'active';
-    this.couponService.updateCoupon(coupon._id!, { status: newStatus }).subscribe(() => this.loadCoupons());
+
+    this.couponService.updateCoupon(coupon._id!, { status: newStatus }).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Updated!',
+          text: `Coupon status has been changed to ${newStatus}.`,
+        });
+        this.loadCoupons();
+      },
+      error: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to update status.',
+        });
+      },
+    });
   }
 }

@@ -4,6 +4,7 @@ import { CouponService } from '../../../../app/services/coupon.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
@@ -24,7 +25,6 @@ export class CouponAddComponent {
       couponTitle: ['', Validators.required],
       couponCode: ['', Validators.required],
       discountType: ['percentage', Validators.required],
-      // allow 0 for both percentage and flat
       discountAmount: [0, [Validators.required, Validators.min(0)]],
       minimumPurchase: [0, [Validators.required, Validators.min(0)]],
       startDate: ['', Validators.required],
@@ -44,12 +44,40 @@ export class CouponAddComponent {
 
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
-    this.isSubmitting = true;
-    this.couponService.createCoupon(this.form.value).subscribe({
-      next: () => this.router.navigate(['/coupons']),
-      error: () => {
-        this.isSubmitting = false;
-      },
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to create this coupon?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, create it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isSubmitting = true;
+
+        this.couponService.createCoupon(this.form.value).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Coupon Created',
+              text: 'The coupon has been successfully added!',
+              confirmButtonText: 'OK',
+            }).then(() => {
+              this.router.navigate(['/coupons']);
+            });
+          },
+          error: () => {
+            this.isSubmitting = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Something went wrong while creating the coupon.',
+              confirmButtonText: 'Try Again',
+            });
+          },
+        });
+      }
     });
   }
 }
