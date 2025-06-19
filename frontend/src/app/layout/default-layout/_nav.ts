@@ -35,7 +35,7 @@ export const navItems: INavData[] = [
     url: '/sub-categories',
     iconComponent: { name: 'cil-tags' },
   },
- {
+  {
     name: 'Products',
     url: '/products',
     iconComponent: { name: 'cil-tags' },
@@ -75,27 +75,27 @@ export const navItems: INavData[] = [
     url: '/reviews',
     iconComponent: { name: 'cil-star' },
   },
-{
+  {
     title: true,
     name: 'System Settings',
   },
-   {
-  name: 'Business Setup',
-  url: '/business-setup',
-  iconComponent: { name: 'cil-star' }
-},
-
-
+  {
+    name: 'Business Setup',
+    url: '/business-setup',
+    iconComponent: { name: 'cil-star' },
+  },
+{
+    name: 'Static Pages',
+    url: '/static-pages',
+    iconComponent: { name: 'cil-star' },
+  },
 
   // {
   //   title: true,
   //   name: 'System settings',
   // },
   // {
-  //   name: 'Static Pages',
-  //   url: '/static-pages',
-  //   iconComponent: { name: 'cil-star' },
-  // },
+
   // {
   //   name: 'Delivery Men',
   //   url: '/delivery-men',
@@ -141,7 +141,6 @@ export const navItems: INavData[] = [
   //   attributes: { target: '_blank' },
   // },
 ];
-
 
 // import { INavData } from '@coreui/angular';
 

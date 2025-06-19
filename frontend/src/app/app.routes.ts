@@ -11,7 +11,7 @@ export const routes: Routes = [
   {
     path: '',
     component: DefaultLayoutComponent,
-    canActivate: [AuthGuard], 
+    canActivate: [AuthGuard],
     data: {
       title: 'Home',
     },
@@ -79,11 +79,13 @@ export const routes: Routes = [
         },
       },
 
-        //  {
-    //     path: 'static-pages',
-    //     loadChildren: () =>
-    //       import('./views/static-pages/staicPages.module').then((m) => m.StaticPagesModule),
-    //   },
+      {
+        path: 'static-pages',
+        loadChildren: () =>
+          import('./views/static-pages/staicPages.module').then(
+            (m) => m.StaticPagesModule
+          ),
+      },
       {
         path: 'reviews',
         loadChildren: () =>

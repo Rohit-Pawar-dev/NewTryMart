@@ -6,8 +6,16 @@ const AddressController = {
     try {
       const { customer_id, is_default } = req.body;
 
-      // If new address is default, unset previous default addresses for user
-      if (is_default) {
+      // Check if user already has any addresses
+      const existingAddresses = await Address.find({ customer_id });
+
+      // If no existing addresses, force is_default to true
+      if (existingAddresses.length === 0) {
+        req.body.is_default = true;
+      }
+
+      // If is_default is true, unset previous default addresses for user
+      if (req.body.is_default) {
         await Address.updateMany(
           { customer_id },
           { $set: { is_default: false } }
@@ -23,7 +31,6 @@ const AddressController = {
       res.status(500).json({ success: false, message: "Server Error" });
     }
   },
-
   // 2. Get all addresses for a user
   async getAddresses(req, res) {
     try {
@@ -55,12 +62,10 @@ const AddressController = {
       // If updating to default, unset previous default addresses for user
       if (updateData.is_default) {
         if (!updateData.customer_id) {
-          return res
-            .status(400)
-            .json({
-              success: false,
-              message: "customer_id is required to set default",
-            });
+          return res.status(400).json({
+            success: false,
+            message: "customer_id is required to set default",
+          });
         }
         await Address.updateMany(
           { customer_id: updateData.customer_id },
@@ -105,46 +110,42 @@ const AddressController = {
 
   // 5. Select address (set is_default true for one address)
   async selectAddress(req, res) {
-  try {
-    const userId = req.body.userId || req.query.userId;
-    const addressId = req.params.addressId;
+    try {
+      const userId = req.body.userId || req.query.userId;
+      const addressId = req.params.addressId;
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // Ensure the address belongs to the user
+      const addressExists = await Address.findOne({
+        _id: addressId,
+        customer_id: userId,
+      });
+      if (!addressExists) {
+        return res.status(404).json({ message: "Address not found" });
+      }
+
+      // Reset all addresses for the user
+      await Address.updateMany({ customer_id: userId }, { is_default: false });
+
+      // Update the selected address to be default, and return the updated address
+      const updatedAddress = await Address.findOneAndUpdate(
+        { _id: addressId, customer_id: userId },
+        { is_default: true },
+        { new: true }
+      );
+
+      return res.json({
+        message: "Address selected successfully",
+        address: updatedAddress,
+      });
+    } catch (error) {
+      console.error("Select address error:", error);
+      return res.status(500).json({ message: "Server error" });
     }
-
-    // Ensure the address belongs to the user
-    const addressExists = await Address.findOne({
-      _id: addressId,
-      customer_id: userId,
-    });
-    if (!addressExists) {
-      return res.status(404).json({ message: "Address not found" });
-    }
-
-    // Reset all addresses for the user
-    await Address.updateMany(
-      { customer_id: userId },
-      { is_default: false }
-    );
-
-    // Update the selected address to be default, and return the updated address
-    const updatedAddress = await Address.findOneAndUpdate(
-      { _id: addressId, customer_id: userId },
-      { is_default: true },
-      { new: true } 
-    );
-
-    return res.json({
-      message: "Address selected successfully",
-      address: updatedAddress,
-    });
-  } catch (error) {
-    console.error("Select address error:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
-}
-
+  },
 };
 
 module.exports = AddressController;

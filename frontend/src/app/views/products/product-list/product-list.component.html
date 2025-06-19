@@ -17,7 +17,8 @@
           <tr>
             <th>#</th>
             <th>Thumbnail</th>
-            <th>Product Name</th>
+            <th>Name</th>
+            <th>Price</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -29,6 +30,7 @@
               <img [src]="product.thumbnail" width="100" class="img-thumbnail" />
             </td>
             <td>{{ product.name }}</td>
+            <td>{{ product.unit_price }}</td>
             <td>
               <span class="badge" [ngClass]="{
                   'bg-success': product.status === 1,
