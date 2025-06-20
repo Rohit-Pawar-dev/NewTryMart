@@ -5,8 +5,9 @@ const dotenv = require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
-
+// ==========================
 // Create Admin
+// ==========================
 const createAdmin = async (req, res) => {
   try {
     const { name, mobile, email, password } = req.body;
@@ -31,42 +32,15 @@ const createAdmin = async (req, res) => {
 
     await newAdmin.save();
 
-    res.status(201).json({ message: 'Admin created successfully', admin: newAdmin });
+    res.status(201).json({ message: 'Admin created successfully', data: newAdmin });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
 };
 
-// Update Admin
-const updateAdmin = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = { ...req.body };
-
-    if (req.file) {
-      updateData.image = `/uploads/admin/${req.file.filename}`;
-    }
-
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
-    }
-
-    const updatedAdmin = await Admin.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true
-    });
-
-    if (!updatedAdmin) {
-      return res.status(404).json({ message: 'Admin not found' });
-    }
-
-    res.status(200).json({ message: 'Admin updated successfully', admin: updatedAdmin });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
+// ==========================
 // Login Admin
+// ==========================
 const loginAdmin = async (req, res) => {
   try {
     const { emailOrMobile, password } = req.body;
@@ -91,7 +65,7 @@ const loginAdmin = async (req, res) => {
     );
 
     res.status(200).json({
-        status: true,
+      status: true,
       message: 'Login successful',
       token,
       data: {
@@ -99,6 +73,7 @@ const loginAdmin = async (req, res) => {
         name: admin.name,
         email: admin.email,
         mobile: admin.mobile,
+        role: "admin",
         image: admin.image
       }
     });
@@ -107,8 +82,94 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+// ==========================
+// Get Admin by ID
+// ==========================
+const getAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const data = await Admin.findById(id).select('-password');
+
+    if (!data) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    res.status(200).json({ status: true, message: 'Admin fetched successfully', data });
+  } catch (error) {
+    res.status(500).json({ status: false, message: 'Server error', error });
+  }
+};
+
+// ==========================
+// Update Admin (excluding password)
+// ==========================
+const updateAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, mobile } = req.body;
+
+    const updateData = { name, email, mobile };
+
+    if (req.file) {
+      updateData.image = `/uploads/admin/${req.file.filename}`;
+    }
+
+    const updatedAdmin = await Admin.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true
+    }).select('-password');
+
+    if (!updatedAdmin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: 'Admin details updated successfully',
+      admin: updatedAdmin
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, message: 'Server error', error });
+  }
+};
+
+// ==========================
+// Change Admin Password
+// ==========================
+const changePassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { oldPassword, newPassword } = req.body;
+
+    const admin = await Admin.findById(id);
+
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, admin.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Old password is incorrect' });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedNewPassword;
+    await admin.save();
+
+    res.status(200).json({ status: true, message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ status: false, message: 'Server error', error });
+  }
+};
+
+// ==========================
+// Export
+// ==========================
 module.exports = {
   createAdmin,
+  loginAdmin,
+  getAdmin,
   updateAdmin,
-  loginAdmin
+  changePassword
 };
