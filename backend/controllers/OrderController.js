@@ -2,6 +2,7 @@ const Cart = require("../models/Cart");
 const OrderItemDetail = require("../models/OrderDetails");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const VariantOption = require("../models/VariantOption");
 const User = require("../models/User");
 const Seller = require("../models/Seller");
 const nlogger = require("../logger");
@@ -11,19 +12,19 @@ async function placeOrder(req, res) {
     const userId = req.body.user_id;
     const shippingAddressId = req.body.address_id;
 
-    // 1. Fetch all cart items for this user and populate product & seller info
+    // 1. Fetch cart items
     const cartItems = await Cart.find({ customer_id: userId })
       .populate("product_id")
       .populate("seller_id");
 
-    if (cartItems.length === 0) {
+    if (!cartItems || cartItems.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
     let totalOrderPrice = 0;
     const orderItemIds = [];
 
-    // Validate stock availability first
+    // Validate stock
     for (const item of cartItems) {
       const product = item.product_id;
 
@@ -33,21 +34,33 @@ async function placeOrder(req, res) {
           .json({ message: `Product not found for cart item ${item._id}` });
       }
 
-      if (product.current_stock < item.quantity) {
-        return res.status(400).json({
-          message: `Insufficient stock for product ${product.name}. Available: ${product.current_stock}, Requested: ${item.quantity}`,
+      if (item.is_variant && item.variant_id) {
+        const variant = await VariantOption.findOne({
+          _id: item.variant_id,
+          product_id: product._id,
         });
+
+        if (!variant || variant.stock < item.quantity) {
+          return res.status(400).json({
+            message: `Insufficient stock for variant of product ${product.name}`,
+          });
+        }
+      } else {
+        if (product.current_stock < item.quantity) {
+          return res.status(400).json({
+            message: `Insufficient stock for product ${product.name}. Available: ${product.current_stock}, Requested: ${item.quantity}`,
+          });
+        }
       }
     }
 
-    // All stock validated, now create order items and update stock
+    // Process each item
     for (const item of cartItems) {
       const product = item.product_id;
       const seller = item.seller_id;
 
       const itemTotalPrice = item.total_price + (item.shipping_cost || 0);
 
-      // Create a clean copy of the product object
       const productSnapshot = product.toObject();
       delete productSnapshot.__v;
       delete productSnapshot.createdAt;
@@ -80,12 +93,32 @@ async function placeOrder(req, res) {
 
       totalOrderPrice += itemTotalPrice;
 
-      // Deduct stock from product
-      product.current_stock -= item.quantity;
-      await product.save();
+      // Deduct stock
+      if (item.is_variant && item.variant_id) {
+        await VariantOption.findOneAndUpdate(
+          { _id: item.variant_id, product_id: product._id },
+          { $inc: { stock: -item.quantity } }
+        );
+      } else {
+        product.current_stock -= item.quantity;
+        await product.save();
+      }
     }
 
-    // Create the Order document
+    // Check for coupon data from any cart item
+    const couponItem = cartItems.find(
+      (item) => item.coupon_code && item.coupon_amount
+    );
+    let couponCode = null;
+    let couponAmount = 0;
+
+    if (couponItem) {
+      couponCode = couponItem.coupon_code;
+      couponAmount = couponItem.coupon_amount || 0;
+      totalOrderPrice = Math.max(0, totalOrderPrice - couponAmount);
+    }
+
+    // Create Order
     const order = new Order({
       customer_id: userId,
       order_items: orderItemIds,
@@ -94,26 +127,24 @@ async function placeOrder(req, res) {
       status: "Pending",
       payment_status: "Unpaid",
       payment_method: req.body.payment_method || "COD",
+      coupon_code: couponCode,
+      coupon_amount: couponAmount,
     });
 
     await order.save();
 
-    // Clear the cart for this user
+    // Clear the cart
     await Cart.deleteMany({ customer_id: userId });
 
-    // Return success response
-    return res.status(201).json({
+    res.status(201).json({
       message: "Order placed successfully",
       order_id: order._id,
     });
   } catch (error) {
     console.error("Error placing order:", error);
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
 }
-
-module.exports = { placeOrder };
-
 
 // Admin Order Listing (with search + pagination)
 async function getOrders(req, res) {
@@ -130,7 +161,7 @@ async function getOrders(req, res) {
     };
 
     const matchingUsers = await User.find(userFilter).select("_id");
-    const userIds = matchingUsers.map(u => u._id);
+    const userIds = matchingUsers.map((u) => u._id);
 
     const filter = searchText ? { customer_id: { $in: userIds } } : {};
 
@@ -182,7 +213,7 @@ async function getOrderById(req, res) {
         .status(404)
         .json({ status: false, message: "Order not found" });
     }
-console.log("Fetched order:", order);
+    console.log("Fetched order:", order);
 
     return res.status(200).json({
       status: true,

@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const VariantOption = require("../models/VariantOption");
 const Review = require("../models/Review");
 // Create Product
 function generateSkuCode(name) {
@@ -23,13 +24,6 @@ function generateVariantCombinations(variants) {
   }
 
   return combinations;
-}
-
-function generateSkuCode(name) {
-  const cleanName = name.toLowerCase().replace(/\s+/g, "-").substring(0, 10);
-  const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase(); // 4-char random
-  const randomNum = Math.floor(100 + Math.random() * 900); // 3-digit number
-  return `${cleanName}-${randomStr}${randomNum}`;
 }
 
 exports.createProduct = async (req, res) => {
@@ -60,22 +54,50 @@ exports.createProduct = async (req, res) => {
     }
     data.sku_code = sku;
 
-    // ✅ Auto-generate variation_options if not provided
-    if (!data.variation_options && data.variants?.length > 0) {
+    // Save product first
+    const product = await Product.create(data);
+
+    // If variants exist, handle variant options
+    let variationOptions = [];
+
+    if (data.variation_options?.length > 0) {
+      // Use provided variation options
+      variationOptions = data.variation_options.map((option) => ({
+        product_id: product._id,
+        variant_values: option.variant_values,
+        price: option.price,
+        stock: option.stock || 0,
+        images: option.images || [],
+        sku:
+          option.sku ||
+          generateSkuCode(
+            data.name + "-" + Object.values(option.variant_values).join("-")
+          ),
+      }));
+    } else if (data.variants?.length > 0) {
+      // Auto-generate variation combinations
       const combinations = generateVariantCombinations(data.variants);
-      data.variation_options = combinations.map((variant_values, i) => ({
+      variationOptions = combinations.map((variant_values) => ({
+        product_id: product._id,
         variant_values,
-        price: data.unit_price, // You can customize this per variant if needed
-        stock: 10, // Default stock
-        images: [], // Default empty, frontend/admin can update later
+        price: data.unit_price,
+        stock: 10,
+        images: [],
         sku: generateSkuCode(
           data.name + "-" + Object.values(variant_values).join("-")
         ),
       }));
     }
 
-    const product = await Product.create(data);
-    res.status(201).json(product);
+    if (variationOptions.length > 0) {
+      await VariantOption.insertMany(variationOptions);
+    }
+
+    res.status(201).json({
+      message: "Product created successfully",
+      product,
+      variant_count: variationOptions.length,
+    });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -132,11 +154,32 @@ exports.getAllProducts = async (req, res) => {
       .sort({ created_at: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit)
-      .populate("category_id sub_category_id seller_id");
+      .populate("category_id sub_category_id seller_id")
+      .lean(); // <-- lean() is needed to modify product objects directly
+
+    // Fetch variation options for all found products
+    const productIds = products.map((p) => p._id);
+    const variantOptions = await VariantOption.find({
+      product_id: { $in: productIds },
+    }).lean();
+
+    // Group variation options by product ID
+    const grouped = {};
+    for (const variant of variantOptions) {
+      const pid = variant.product_id.toString();
+      if (!grouped[pid]) grouped[pid] = [];
+      grouped[pid].push(variant);
+    }
+
+    // Attach variation_options to each product
+    const enriched = products.map((prod) => ({
+      ...prod,
+      variation_options: grouped[prod._id.toString()] || [],
+    }));
 
     res.json({
       message: "Products fetched successfully",
-      data: products,
+      data: enriched,
       total,
       limit: parsedLimit,
       offset: parsedOffset,
@@ -146,7 +189,6 @@ exports.getAllProducts = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 // Frontend - Get All Active Products
 exports.getActiveProducts = async (req, res) => {
   try {
@@ -162,11 +204,31 @@ exports.getActiveProducts = async (req, res) => {
       .sort({ created_at: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit)
-      .populate("seller_id");
+      .populate("category_id sub_category_id seller_id")
+      .lean();
+
+    const productIds = products.map((p) => p._id);
+    const variantOptions = await VariantOption.find({
+      product_id: { $in: productIds },
+    }).lean();
+
+    // Group variants by product_id
+    const groupedVariants = {};
+    for (const v of variantOptions) {
+      const pid = v.product_id.toString();
+      if (!groupedVariants[pid]) groupedVariants[pid] = [];
+      groupedVariants[pid].push(v);
+    }
+
+    // Attach variation_options to each product
+    const enriched = products.map((prod) => ({
+      ...prod,
+      variation_options: groupedVariants[prod._id.toString()] || [],
+    }));
 
     res.json({
       message: "Active products fetched",
-      data: products,
+      data: enriched,
       total,
       limit: parsedLimit,
       offset: parsedOffset,
@@ -191,11 +253,32 @@ exports.getTopProducts = async (req, res) => {
       .sort({ created_at: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit)
-      .populate("seller_id");
+      .populate("seller_id")
+      .lean(); // Use lean() to allow adding properties
+
+    // Get all product IDs
+    const productIds = products.map((p) => p._id);
+    const variantOptions = await VariantOption.find({
+      product_id: { $in: productIds },
+    }).lean();
+
+    // Group variant options by product ID
+    const grouped = {};
+    for (const variant of variantOptions) {
+      const pid = variant.product_id.toString();
+      if (!grouped[pid]) grouped[pid] = [];
+      grouped[pid].push(variant);
+    }
+
+    // Attach variation_options to each product
+    const enriched = products.map((prod) => ({
+      ...prod,
+      variation_options: grouped[prod._id.toString()] || [],
+    }));
 
     res.json({
       message: "Top products fetched",
-      data: products,
+      data: enriched,
       total,
       limit: parsedLimit,
       offset: parsedOffset,
@@ -220,11 +303,32 @@ exports.getNewProducts = async (req, res) => {
       .sort({ created_at: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit)
-      .populate("seller_id");
+      .populate("seller_id")
+      .lean(); // to allow modifying the response
+
+    // Get all product IDs
+    const productIds = products.map((p) => p._id);
+    const variantOptions = await VariantOption.find({
+      product_id: { $in: productIds },
+    }).lean();
+
+    // Group variant options by product ID
+    const grouped = {};
+    for (const variant of variantOptions) {
+      const pid = variant.product_id.toString();
+      if (!grouped[pid]) grouped[pid] = [];
+      grouped[pid].push(variant);
+    }
+
+    // Attach variation_options to each product
+    const enriched = products.map((prod) => ({
+      ...prod,
+      variation_options: grouped[prod._id.toString()] || [],
+    }));
 
     res.json({
       message: "New products fetched",
-      data: products,
+      data: enriched,
       total,
       limit: parsedLimit,
       offset: parsedOffset,
@@ -253,11 +357,32 @@ exports.getProductsByCategory = async (req, res) => {
       .sort({ created_at: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit)
-      .populate("seller_id");
+      .populate("seller_id")
+      .lean(); // to allow direct object modification
+
+    // Fetch all variation options for the selected products
+    const productIds = products.map((p) => p._id);
+    const variantOptions = await VariantOption.find({
+      product_id: { $in: productIds },
+    }).lean();
+
+    // Group them by product_id
+    const grouped = {};
+    for (const variant of variantOptions) {
+      const pid = variant.product_id.toString();
+      if (!grouped[pid]) grouped[pid] = [];
+      grouped[pid].push(variant);
+    }
+
+    // Inject variation_options into each product
+    const enriched = products.map((prod) => ({
+      ...prod,
+      variation_options: grouped[prod._id.toString()] || [],
+    }));
 
     res.json({
       message: "Category-wise products fetched",
-      data: products,
+      data: enriched,
       total,
       limit: parsedLimit,
       offset: parsedOffset,
@@ -286,11 +411,32 @@ exports.getProductsBySubCategory = async (req, res) => {
       .sort({ created_at: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit)
-      .populate("seller_id");
+      .populate("seller_id")
+      .lean(); // allow direct modification
+
+    // Fetch all variation options for the current products
+    const productIds = products.map((p) => p._id);
+    const variantOptions = await VariantOption.find({
+      product_id: { $in: productIds },
+    }).lean();
+
+    // Group variation options by product ID
+    const grouped = {};
+    for (const variant of variantOptions) {
+      const pid = variant.product_id.toString();
+      if (!grouped[pid]) grouped[pid] = [];
+      grouped[pid].push(variant);
+    }
+
+    // Merge variation options into each product
+    const enrichedProducts = products.map((prod) => ({
+      ...prod,
+      variation_options: grouped[prod._id.toString()] || [],
+    }));
 
     res.json({
       message: "Sub-category-wise products fetched",
-      data: products,
+      data: enrichedProducts,
       total,
       limit: parsedLimit,
       offset: parsedOffset,
@@ -307,19 +453,27 @@ exports.getProductDetails = async (req, res) => {
       _id: req.params.id,
       status: 1,
       request_status: 1,
-    }).populate("seller_id", "shop_name logo");
+    })
+      .populate("seller_id", "shop_name logo")
+      .lean();
 
     if (!product)
-      return res
-        .status(404)
-        .json({ status: false, message: "Product not found or inactive" });
+      return res.status(404).json({
+        status: false,
+        message: "Product not found or inactive",
+      });
+
+    // ✅ Fetch variant options from VariantOption table
+    const variation_options = await VariantOption.find({
+      product_id: req.params.id,
+    }).lean();
 
     // ✅ Fetch active reviews for the product
     const reviews = await Review.find({
       product_id: req.params.id,
       status: "active",
     })
-      .populate("user_id", "name profilePicture") // optional user info
+      .populate("user_id", "name profilePicture")
       .sort({ createdAt: -1 });
 
     // ✅ Calculate average rating
@@ -327,6 +481,9 @@ exports.getProductDetails = async (req, res) => {
     const avgRating = reviews.length
       ? (totalRatings / reviews.length).toFixed(1)
       : null;
+
+    // ✅ Include variation_options in the product
+    product.variation_options = variation_options;
 
     res.json({
       status: true,
@@ -343,10 +500,20 @@ exports.getProductDetails = async (req, res) => {
 // Admin: Get Product by ID
 exports.getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate(
-      "category_id sub_category_id seller_id"
-    );
+    const product = await Product.findById(req.params.id)
+      .populate("category_id sub_category_id seller_id")
+      .lean();
+
     if (!product) return res.status(404).json({ msg: "Product not found" });
+
+    // Fetch variation options from separate collection
+    const variation_options = await VariantOption.find({
+      product_id: req.params.id,
+    }).lean();
+
+    // Inject variation_options into product response
+    product.variation_options = variation_options;
+
     res.json(product);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -356,10 +523,33 @@ exports.getProductById = async (req, res) => {
 // Update
 exports.updateProduct = async (req, res) => {
   try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const productId = req.params.id;
+    const data = req.body;
+
+    // 1. Update product
+    const updatedProduct = await Product.findByIdAndUpdate(productId, data, {
       new: true,
     });
-    res.json(updated);
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // 2. Update variation options if present
+    if (Array.isArray(data.variation_options)) {
+      // Delete existing variation options for this product
+      await VariantOption.deleteMany({ product_id: productId });
+
+      // Insert new variation options
+      const newVariants = data.variation_options.map((variant) => ({
+        ...variant,
+        product_id: productId,
+      }));
+
+      await VariantOption.insertMany(newVariants);
+    }
+
+    res.json(updatedProduct);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -368,8 +558,18 @@ exports.updateProduct = async (req, res) => {
 // Delete
 exports.deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ msg: "Product deleted" });
+    const productId = req.params.id;
+
+    // 1. Delete the product
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+    if (!deletedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // 2. Delete associated variant options
+    await VariantOption.deleteMany({ product_id: productId });
+
+    res.json({ msg: "Product and related variants deleted successfully" });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

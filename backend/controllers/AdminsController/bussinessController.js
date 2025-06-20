@@ -5,12 +5,12 @@ exports.getBusinessSetup = async (req, res) => {
   try {
     const setup = await BusinessSetup.findOne();
 
-    if (!setup) {
-      return res.status(404).json({
-        status: false,
-        message: 'No business setup found.'
-      });
-    }
+    // if (!setup) {
+    //   return res.status(404).json({
+    //     status: false,
+    //     message: 'No business setup found.'
+    //   });
+    // }
 
     res.status(200).json({
       status: true,

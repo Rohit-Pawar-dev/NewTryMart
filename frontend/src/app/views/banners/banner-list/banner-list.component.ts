@@ -29,12 +29,7 @@ export class BannerListComponent implements OnInit {
     ads_video_banner: 'Advertisement Video'
   };
 
-  bannerTypeMap: { [key: string]: string } = {
-  main_banner: 'Main Banner',
-  popup_banner: 'Popup Banner',
-  ads_img_banner: 'Advertisement Image',
-  ads_video_banner: 'Advertisement Video'
-};
+
 
 
   constructor(private bannerService: BannerService, private router: Router) {}
@@ -67,36 +62,11 @@ export class BannerListComponent implements OnInit {
     this.loadBanners();
   }
 
-<<<<<<< HEAD
-  deleteBanner(id: string) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.bannerService.deleteBanner(id).subscribe({
-          next: () => {
-            Swal.fire('Deleted!', 'Banner has been deleted.', 'success');
-            this.loadBanners();
-          },
-          error: () => {
-            Swal.fire('Error', 'Failed to delete banner', 'error');
-          }
-        });
-      }
-    });
-=======
   changePage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.loadBanners();
     }
->>>>>>> d561200030da4bae0d6de985640d42d8e3bee81c
   }
 
   deleteBanner(id: string) {

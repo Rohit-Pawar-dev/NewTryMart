@@ -20,6 +20,15 @@ const cartSchema = new Schema(
       default: 1,
       min: 1,
     },
+    variant_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "VariantOption",
+      default: null,
+    },
+    is_variant: {
+      type: Boolean,
+      default: false,
+    },
     selected_variant: {
       type: Map,
       of: String,
@@ -46,6 +55,14 @@ const cartSchema = new Schema(
       type: Number,
       required: false,
       default: 0,
+    },
+    coupon_amount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    coupon_code: {
+      type: String,
     },
     discount_type: { type: String, enum: ["flat", "percent"], default: "flat" },
     tax_model: {

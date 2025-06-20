@@ -46,8 +46,8 @@ export class BusinessSetupComponent implements OnInit {
           this.business = { ...data };
           this.originalData = { ...data };
         } else {
-          this.error = 'Invalid response structure.';
-          Swal.fire('Error', this.error, 'error');
+          // this.error = 'Invalid response structure.';
+          // Swal.fire('Error', this.error, 'error');
         }
 
         this.isLoading = false;
