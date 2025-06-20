@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+import Swal from 'sweetalert2';
+
 @Component({
   standalone: true,
   selector: 'app-seller-list',
@@ -54,16 +56,27 @@ export class SellerListComponent implements OnInit {
   }
 
   deleteSeller(sellerId: string): void {
-    if (confirm('Are you sure you want to delete this seller?')) {
-      this.sellerService.deleteSeller(sellerId).subscribe({
-        next: () => {
-          this.sellers = this.sellers.filter(seller => seller._id !== sellerId);
-        },
-        error: (err) => {
-          console.error('Error deleting seller:', err);
-        }
-      });
-    }
+    Swal.fire({
+      title: 'Delete Seller?',
+      text: 'Are you sure you want to delete this seller?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.sellerService.deleteSeller(sellerId).subscribe({
+          next: () => {
+            this.sellers = this.sellers.filter(seller => seller._id !== sellerId);
+            Swal.fire('Deleted!', 'Seller has been deleted.', 'success');
+          },
+          error: (err) => {
+            console.error('Error deleting seller:', err);
+            Swal.fire('Error', 'Failed to delete seller.', 'error');
+          }
+        });
+      }
+    });
   }
 
   toggleStatus(seller: Seller): void {
@@ -71,9 +84,11 @@ export class SellerListComponent implements OnInit {
     this.sellerService.updateSeller(seller._id!, { status: newStatus }).subscribe({
       next: () => {
         seller.status = newStatus;
+        Swal.fire('Updated!', `Seller status changed to ${newStatus}.`, 'success');
       },
       error: (err) => {
         console.error('Error updating status:', err);
+        Swal.fire('Error', 'Failed to update seller status.', 'error');
       }
     });
   }

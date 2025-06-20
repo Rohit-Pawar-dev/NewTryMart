@@ -8,6 +8,9 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
+// Import SweetAlert2
+import Swal from 'sweetalert2';
+
 @Component({
   standalone: true,
   selector: 'app-sub-category-add',
@@ -68,8 +71,14 @@ export class SubCategoryAddComponent implements OnInit {
 
     const finalizeSubmit = () => {
       this.subCategoryService.createSubCategory(this.form.value).subscribe({
-        next: () => this.router.navigate(['/sub-categories']),
+        next: () => {
+          // Show success alert
+          Swal.fire('Success', 'Sub-category created successfully!', 'success');
+          this.router.navigate(['/sub-categories']);
+        },
         error: () => {
+          // Show error alert
+          Swal.fire('Error', 'Failed to create sub-category.', 'error');
           this.isSubmitting = false;
         },
       });

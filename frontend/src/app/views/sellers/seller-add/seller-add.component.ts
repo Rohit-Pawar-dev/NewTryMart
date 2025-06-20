@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { SellerService } from '../../../services/seller.service';
 import { environment } from '../../../../environments/environment';
 
+import Swal from 'sweetalert2';
+
 @Component({
   standalone: true,
   selector: 'app-seller-add',
@@ -78,17 +80,32 @@ export class SellerAddComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.sellerForm.valid && !this.isSubmitting) {
-      this.isSubmitting = true;
-      const newSeller = this.sellerForm.value;
+    if (this.sellerForm.invalid || this.isSubmitting) return;
 
-      this.sellerService.createSeller(newSeller).subscribe({
-        next: () => this.router.navigate(['/sellers']),
-        error: (err) => {
-          console.error('Error creating seller:', err);
-          this.isSubmitting = false;
-        }
-      });
-    }
+    Swal.fire({
+      title: 'Submit Seller?',
+      text: 'Are you sure you want to create this seller?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, create',
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.isSubmitting = true;
+        const newSeller = this.sellerForm.value;
+
+        this.sellerService.createSeller(newSeller).subscribe({
+          next: () => {
+            Swal.fire('Created!', 'Seller has been created.', 'success');
+            this.router.navigate(['/sellers']);
+          },
+          error: (err) => {
+            console.error('Error creating seller:', err);
+            Swal.fire('Error', 'Failed to create seller.', 'error');
+            this.isSubmitting = false;
+          }
+        });
+      }
+    });
   }
 }

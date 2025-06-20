@@ -6,7 +6,6 @@ const User = require("../models/User");
 const Seller = require("../models/Seller");
 const nlogger = require("../logger");
 
-// Place Order
 async function placeOrder(req, res) {
   try {
     const userId = req.body.user_id;
@@ -14,8 +13,8 @@ async function placeOrder(req, res) {
 
     // 1. Fetch all cart items for this user and populate product & seller info
     const cartItems = await Cart.find({ customer_id: userId })
-      .populate("product_id") // populate product details
-      .populate("seller_id"); // populate seller details
+      .populate("product_id")
+      .populate("seller_id");
 
     if (cartItems.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
@@ -48,10 +47,15 @@ async function placeOrder(req, res) {
 
       const itemTotalPrice = item.total_price + (item.shipping_cost || 0);
 
-      // Create OrderItemDetail document
+      // Create a clean copy of the product object
+      const productSnapshot = product.toObject();
+      delete productSnapshot.__v;
+      delete productSnapshot.createdAt;
+      delete productSnapshot.updatedAt;
+
       const orderItem = new OrderItemDetail({
         product_id: product._id,
-        product_detail: product._id, // or full product info if needed
+        product_detail: productSnapshot,
         name: product.name,
         thumbnail: product.thumbnail,
         selected_variant: item.selected_variant,
@@ -108,6 +112,9 @@ async function placeOrder(req, res) {
   }
 }
 
+module.exports = { placeOrder };
+
+
 // Admin Order Listing (with search + pagination)
 async function getOrders(req, res) {
   try {
@@ -130,7 +137,7 @@ async function getOrders(req, res) {
     const total = await Order.countDocuments(filter);
 
     const orders = await Order.find(filter)
-      .populate("customer_id", "name mobile")
+      .populate("customer_id", "name mobile email profilePicture")
       .populate({
         path: "order_items",
         populate: {

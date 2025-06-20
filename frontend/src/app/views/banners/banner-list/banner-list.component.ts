@@ -1,3 +1,4 @@
+// banner-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { BannerService, Banner } from '../../../services/banner.service';
 import { Router } from '@angular/router';
@@ -16,6 +17,17 @@ export class BannerListComponent implements OnInit {
   banners: Banner[] = [];
   searchTerm = '';
   isLoading = false;
+  currentPage = 1;
+  limit = 10;
+  total = 0;
+  totalPages = 0;
+
+  bannerTypeMap: { [key: string]: string } = {
+    main_banner: 'Main Banner',
+    popup_banner: 'Popup Banner',
+    ads_img_banner: 'Advertisement Image',
+    ads_video_banner: 'Advertisement Video'
+  };
 
   bannerTypeMap: { [key: string]: string } = {
   main_banner: 'Main Banner',
@@ -33,10 +45,14 @@ export class BannerListComponent implements OnInit {
 
   loadBanners() {
     this.isLoading = true;
-    this.bannerService.getBanners({ search: this.searchTerm }).subscribe({
-      next: (data) => {
-        this.banners = data;
+    const offset = (this.currentPage - 1) * this.limit;
+    this.bannerService.getBanners({ search: this.searchTerm, limit: this.limit, offset }).subscribe({
+      next: (response: any) => {
+        this.banners = response.data || [];
+        this.total = response.total || 0;
+        this.totalPages = response.totalPages || Math.ceil(this.total / this.limit);
         this.isLoading = false;
+        console.log(response);
       },
       error: (err) => {
         console.error('Error loading banners:', err);
@@ -47,7 +63,40 @@ export class BannerListComponent implements OnInit {
   }
 
   onSearchChange() {
+    this.currentPage = 1;
     this.loadBanners();
+  }
+
+<<<<<<< HEAD
+  deleteBanner(id: string) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.bannerService.deleteBanner(id).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'Banner has been deleted.', 'success');
+            this.loadBanners();
+          },
+          error: () => {
+            Swal.fire('Error', 'Failed to delete banner', 'error');
+          }
+        });
+      }
+    });
+=======
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadBanners();
+    }
+>>>>>>> d561200030da4bae0d6de985640d42d8e3bee81c
   }
 
   deleteBanner(id: string) {

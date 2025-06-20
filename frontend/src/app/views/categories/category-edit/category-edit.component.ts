@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
 import { CategoryService } from '../../../../app/services/category.service';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
@@ -21,7 +22,7 @@ export class CategoryEditComponent implements OnInit {
   imagePreview: string | null = null;
   isUploading = false;
   uploadError: string | null = null;
-  selectedFile: File | null = null; // ✅ Temporarily hold selected image
+  selectedFile: File | null = null;
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
@@ -64,38 +65,62 @@ export class CategoryEditComponent implements OnInit {
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
-    this.isSubmitting = true;
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to update this category?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it!',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isSubmitting = true;
 
-    const finalizeSubmit = () => {
-      this.categoryService.updateCategory(this.id, this.form.value).subscribe({
-        next: () => this.router.navigate(['/categories']),
-        error: () => {
-          this.isSubmitting = false;
-        },
-      });
-    };
+        const finalizeSubmit = () => {
+          this.categoryService.updateCategory(this.id, this.form.value).subscribe({
+            next: () => {
+              Swal.fire({
+                title: 'Updated!',
+                text: 'Category updated successfully!',
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+              }).then(() => {
+                this.router.navigate(['/categories']);
+              });
+            },
+            error: () => {
+              this.isSubmitting = false;
+              Swal.fire('Error', 'Failed to update category', 'error');
+            },
+          });
+        };
 
-    if (this.selectedFile) {
-      this.isUploading = true;
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      formData.append('type', 'category');
+        if (this.selectedFile) {
+          this.isUploading = true;
+          const formData = new FormData();
+          formData.append('file', this.selectedFile);
+          formData.append('type', 'category');
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-        next: (res) => {
-          const normalizedUrl = res.file.replace(/\\/g, '/');
-          this.form.patchValue({ image: normalizedUrl });
-          this.isUploading = false;
+          this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+            next: (res) => {
+              const normalizedUrl = res.file.replace(/\\/g, '/');
+              this.form.patchValue({ image: normalizedUrl });
+              this.isUploading = false;
+              finalizeSubmit();
+            },
+            error: () => {
+              this.uploadError = 'Failed to upload image. Please try again.';
+              this.isUploading = false;
+              this.isSubmitting = false;
+              Swal.fire('Error', this.uploadError, 'error');
+            },
+          });
+        } else {
           finalizeSubmit();
-        },
-        error: () => {
-          this.uploadError = 'Failed to upload image. Please try again.';
-          this.isUploading = false;
-          this.isSubmitting = false;
-        },
-      });
-    } else {
-      finalizeSubmit();
-    }
+        }
+      }
+    });
   }
 }
