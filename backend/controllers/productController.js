@@ -1,8 +1,32 @@
 const Product = require("../models/Product");
-const Review = require('../models/Review');
+const Review = require("../models/Review");
 // Create Product
 function generateSkuCode(name) {
-  const cleanName = name.toLowerCase().replace(/\s+/g, '-').substring(0, 10);
+  const cleanName = name.toLowerCase().replace(/\s+/g, "-").substring(0, 10);
+  const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase(); // 4-char random
+  const randomNum = Math.floor(100 + Math.random() * 900); // 3-digit number
+  return `${cleanName}-${randomStr}${randomNum}`;
+}
+function generateVariantCombinations(variants) {
+  if (!variants || variants.length === 0) return [];
+
+  const [first, ...rest] = variants;
+  let combinations = first.values.map((val) => ({ [first.name]: val }));
+
+  for (const variant of rest) {
+    combinations = combinations.flatMap((combo) =>
+      variant.values.map((val) => ({
+        ...combo,
+        [variant.name]: val,
+      }))
+    );
+  }
+
+  return combinations;
+}
+
+function generateSkuCode(name) {
+  const cleanName = name.toLowerCase().replace(/\s+/g, "-").substring(0, 10);
   const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase(); // 4-char random
   const randomNum = Math.floor(100 + Math.random() * 900); // 3-digit number
   return `${cleanName}-${randomStr}${randomNum}`;
@@ -13,30 +37,42 @@ exports.createProduct = async (req, res) => {
     const data = req.body;
 
     // Auto-fill seller/admin flags
-    if (data.added_by === 'admin') {
+    if (data.added_by === "admin") {
       data.seller_id = null;
       data.status = 1;
       data.request_status = 1;
-    } else if (data.added_by === 'seller') {
+    } else if (data.added_by === "seller") {
       data.status = 0;
       data.request_status = 0;
     }
 
     // Ensure name is present
     if (!data.name) {
-      return res.status(400).json({ error: "Product name is required to generate SKU." });
+      return res
+        .status(400)
+        .json({ error: "Product name is required to generate SKU." });
     }
 
-    // Generate and attach unique SKU
+    // Generate and attach unique product-level SKU
     let sku = generateSkuCode(data.name);
-
-    // Ensure uniqueness in DB (in rare case of conflict)
-    let skuExists = await Product.findOne({ sku_code: sku });
-    while (skuExists) {
+    while (await Product.findOne({ sku_code: sku })) {
       sku = generateSkuCode(data.name);
-      skuExists = await Product.findOne({ sku_code: sku });
     }
     data.sku_code = sku;
+
+    // ✅ Auto-generate variation_options if not provided
+    if (!data.variation_options && data.variants?.length > 0) {
+      const combinations = generateVariantCombinations(data.variants);
+      data.variation_options = combinations.map((variant_values, i) => ({
+        variant_values,
+        price: data.unit_price, // You can customize this per variant if needed
+        stock: 10, // Default stock
+        images: [], // Default empty, frontend/admin can update later
+        sku: generateSkuCode(
+          data.name + "-" + Object.values(variant_values).join("-")
+        ),
+      }));
+    }
 
     const product = await Product.create(data);
     res.status(201).json(product);
@@ -44,6 +80,43 @@ exports.createProduct = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+// exports.createProduct = async (req, res) => {
+//   try {
+//     const data = req.body;
+
+//     // Auto-fill seller/admin flags
+//     if (data.added_by === 'admin') {
+//       data.seller_id = null;
+//       data.status = 1;
+//       data.request_status = 1;
+//     } else if (data.added_by === 'seller') {
+//       data.status = 0;
+//       data.request_status = 0;
+//     }
+
+//     // Ensure name is present
+//     if (!data.name) {
+//       return res.status(400).json({ error: "Product name is required to generate SKU." });
+//     }
+
+//     // Generate and attach unique SKU
+//     let sku = generateSkuCode(data.name);
+
+//     // Ensure uniqueness in DB (in rare case of conflict)
+//     let skuExists = await Product.findOne({ sku_code: sku });
+//     while (skuExists) {
+//       sku = generateSkuCode(data.name);
+//       skuExists = await Product.findOne({ sku_code: sku });
+//     }
+//     data.sku_code = sku;
+
+//     const product = await Product.create(data);
+//     res.status(201).json(product);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// };
 
 // Admin - Get All Products
 exports.getAllProducts = async (req, res) => {
@@ -244,21 +317,23 @@ exports.getProductDetails = async (req, res) => {
     // ✅ Fetch active reviews for the product
     const reviews = await Review.find({
       product_id: req.params.id,
-      status: 'active'
+      status: "active",
     })
-    .populate('user_id', 'name profilePicture') // optional user info
-    .sort({ createdAt: -1 });
+      .populate("user_id", "name profilePicture") // optional user info
+      .sort({ createdAt: -1 });
 
     // ✅ Calculate average rating
     const totalRatings = reviews.reduce((sum, r) => sum + r.rating, 0);
-    const avgRating = reviews.length ? (totalRatings / reviews.length).toFixed(1) : null;
+    const avgRating = reviews.length
+      ? (totalRatings / reviews.length).toFixed(1)
+      : null;
 
     res.json({
       status: true,
       product,
       reviews,
       average_rating: avgRating,
-      total_reviews: reviews.length
+      total_reviews: reviews.length,
     });
   } catch (err) {
     res.status(400).json({ status: false, message: err.message });

@@ -46,12 +46,26 @@ const productSchema = new Schema(
     description: { type: String }, // CKEditor content
     status: { type: Number, enum: [0, 1], default: 1 },
     request_status: { type: Number, enum: [0, 1], default: 0 },
-    variants: [variantSchema],
-
+    
     sku_code: { type: String },
     unit: { type: String, required: true },
     is_offers: { type: Boolean, default: false },
     is_trending: { type: Boolean, default: false },
+
+    variants: [variantSchema],
+     variation_options: [
+    {
+      variant_values: {
+        type: Map,
+        of: String,
+        required: true,
+      },
+      price: { type: Number, required: true },
+      stock: { type: Number, default: 0 },
+      images: [String],
+      sku: { type: String },
+    }
+  ],
 
   },
   {
