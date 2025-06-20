@@ -62,13 +62,11 @@ export class AdminProfileComponent implements OnInit {
       next: (res) => {
         console.log('Admin API response:', res);
 
-        // Fix: Your API returns { status, message, data: admin }
         const adminData = res?.data || res?.admin;
 
         if (res?.status && adminData) {
           this.admin = adminData;
 
-          // Ensure correct image path if not full URL
           if (this.admin.image && !this.admin.image.startsWith('http')) {
             const baseUrl = environment.apiUrl.replace('/api', '');
             this.admin.image = `${baseUrl}${this.admin.image}`;
@@ -100,43 +98,66 @@ export class AdminProfileComponent implements OnInit {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('name', this.admin.name);
-    formData.append('email', this.admin.email);
-    formData.append('mobile', this.admin.mobile);
-    if (this.selectedImage) {
-      formData.append('image', this.selectedImage);
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to update your profile?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const formData = new FormData();
+        formData.append('name', this.admin.name);
+        formData.append('email', this.admin.email);
+        formData.append('mobile', this.admin.mobile);
+        if (this.selectedImage) {
+          formData.append('image', this.selectedImage);
+        }
 
-    this.adminService.updateAdmin(this.adminId, formData).subscribe({
-      next: () => {
-        Swal.fire('Success', 'Profile updated successfully!', 'success');
-        this.fetchAdmin();
-      },
-      error: (err) => {
-        console.error('Update Error:', err);
-        Swal.fire('Error', 'Failed to update profile', 'error');
+        this.adminService.updateAdmin(this.adminId, formData).subscribe({
+          next: () => {
+            Swal.fire('Success', 'Profile updated successfully!', 'success');
+            this.fetchAdmin();
+          },
+          error: (err) => {
+            console.error('Update Error:', err);
+            Swal.fire('Error', 'Failed to update profile', 'error');
+          }
+        });
       }
     });
   }
 
-  onPasswordChange() {
-    const { oldPassword, newPassword } = this.passwordForm;
+ onPasswordChange() {
+  const { oldPassword, newPassword } = this.passwordForm;
 
-    if (!oldPassword || !newPassword) {
-      Swal.fire('Warning', 'Please enter both old and new passwords.', 'warning');
-      return;
-    }
-
-    this.adminService.changePassword(this.adminId, this.passwordForm).subscribe({
-      next: () => {
-        Swal.fire('Success', 'Password changed successfully!', 'success');
-        this.passwordForm = { oldPassword: '', newPassword: '' };
-      },
-      error: (err) => {
-        console.error('Password Change Error:', err);
-        Swal.fire('Error', 'Old password incorrect or update failed', 'error');
-      }
-    });
+  if (!oldPassword || !newPassword) {
+    Swal.fire('Warning', 'Please enter both old and new passwords.', 'warning');
+    return;
   }
+
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to change your password?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, change it!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.adminService.changePassword(this.adminId, this.passwordForm).subscribe({
+        next: () => {
+          Swal.fire('Success', 'Password changed successfully!', 'success');
+          this.passwordForm = { oldPassword: '', newPassword: '' };
+        },
+        error: (err) => {
+          console.error('Password Change Error:', err);
+          Swal.fire('Error', 'Old password incorrect or update failed', 'error');
+        }
+      });
+    }
+  });
+}
+
 }

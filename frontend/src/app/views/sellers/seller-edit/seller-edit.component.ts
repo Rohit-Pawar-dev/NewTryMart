@@ -6,6 +6,8 @@ import { SellerService, Seller } from '../../../services/seller.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
+import Swal from 'sweetalert2';
+
 @Component({
   standalone: true,
   selector: 'app-seller-edit',
@@ -96,16 +98,32 @@ export class SellerEditComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.sellerForm.valid && this.sellerId) {
-      this.isSubmitting = true;
-      const updatedSeller = this.sellerForm.value;
-      this.sellerService.updateSeller(this.sellerId, updatedSeller).subscribe({
-        next: () => this.router.navigate(['/sellers']),
-        error: (err) => {
-          console.error('Error updating seller:', err);
-          this.isSubmitting = false;
-        }
-      });
-    }
+    if (this.sellerForm.invalid || !this.sellerId) return;
+
+    Swal.fire({
+      title: 'Update Seller?',
+      text: 'Are you sure you want to update this seller?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update',
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.isSubmitting = true;
+        const updatedSeller = this.sellerForm.value;
+
+        this.sellerService.updateSeller(this.sellerId!, updatedSeller).subscribe({
+          next: () => {
+            Swal.fire('Updated!', 'Seller has been updated.', 'success');
+            this.router.navigate(['/sellers']);
+          },
+          error: (err) => {
+            console.error('Error updating seller:', err);
+            Swal.fire('Error', 'Failed to update seller.', 'error');
+            this.isSubmitting = false;
+          }
+        });
+      }
+    });
   }
 }

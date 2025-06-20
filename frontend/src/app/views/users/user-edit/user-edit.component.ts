@@ -7,6 +7,9 @@ import { HttpClient } from '@angular/common/http';
 import { UserService, User } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment';
 
+// Import SweetAlert2
+import Swal from 'sweetalert2';
+
 @Component({
   standalone: true,
   selector: 'app-user-edit',
@@ -78,9 +81,13 @@ export class UserEditComponent implements OnInit {
     const finalizeUpdate = () => {
       const updatedUser: Partial<User> = this.userForm.value;
       this.userService.updateUser(this.userId!, updatedUser).subscribe({
-        next: () => this.router.navigate(['/users']),
+        next: () => {
+          Swal.fire('Success', 'User updated successfully!', 'success');
+          this.router.navigate(['/users']);
+        },
         error: (error) => {
           console.error('Error updating user:', error);
+          Swal.fire('Error', 'Failed to update user.', 'error');
           this.isSubmitting = false;
         }
       });
@@ -101,6 +108,7 @@ export class UserEditComponent implements OnInit {
         },
         error: (err) => {
           console.error('Image upload failed:', err);
+          Swal.fire('Error', 'Failed to upload image.', 'error');
           this.uploadError = 'Failed to upload image';
           this.isUploading = false;
           this.isSubmitting = false;

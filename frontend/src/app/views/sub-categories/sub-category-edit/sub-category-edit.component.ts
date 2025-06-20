@@ -9,6 +9,9 @@ import { CategoryService } from '../../../../app/services/category.service';
 import { SubCategoryService } from '../../../../app/services/sub-category.service';
 import { forkJoin } from 'rxjs';
 
+// Import SweetAlert2
+import Swal from 'sweetalert2';
+
 @Component({
   standalone: true,
   selector: 'app-sub-category-edit',
@@ -89,8 +92,12 @@ export class SubCategoryEditComponent implements OnInit {
 
     const finalizeSubmit = () => {
       this.subCategoryService.updateSubCategory(this.id, this.form.value).subscribe({
-        next: () => this.router.navigate(['/sub-categories']),
+        next: () => {
+          Swal.fire('Success', 'Sub-category updated successfully!', 'success');
+          this.router.navigate(['/sub-categories']);
+        },
         error: () => {
+          Swal.fire('Error', 'Failed to update sub-category.', 'error');
           this.isSubmitting = false;
         },
       });

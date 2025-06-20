@@ -8,9 +8,8 @@ const orderItemDetailSchema = new Schema(
       ref: "Product",
       required: true,
     },
-    product_detail: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
+   product_detail: {
+      type: Schema.Types.Mixed, // Removed `ref` because we're storing snapshot
       required: true,
     },
     name: { type: String, required: true },

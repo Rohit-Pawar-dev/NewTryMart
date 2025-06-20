@@ -33,6 +33,7 @@ export class ProductListComponent implements OnInit {
       error: (err) => {
         console.error('Error loading products:', err);
         this.isLoading = false;
+        Swal.fire('Error', 'Failed to load products', 'error');
       },
     });
   }
@@ -48,26 +49,32 @@ export class ProductListComponent implements OnInit {
   deleteProduct(id: string): void {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Do you really want to delete this product?',
+      text: 'This action will permanently delete the product.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.productService.deleteProduct(id).subscribe(() => {
-          this.loadProducts();
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Product deleted successfully',
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-            toast: false,
-          });
+        this.productService.deleteProduct(id).subscribe({
+          next: () => {
+            this.loadProducts();
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Product deleted successfully.',
+              icon: 'success',
+              timer: 1500,
+              timerProgressBar: true,
+              showConfirmButton: false,
+              position: 'center',
+            });
+          },
+          error: (err) => {
+            console.error('Delete Error:', err);
+            Swal.fire('Error', 'Failed to delete product', 'error');
+          }
         });
       }
     });
@@ -75,24 +82,14 @@ export class ProductListComponent implements OnInit {
 
   toggleStatus(product: Product): void {
     const newStatus = product.status === 1 ? 0 : 1;
+
     this.productService.updateProduct(product._id!, { status: newStatus }).subscribe({
       next: () => {
-        // Just update the product's status locally to avoid reloading all products
         product.status = newStatus;
-
-        // Show success toast without confirmation
-        Swal.fire({
-           position: 'center',
-          icon: 'success',
-          title: `Product is now ${newStatus === 1 ? 'Active' : 'Inactive'}`,
-          showConfirmButton: false,
-          timer: 1500,
-          timerProgressBar: true,
-          toast: true,
-        });
+         Swal.fire('Updated', `Status changed`, 'success');
       },
       error: (err) => {
-        console.error('Failed to update status:', err);
+        console.error('Status Update Error:', err);
         Swal.fire('Error', 'Failed to update product status', 'error');
       },
     });
