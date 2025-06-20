@@ -3,3 +3,11 @@
 2025-06-19T10:53:49.898Z [info]: Create Seller
 2025-06-19T10:53:49.990Z [error]: Create Seller Error: E11000 duplicate key error collection: e_trymart.sellers index: mobile_1 dup key: { mobile: "9876467212" }
 2025-06-19T12:26:17.669Z [info]: Retrieving Sellers. Search: ""
+2025-06-19T14:49:31.276Z [info]: Retrieving Sellers. Search: ""
+2025-06-19T14:49:35.258Z [info]: Retrieving Users List 
+2025-06-19T14:49:54.477Z [info]: Retrieving Users List 
+2025-06-19T14:50:09.431Z [info]: Retrieving Users List 
+2025-06-19T14:50:51.650Z [info]: Create User
+2025-06-19T14:50:51.746Z [info]: Create User Error: MongoServerError: E11000 duplicate key error collection: e_trymart.users index: mobile_1 dup key: { mobile: "6261730028" }
+2025-06-19T14:51:05.454Z [info]: Create User
+2025-06-19T14:51:05.595Z [info]: Retrieving Users List 
