@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
+import Swal from 'sweetalert2';
+
 
 @Component({
   standalone: true,
@@ -56,14 +58,29 @@ export class CategoryAddComponent {
     this.isSubmitting = true;
     this.uploadError = null;
 
+    // const finalizeSubmit = () => {
+    //   this.categoryService.createCategory(this.form.value).subscribe({
+    //     next: () => this.router.navigate(['/categories']),
+    //     error: () => {
+    //       this.isSubmitting = false;
+    //     },
+    //   });
+    // };
+
+
     const finalizeSubmit = () => {
-      this.categoryService.createCategory(this.form.value).subscribe({
-        next: () => this.router.navigate(['/categories']),
-        error: () => {
-          this.isSubmitting = false;
-        },
-      });
-    };
+  this.categoryService.createCategory(this.form.value).subscribe({
+    next: () => {
+      Swal.fire('Success', 'Category created successfully!', 'success');
+      this.router.navigate(['/categories']);
+    },
+    error: () => {
+      Swal.fire('Error', 'Failed to create category.', 'error');
+      this.isSubmitting = false;
+    },
+  });
+};
+
 
     if (this.selectedFile) {
       this.isUploading = true;

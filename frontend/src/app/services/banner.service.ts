@@ -23,11 +23,10 @@ export class BannerService {
 
   constructor(private http: HttpClient) {}
 
-  getBanners(params: { search?: string; limit?: number; offset?: number } = {}): Observable<Banner[]> {
-  const query = new URLSearchParams({ all: 'true', ...params } as any).toString();
-  return this.http.get<{ data: Banner[] }>(`${this.apiUrl}?${query}`).pipe(
-    map(response => response.data)
-  );
+getBanners(params: { search?: string; limit?: number; offset?: number } = {}): Observable<any> {
+   const query = new URLSearchParams({ all: 'true', ...params } as any).toString();
+
+  return this.http.get<any>(`${this.apiUrl}?${query}`);
 }
 
 

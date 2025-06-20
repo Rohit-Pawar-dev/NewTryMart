@@ -9,6 +9,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+// Import SweetAlert2
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-sub-category-list',
   templateUrl: './sub-category-list.component.html',
@@ -51,7 +54,6 @@ export class SubCategoryListComponent implements OnInit {
       .getSubCategories({ search: this.searchTerm })
       .subscribe({
         next: (data) => {
-          // console.log('Sub-categories loaded:', data);
           this.subCategories = data;
           this.isLoading = false;
         },
@@ -66,11 +68,26 @@ export class SubCategoryListComponent implements OnInit {
     this.loadSubCategories();
   }
 
-  deleteSubCategory(id: string) {
-    if (confirm('Are you sure to delete?')) {
-      this.subCategoryService
-        .deleteSubCategory(id)
-        .subscribe(() => this.loadSubCategories());
+  async deleteSubCategory(id: string) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won’t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      this.subCategoryService.deleteSubCategory(id).subscribe({
+        next: () => {
+          Swal.fire('Deleted!', 'Sub-category has been deleted.', 'success');
+          this.loadSubCategories();
+        },
+        error: () => {
+          Swal.fire('Error', 'Failed to delete sub-category.', 'error');
+        },
+      });
     }
   }
 
@@ -78,7 +95,19 @@ export class SubCategoryListComponent implements OnInit {
     const newStatus = subCategory.status === 'active' ? 'inactive' : 'active';
     this.subCategoryService
       .updateSubCategory(subCategory._id!, { status: newStatus })
-      .subscribe(() => this.loadSubCategories());
+      .subscribe({
+        next: () => {
+          Swal.fire(
+            'Updated!',
+            `Status changed to ${newStatus}.`,
+            'success'
+          );
+          this.loadSubCategories();
+        },
+        error: () => {
+          Swal.fire('Error', 'Failed to update status.', 'error');
+        },
+      });
   }
 
   getCategoryName(cat: string | { _id: string; name: string }): string {

@@ -12,6 +12,9 @@ import { HttpClient } from '@angular/common/http';
 import { UserService, User } from '../../../services/user.service';
 import { environment } from '../../../../environments/environment'; // update path if needed
 
+// Import SweetAlert2
+import Swal from 'sweetalert2';
+
 @Component({
   standalone: true,
   selector: 'app-user-add',
@@ -69,9 +72,13 @@ export class UserAddComponent implements OnInit {
     const createUser = () => {
       const newUser: User = this.userForm.value;
       this.userService.createUser(newUser).subscribe({
-        next: () => this.router.navigate(['/users']),
+        next: () => {
+          Swal.fire('Success', 'User created successfully!', 'success');
+          this.router.navigate(['/users']);
+        },
         error: (error) => {
           console.error('Error creating user:', error);
+          Swal.fire('Error', 'Failed to create user.', 'error');
           this.isSubmitting = false;
         },
       });
@@ -93,6 +100,7 @@ export class UserAddComponent implements OnInit {
         },
         error: (err) => {
           console.error('Upload failed', err);
+          Swal.fire('Error', 'Image upload failed.', 'error');
           this.uploadError = 'Image upload failed';
           this.isUploading = false;
           this.isSubmitting = false;
