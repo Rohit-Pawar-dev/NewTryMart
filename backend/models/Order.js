@@ -8,6 +8,16 @@ const orderSchema = new Schema(
       ref: "User",
       required: true,
     },
+    seller_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Seller",
+    },
+    seller_is: {
+      type: String,
+      enum: ["admin", "seller"],
+      required: true,
+      default: "admin",
+    },
     order_items: [
       {
         type: Schema.Types.ObjectId,
@@ -42,6 +52,7 @@ const orderSchema = new Schema(
     },
     coupon_code: { type: String, default: null },
     coupon_amount: { type: Number, default: 0 },
+    shipping_cost: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
   selector: 'app-admin-profile',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './admin-profile.component.html'
+  templateUrl: './admin-profile.component.html',
 })
 export class AdminProfileComponent implements OnInit {
   adminId: string = '';
@@ -20,14 +20,14 @@ export class AdminProfileComponent implements OnInit {
     name: '',
     email: '',
     mobile: '',
-    image: ''
+    image: '',
   };
 
   selectedImage: File | null = null;
 
   passwordForm = {
     oldPassword: '',
-    newPassword: ''
+    newPassword: '',
   };
 
   constructor(private adminService: AdminProfileService) {}
@@ -84,7 +84,7 @@ export class AdminProfileComponent implements OnInit {
         this.error = 'Failed to fetch profile';
         this.isLoading = false;
         Swal.fire('Error', this.error, 'error');
-      }
+      },
     });
   }
 
@@ -104,7 +104,7 @@ export class AdminProfileComponent implements OnInit {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, update it!',
-      cancelButtonText: 'Cancel'
+      cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
         const formData = new FormData();
@@ -123,41 +123,50 @@ export class AdminProfileComponent implements OnInit {
           error: (err) => {
             console.error('Update Error:', err);
             Swal.fire('Error', 'Failed to update profile', 'error');
-          }
+          },
         });
       }
     });
   }
 
- onPasswordChange() {
-  const { oldPassword, newPassword } = this.passwordForm;
+  onPasswordChange() {
+    const { oldPassword, newPassword } = this.passwordForm;
 
-  if (!oldPassword || !newPassword) {
-    Swal.fire('Warning', 'Please enter both old and new passwords.', 'warning');
-    return;
-  }
-
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you want to change your password?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, change it!',
-    cancelButtonText: 'Cancel'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.adminService.changePassword(this.adminId, this.passwordForm).subscribe({
-        next: () => {
-          Swal.fire('Success', 'Password changed successfully!', 'success');
-          this.passwordForm = { oldPassword: '', newPassword: '' };
-        },
-        error: (err) => {
-          console.error('Password Change Error:', err);
-          Swal.fire('Error', 'Old password incorrect or update failed', 'error');
-        }
-      });
+    if (!oldPassword || !newPassword) {
+      Swal.fire(
+        'Warning',
+        'Please enter both old and new passwords.',
+        'warning'
+      );
+      return;
     }
-  });
-}
 
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to change your password?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, change it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService
+          .changePassword(this.adminId, this.passwordForm)
+          .subscribe({
+            next: () => {
+              Swal.fire('Success', 'Password changed successfully!', 'success');
+              this.passwordForm = { oldPassword: '', newPassword: '' };
+            },
+            error: (err) => {
+              console.error('Password Change Error:', err);
+              Swal.fire(
+                'Error',
+                'Old password incorrect or update failed',
+                'error'
+              );
+            },
+          });
+      }
+    });
+  }
 }

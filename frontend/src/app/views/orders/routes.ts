@@ -6,9 +6,11 @@ export const routes: Routes = [
   {
     path: '',
     component: OrderListComponent,
+    data: { title: 'Order List' },
   },
   {
     path: ':id',
     component: OrderViewComponent,
+    data: { title: 'View Order' },
   },
 ];

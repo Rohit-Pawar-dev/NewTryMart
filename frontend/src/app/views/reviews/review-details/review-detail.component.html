@@ -1,0 +1,47 @@
+<div class="card" *ngIf="review">
+  <div class="card-header">
+    <h4>Review Details</h4>
+  </div>
+  <div class="card-body">
+    <p><strong>Customer Name:</strong> {{ review.user_id?.name || "N/A" }}</p>
+    <p><strong>Mobile:</strong> {{ review.user_id?.mobile || "N/A" }}</p>
+    <p><strong>Product:</strong> {{ review.product_id?.name || "N/A" }}</p>
+    <p><strong>Rating:</strong> {{ review.rating }}</p>
+    <p><strong>Comment:</strong> {{ review.comment }}</p>
+
+    <div *ngIf="review.image" class="mb-3">
+      <img
+        [src]="review.image"
+        class="img-thumbnail"
+        alt="Review Image"
+        style="max-height: 200px"
+      />
+    </div>
+
+    <p>
+      <strong>Status:</strong>
+      <span
+        class="badge"
+        [ngClass]="{
+          'bg-success': review.status === 'active',
+          'bg-danger': review.status === 'inactive'
+        }"
+      >
+        {{ review.status }}
+      </span>
+    </p>
+
+    <p><strong>Date:</strong> {{ review.createdAt | date : "medium" }}</p>
+  </div>
+  <div class="card-footer text-end">
+    <button class="btn btn-secondary" (click)="goBack()">Back</button>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center text-muted my-3">
+  Loading review details...
+</div>
+
+<div *ngIf="error" class="alert alert-danger">
+  {{ error }}
+</div>

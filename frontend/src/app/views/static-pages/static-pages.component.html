@@ -1,24 +1,36 @@
-<div class="container p-4" *ngIf="!loading">
-  <h2 class="text-2xl font-semibold mb-6">Manage Static Pages</h2>
+<div class="static_pages-container" *ngIf="!loading">
+  <!-- Tab Header -->
+  <div class="static_pages-tabs">
+    <button
+      *ngFor="let page of pages; let i = index"
+      class="static_pages-tab-btn"
+      [ngClass]="{ active: selectedTab === i }"
+      (click)="selectedTab = i"
+    >
+      {{ page.title }}
+    </button>
+  </div>
 
-  <div *ngFor="let page of pages" class="mb-10">
-    <h3 class="text-xl font-medium mb-2">{{ page.title }}</h3>
+  <!-- Tab Content -->
+  <div class="static_pages-content">
+    <h3 class="static_pages-heading">
+      {{ pages[selectedTab]?.title }}
+    </h3>
 
     <ckeditor
+      class="static_pages-editor"
       [editor]="Editor"
-      [(ngModel)]="page.content"
+      [(ngModel)]="pages[selectedTab].content"
       [config]="{ placeholder: 'Edit content here...' }"
     ></ckeditor>
 
     <button
-      class="mt-3 bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
-      (click)="updatePage(page)"
+      class="static_pages-update-btn"
+      (click)="updatePage(pages[selectedTab])"
     >
-      Update {{ page.title }}
+      Update {{ pages[selectedTab].title }}
     </button>
-
-    <hr class="my-6 border-t" />
   </div>
 </div>
 
-<div *ngIf="loading" class="p-4 text-gray-500">Loading pages...</div>
+<div *ngIf="loading" class="static_pages-loading">Loading pages...</div>

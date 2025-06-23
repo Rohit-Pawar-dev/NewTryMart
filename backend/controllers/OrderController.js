@@ -12,7 +12,7 @@ async function placeOrder(req, res) {
     const userId = req.body.user_id;
     const shippingAddressId = req.body.address_id;
 
-    // 1. Fetch cart items
+    // Fetch cart items and populate necessary fields
     const cartItems = await Cart.find({ customer_id: userId })
       .populate("product_id")
       .populate("seller_id");
@@ -21,13 +21,9 @@ async function placeOrder(req, res) {
       return res.status(400).json({ message: "Cart is empty" });
     }
 
-    let totalOrderPrice = 0;
-    const orderItemIds = [];
-
-    // Validate stock
+    // Step 1: Validate Stock
     for (const item of cartItems) {
       const product = item.product_id;
-
       if (!product) {
         return res
           .status(400)
@@ -45,104 +41,128 @@ async function placeOrder(req, res) {
             message: `Insufficient stock for variant of product ${product.name}`,
           });
         }
-      } else {
-        if (product.current_stock < item.quantity) {
-          return res.status(400).json({
-            message: `Insufficient stock for product ${product.name}. Available: ${product.current_stock}, Requested: ${item.quantity}`,
-          });
+      } else if (product.current_stock < item.quantity) {
+        return res
+          .status(400)
+          .json({ message: `Insufficient stock for product ${product.name}` });
+      }
+    }
+
+    // Step 2: Group cart items by seller_id (or 'admin')
+    console.log("Item:", cartItems);
+    const groupedItems = {};
+    for (const item of cartItems) {
+      const sellerKey =
+        item.added_by === "admin" ? "admin" : item.seller_id?._id?.toString();
+      if (!groupedItems[sellerKey]) groupedItems[sellerKey] = [];
+      groupedItems[sellerKey].push(item);
+    }
+
+    const orderResults = [];
+
+    // Step 3: Create order per seller
+    for (const [sellerKey, items] of Object.entries(groupedItems)) {
+      let totalOrderPrice = 0;
+      const orderItemIds = [];
+
+      for (const item of items) {
+        const product = item.product_id;
+        const seller = item.seller_id;
+
+        const itemTotalPrice = item.total_price + (item.shipping_cost || 0);
+        totalOrderPrice += itemTotalPrice;
+
+        const productSnapshot = product.toObject();
+        delete productSnapshot.__v;
+        delete productSnapshot.createdAt;
+        delete productSnapshot.updatedAt;
+
+        // Determine seller_id safely
+        const sellerId =
+          sellerKey === "admin" ? null : items[0]?.seller_id?._id || null;
+
+        const orderItem = new OrderItemDetail({
+          product_id: product._id,
+          product_detail: productSnapshot,
+          name: product.name,
+          thumbnail: product.thumbnail,
+          selected_variant: item.selected_variant,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total_price: itemTotalPrice,
+          tax: item.tax,
+          discount: item.discount,
+          discount_type: item.discount_type,
+          tax_model: item.tax_model,
+          slug: item.slug,
+          seller_id: sellerId,
+          seller_is: sellerKey === "admin" ? "admin" : "seller",
+          shipping_cost: item.shipping_cost,
+          shipping_type: item.shipping_type,
+          shipping_address: shippingAddressId,
+          delivery_status: "Pending",
+        });
+
+        await orderItem.save();
+        orderItemIds.push(orderItem._id);
+
+        // Deduct stock
+        if (item.is_variant && item.variant_id) {
+          await VariantOption.findOneAndUpdate(
+            { _id: item.variant_id, product_id: product._id },
+            { $inc: { stock: -item.quantity } }
+          );
+        } else {
+          product.current_stock -= item.quantity;
+          await product.save();
         }
       }
-    }
 
-    // Process each item
-    for (const item of cartItems) {
-      const product = item.product_id;
-      const seller = item.seller_id;
+      // Coupon (if any)
+      const couponItem = items.find(
+        (item) => item.coupon_code && item.coupon_amount
+      );
+      let couponCode = null;
+      let couponAmount = 0;
+      if (couponItem) {
+        couponCode = couponItem.coupon_code;
+        couponAmount = couponItem.coupon_amount || 0;
+        totalOrderPrice = Math.max(0, totalOrderPrice - couponAmount);
+      }
 
-      const itemTotalPrice = item.total_price + (item.shipping_cost || 0);
-
-      const productSnapshot = product.toObject();
-      delete productSnapshot.__v;
-      delete productSnapshot.createdAt;
-      delete productSnapshot.updatedAt;
-
-      const orderItem = new OrderItemDetail({
-        product_id: product._id,
-        product_detail: productSnapshot,
-        name: product.name,
-        thumbnail: product.thumbnail,
-        selected_variant: item.selected_variant,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        total_price: itemTotalPrice,
-        tax: item.tax,
-        discount: item.discount,
-        discount_type: item.discount_type,
-        tax_model: item.tax_model,
-        slug: item.slug,
-        seller_id: seller ? seller._id : null,
-        shipping_cost: item.shipping_cost,
-        shipping_type: item.shipping_type,
+      const order = new Order({
+        customer_id: userId,
+        order_items: orderItemIds,
         shipping_address: shippingAddressId,
-        delivery_status: "Pending",
-        added_by: item.added_by,
+        total_price: totalOrderPrice,
+        status: "Pending",
+        payment_status: "Unpaid",
+        payment_method: req.body.payment_method || "COD",
+        coupon_code: couponCode,
+        coupon_amount: couponAmount,
+        seller_id: sellerKey === "admin" ? null : items[0].seller_id?._id,
+        seller_is: sellerKey === "admin" ? "admin" : "seller",
       });
 
-      await orderItem.save();
-      orderItemIds.push(orderItem._id);
+      await order.save();
+      orderResults.push(order._id);
 
-      totalOrderPrice += itemTotalPrice;
-
-      // Deduct stock
-      if (item.is_variant && item.variant_id) {
-        await VariantOption.findOneAndUpdate(
-          { _id: item.variant_id, product_id: product._id },
-          { $inc: { stock: -item.quantity } }
-        );
-      } else {
-        product.current_stock -= item.quantity;
-        await product.save();
-      }
+      await OrderItemDetail.updateMany(
+        { _id: { $in: orderItemIds } },
+        { order_id: order._id }
+      );
     }
 
-    // Check for coupon data from any cart item
-    const couponItem = cartItems.find(
-      (item) => item.coupon_code && item.coupon_amount
-    );
-    let couponCode = null;
-    let couponAmount = 0;
-
-    if (couponItem) {
-      couponCode = couponItem.coupon_code;
-      couponAmount = couponItem.coupon_amount || 0;
-      totalOrderPrice = Math.max(0, totalOrderPrice - couponAmount);
-    }
-
-    // Create Order
-    const order = new Order({
-      customer_id: userId,
-      order_items: orderItemIds,
-      shipping_address: shippingAddressId,
-      total_price: totalOrderPrice,
-      status: "Pending",
-      payment_status: "Unpaid",
-      payment_method: req.body.payment_method || "COD",
-      coupon_code: couponCode,
-      coupon_amount: couponAmount,
-    });
-
-    await order.save();
-
-    // Clear the cart
+    // Clear cart
     await Cart.deleteMany({ customer_id: userId });
 
-    res.status(201).json({
-      message: "Order placed successfully",
-      order_id: order._id,
+    return res.status(201).json({
+      message: "Orders placed successfully",
+      order_ids: orderResults,
     });
   } catch (error) {
     console.error("Error placing order:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 }
 
@@ -169,13 +189,8 @@ async function getOrders(req, res) {
 
     const orders = await Order.find(filter)
       .populate("customer_id", "name mobile email profilePicture")
-      .populate({
-        path: "order_items",
-        populate: {
-          path: "seller_id",
-          select: "shop_name",
-        },
-      })
+      .populate("order_items")
+      .populate("seller_id")
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
@@ -198,8 +213,10 @@ async function getOrders(req, res) {
 // Get Single Order by ID
 async function getOrderById(req, res) {
   try {
-    const order = await Order.findById(req.params.id)
-      .populate("customer_id", "name email mobile")
+    let order = await Order.findById(req.params.id)
+      .populate("customer_id", "name email mobile profilePicture")
+      .populate("seller_id", "shop_name mobile email")
+      .populate("shipping_address")
       .populate({
         path: "order_items",
         populate: {
@@ -213,7 +230,17 @@ async function getOrderById(req, res) {
         .status(404)
         .json({ status: false, message: "Order not found" });
     }
-    console.log("Fetched order:", order);
+
+    // 👇 Convert to plain object to append custom data
+    order = order.toObject();
+
+    // 👇 Count total orders by the same customer
+    const orderCount = await Order.countDocuments({
+      customer_id: order.customer_id._id,
+    });
+
+    // 👇 Attach order count
+    order.customer_order_count = orderCount;
 
     return res.status(200).json({
       status: true,
@@ -221,7 +248,7 @@ async function getOrderById(req, res) {
       data: order,
     });
   } catch (err) {
-    nlogger.error("Error fetching order by ID", err);
+    console.error("Error fetching order by ID", err);
     return res.status(500).json({ status: false, message: "Server error" });
   }
 }

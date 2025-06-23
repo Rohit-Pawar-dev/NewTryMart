@@ -1,22 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { SellerService, Seller } from '../../../services/seller.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-
 import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
   selector: 'app-seller-edit',
   templateUrl: './seller-edit.component.html',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-  ]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
 })
 export class SellerEditComponent implements OnInit {
   sellerForm: FormGroup;
@@ -24,6 +24,9 @@ export class SellerEditComponent implements OnInit {
   isUploading = false;
   uploadError: string | null = null;
   imagePreview: string | null = null;
+  profilePreview: string | null = null;
+  selectedLogoFile: File | null = null;
+  selectedProfileFile: File | null = null;
   sellerId: string | null = null;
 
   private uploadUrl = `${environment.apiUrl}/upload-media`;
@@ -40,18 +43,18 @@ export class SellerEditComponent implements OnInit {
       gender: ['prefer_not_to_say'],
       mobile: ['', [Validators.required, Validators.maxLength(10)]],
       email: [''],
-      otp: ['0000', Validators.required],
       shop_name: ['', Validators.required],
       address: [''],
       country: [''],
       state: [''],
       city: [''],
       pincode: [''],
-      business_category: ['', Validators.required],
+      // business_category: ['', Validators.required],
       gst_number: [''],
-      gst_registration_type: ['Unregistered'],
+      // gst_registration_type: ['Unregistered'],
       gst_verified: [false],
       logo: ['', Validators.required],
+      profile_image: [''],
       status: ['active', Validators.required],
     });
   }
@@ -62,11 +65,10 @@ export class SellerEditComponent implements OnInit {
       this.sellerService.getSeller(this.sellerId).subscribe({
         next: (seller: Seller) => {
           this.sellerForm.patchValue(seller);
-          if (seller.logo) {
-            this.imagePreview = seller.logo;
-          }
+          if (seller.logo) this.imagePreview = seller.logo;
+          if (seller.profile_image) this.profilePreview = seller.profile_image;
         },
-        error: (err) => console.error('Error loading seller:', err)
+        error: (err) => console.error('Error loading seller:', err),
       });
     }
   }
@@ -74,14 +76,13 @@ export class SellerEditComponent implements OnInit {
   onLogoSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    this.selectedLogoFile = file;
 
     const formData = new FormData();
-    formData.append('type', 'seller');
     formData.append('file', file);
+    formData.append('type', 'seller');
 
     this.isUploading = true;
-    this.uploadError = null;
-
     this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
       next: (res) => {
         const normalizedUrl = res.file.replace(/\\/g, '/');
@@ -93,7 +94,32 @@ export class SellerEditComponent implements OnInit {
         console.error('Logo upload failed', err);
         this.uploadError = 'Logo upload failed';
         this.isUploading = false;
-      }
+      },
+    });
+  }
+
+  onProfileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.selectedProfileFile = file;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'seller-profile');
+
+    this.isUploading = true;
+    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      next: (res) => {
+        const normalizedUrl = res.file.replace(/\\/g, '/');
+        this.sellerForm.patchValue({ profile_image: normalizedUrl });
+        this.profilePreview = normalizedUrl;
+        this.isUploading = false;
+      },
+      error: (err) => {
+        console.error('Profile image upload failed', err);
+        this.uploadError = 'Profile image upload failed';
+        this.isUploading = false;
+      },
     });
   }
 
@@ -106,23 +132,25 @@ export class SellerEditComponent implements OnInit {
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, update',
-      cancelButtonText: 'Cancel'
-    }).then(result => {
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
       if (result.isConfirmed) {
         this.isSubmitting = true;
         const updatedSeller = this.sellerForm.value;
 
-        this.sellerService.updateSeller(this.sellerId!, updatedSeller).subscribe({
-          next: () => {
-            Swal.fire('Updated!', 'Seller has been updated.', 'success');
-            this.router.navigate(['/sellers']);
-          },
-          error: (err) => {
-            console.error('Error updating seller:', err);
-            Swal.fire('Error', 'Failed to update seller.', 'error');
-            this.isSubmitting = false;
-          }
-        });
+        this.sellerService
+          .updateSeller(this.sellerId!, updatedSeller)
+          .subscribe({
+            next: () => {
+              Swal.fire('Updated!', 'Seller has been updated.', 'success');
+              this.router.navigate(['/sellers']);
+            },
+            error: (err) => {
+              console.error('Error updating seller:', err);
+              Swal.fire('Error', 'Failed to update seller.', 'error');
+              this.isSubmitting = false;
+            },
+          });
       }
     });
   }

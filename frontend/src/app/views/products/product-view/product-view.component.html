@@ -12,43 +12,95 @@
           [src]="p.thumbnail"
           alt="Thumbnail"
           class="img-thumbnail"
-          style="max-height: 200px;"
+          style="max-height: 200px"
         />
       </div>
 
       <!-- Product Info -->
-      <ul class="list-group">
-        <li class="list-group-item"><strong>Name:</strong> {{ p.name }}</li>
-        <li class="list-group-item"><strong>Category:</strong> {{ categoryName }}</li>
-        <li class="list-group-item"><strong>Unit Price:</strong> ₹{{ p.unit_price }}</li>
-        <li class="list-group-item"><strong>Unit:</strong> {{ p.unit }}</li>
-        <li class="list-group-item"><strong>Minimum Purchase Qty:</strong> {{ p.min_qty }}</li>
-        <li class="list-group-item"><strong>Current Stock:</strong> {{ p.current_stock }}</li>
-        <li class="list-group-item"><strong>SKU Code:</strong> {{ p.sku_code }}</li>
-        <li class="list-group-item">
-          <strong>Status:</strong>
-          <span class="badge" [ngClass]="p.status === 1 ? 'bg-success' : 'bg-danger'">
-            {{ p.status === 1 ? 'Active' : 'Inactive' }}
-          </span>
-        </li>
-        <li class="list-group-item"><strong>Added By:</strong> {{ p.added_by }}</li>
-        <li class="list-group-item">
-          <strong>Description:</strong>
-          <p class="mb-0">{{ p.description }}</p>
-        </li>
-      </ul>
+      <div class="row">
+        <!-- Product Name -->
+        <div class="col-md-12 mb-3">
+          <strong>Product Name:</strong>
+          <p class="mb-0">{{ p.name }}</p>
+        </div>
+      </div>
 
-      <!-- Gallery -->
+      <!-- Description -->
+      <div class="mb-4">
+        <strong>Description:</strong>
+        <div [innerHTML]="p.description"></div>
+      </div>
+
+      <div class="row">
+        <!-- Category -->
+        <!-- <div class="col-md-6 mb-3">
+          <strong>Category:</strong>
+          <p class="mb-0">{{ p.category_id?.name }}</p>
+        </div> -->
+
+        <!-- Sub Category -->
+        <!-- <div class="col-md-6 mb-3">
+          <strong>Sub Category:</strong>
+          <p class="mb-0">{{ p.sub_category_id?.name }}</p>
+        </div> -->
+      </div>
+
+      <div class="row">
+        <!-- Unit Price -->
+        <div class="col-md-4 mb-3">
+          <strong>Unit Price:</strong>
+          <p class="mb-0">₹{{ p.unit_price }}</p>
+        </div>
+
+        <!-- Discount -->
+        <div class="col-md-4 mb-3">
+          <strong>Discount:</strong>
+          <p class="mb-0">{{ p.discount }}</p>
+        </div>
+
+        <!-- Discount Type -->
+        <div class="col-md-4 mb-3">
+          <strong>Discount Type:</strong>
+          <p class="mb-0">{{ p.discount_type }}</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Tax -->
+        <div class="col-md-4 mb-3">
+          <strong>Tax (%):</strong>
+          <p class="mb-0">{{ p.tax }}</p>
+        </div>
+
+        <!-- Stock -->
+        <div class="col-md-4 mb-3">
+          <strong>Stock:</strong>
+          <p class="mb-0">{{ p.current_stock }}</p>
+        </div>
+
+        <!-- Min Qty -->
+        <div class="col-md-4 mb-3">
+          <strong>Minimum Qty:</strong>
+          <p class="mb-0">{{ p.min_qty }}</p>
+        </div>
+      </div>
+
+      <!-- Gallery (images[]) -->
       <div class="mt-4" *ngIf="p.images?.length">
-        <h5>Images</h5>
-        <div class="d-flex flex-wrap gap-2">
-          <img
+        <strong>Images</strong>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <div
             *ngFor="let img of p.images"
-            [src]="img"
-            alt="Gallery Image"
-            class="img-thumbnail"
-            style="max-height: 120px;"
-          />
+            class="border rounded p-1"
+            style="max-width: 120px"
+          >
+            <img
+              [src]="img"
+              alt="Gallery Image"
+              class="img-fluid rounded"
+              style="max-height: 100px; object-fit: cover"
+            />
+          </div>
         </div>
       </div>
     </div>

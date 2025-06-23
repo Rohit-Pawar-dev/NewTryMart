@@ -50,7 +50,7 @@ exports.getSellerDetails = async (req, res) => {
     const parsedLimit = Math.max(1, parseInt(limit));
     const parsedOffset = Math.max(0, parseInt(offset));
 
-    // Fetch the seller
+    // Fetch seller info
     const seller = await Seller.findById(sellerId).lean();
     if (!seller) {
       return res
@@ -58,10 +58,9 @@ exports.getSellerDetails = async (req, res) => {
         .json({ status: false, message: "Seller not found" });
     }
 
-    // Append full logo URL
     seller.logo = seller.logo ? `${MEDIA_URL}${seller.logo}` : null;
 
-    // Fetch seller's active products
+    // Filter for seller's approved and active products
     const productFilter = {
       seller_id: sellerId,
       status: 1,
@@ -77,15 +76,13 @@ exports.getSellerDetails = async (req, res) => {
       .populate("category_id sub_category_id seller_id")
       .lean();
 
-    // Get all product IDs
     const productIds = products.map((p) => p._id);
 
-    // Fetch variant options
     const variantOptions = await VariantOption.find({
       product_id: { $in: productIds },
     }).lean();
 
-    // Group variants by product_id
+    // Group variant options by product ID
     const groupedVariants = {};
     for (const variant of variantOptions) {
       const pid = variant.product_id.toString();
@@ -93,26 +90,29 @@ exports.getSellerDetails = async (req, res) => {
       groupedVariants[pid].push(variant);
     }
 
-    // Attach variation_options to each product
     const enrichedProducts = products.map((prod) => ({
       ...prod,
       variation_options: groupedVariants[prod._id.toString()] || [],
     }));
 
-    res.json({
+    // Final response
+    res.status(200).json({
       status: true,
-      message: "Seller and products fetched successfully",
+      message: "Seller details fetched successfully",
       data: {
         seller,
-        products: enrichedProducts,
-        total,
-        limit: parsedLimit,
-        offset: parsedOffset,
-        totalPages: Math.ceil(total / parsedLimit),
       },
+      products: enrichedProducts,
+      total,
+      limit: parsedLimit,
+      offset: parsedOffset,
+      totalPages: Math.ceil(total / parsedLimit),
     });
   } catch (error) {
     console.error("getSellerDetails error:", error);
-    res.status(500).json({ status: false, message: "Internal server error" });
+    res.status(500).json({
+      status: false,
+      message: "Internal server error",
+    });
   }
 };

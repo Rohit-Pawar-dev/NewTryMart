@@ -6,14 +6,23 @@ import { BannerViewComponent } from './banner-view/banner-view.component';
 
 export const routes: Routes = [
   {
-      path: '',
-      component: BannerListComponent,
-      data: {
-        title: 'Banners'
-      }
-    },
-  // { path: '', component: BannerListComponent },
-  { path: 'add', component: BannerAddComponent },
-  { path: 'edit/:id', component: BannerEditComponent },
-  { path: 'view/:id', component: BannerViewComponent },
+    path: '',
+    component: BannerListComponent,
+    data: { title: 'Banners' },
+  },
+  {
+    path: 'add',
+    component: BannerAddComponent,
+    data: { title: 'Add Banner' },
+  },
+  {
+    path: 'edit/:id',
+    component: BannerEditComponent,
+    data: { title: 'Edit Banner' },
+  },
+  {
+    path: 'view/:id',
+    component: BannerViewComponent,
+    data: { title: 'View Banner' },
+  },
 ];

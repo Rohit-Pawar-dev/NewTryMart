@@ -4,144 +4,165 @@
   </div>
   <div class="card-body">
     <form [formGroup]="sellerForm" (ngSubmit)="onSubmit()">
-      <!-- Name -->
-      <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
-        <input
-          id="name"
-          type="text"
-          class="form-control"
-          formControlName="name"
-        />
-      </div>
-
-      <!-- Gender -->
-      <div class="mb-3">
-        <label class="form-label">Gender</label>
-        <select class="form-select" formControlName="gender">
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-
-      <!-- Mobile -->
-      <div class="mb-3">
-        <label class="form-label">Mobile</label>
-        <input
-          type="text"
-          class="form-control"
-          formControlName="mobile"
-          maxlength="10"
-        />
-      </div>
-
-      <!-- Email -->
-      <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-control" formControlName="email" />
-      </div>
-
-      <!-- Shop Name -->
-      <div class="mb-3">
-        <label class="form-label">Shop Name</label>
-        <input type="text" class="form-control" formControlName="shop_name" />
-      </div>
-
-      <!-- Address, Country, State, City, Pincode -->
-      <div class="mb-3">
-        <label class="form-label">Address</label>
-        <input type="text" class="form-control" formControlName="address" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Country</label>
-        <input type="text" class="form-control" formControlName="country" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">State</label>
-        <input type="text" class="form-control" formControlName="state" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">City</label>
-        <input type="text" class="form-control" formControlName="city" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Pincode</label>
-        <input type="text" class="form-control" formControlName="pincode" />
-      </div>
-
-      <!-- Business Category -->
-      <div class="mb-3">
-        <label class="form-label">Business Category</label>
-        <input
-          type="text"
-          class="form-control"
-          formControlName="business_category"
-        />
-      </div>
-
-      <!-- GST Fields -->
-      <div class="mb-3">
-        <label class="form-label">GST Number</label>
-        <input type="text" class="form-control" formControlName="gst_number" />
-      </div>
-
-      <!-- <div class="mb-3">
-        <label class="form-label">GST Registration Type</label>
-        <select class="form-select" formControlName="gst_registration_type">
-          <option value="Regular">Regular</option>
-          <option value="Composition">Composition</option>
-          <option value="Unregistered">Unregistered</option>
-          <option value="Exempted">Exempted</option>
-        </select>
-      </div> -->
-
-      <!-- <div class="mb-3 form-check">
-        <input
-          type="checkbox"
-          class="form-check-input"
-          formControlName="gst_verified"
-        />
-        <label class="form-check-label">GST Verified</label>
-      </div> -->
-
-      <!-- Logo -->
-      <div class="mb-3">
-        <label for="logoUpload" class="form-label">Upload Logo</label>
-        <input
-          type="file"
-          id="logoUpload"
-          class="form-control"
-          accept="image/*"
-          (change)="onLogoSelected($event)"
-          [disabled]="isUploading"
-        />
-        <div *ngIf="imagePreview" class="mt-2">
-          <img
-            [src]="imagePreview"
-            alt="Logo Preview"
-            style="max-height: 150px"
+      <div class="row">
+        <!-- Name -->
+        <div class="col-md-6 mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input
+            id="name"
+            type="text"
+            class="form-control"
+            formControlName="name"
           />
         </div>
-        <div class="invalid-feedback d-block" *ngIf="uploadError">
-          {{ uploadError }}
+
+        <!-- Gender -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Gender</label>
+          <select class="form-select" formControlName="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Mobile -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Mobile</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="mobile"
+            maxlength="10"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" formControlName="email" />
+        </div>
+
+        <!-- Shop Name -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Shop Name</label>
+          <input type="text" class="form-control" formControlName="shop_name" />
+        </div>
+
+        <!-- Address -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Address</label>
+          <input type="text" class="form-control" formControlName="address" />
+        </div>
+
+        <!-- Country -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-control" formControlName="country" />
+        </div>
+
+        <!-- State -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">State</label>
+          <input type="text" class="form-control" formControlName="state" />
+        </div>
+
+        <!-- City -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">City</label>
+          <input type="text" class="form-control" formControlName="city" />
+        </div>
+
+        <!-- Pincode -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Pincode</label>
+          <input type="text" class="form-control" formControlName="pincode" />
+        </div>
+
+        <!-- Business Category -->
+        <!-- <div class="col-md-8 mb-3">
+          <label class="form-label">Business Category</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="business_category"
+          />
+        </div> -->
+
+        <!-- GST Number -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">GST Number</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="gst_number"
+          />
+        </div>
+
+        <!-- GST Registration Type -->
+        <!-- <div class="col-md-6 mb-3">
+          <label class="form-label">GST Registration Type</label>
+          <select class="form-select" formControlName="gst_registration_type">
+            <option value="Regular">Regular</option>
+            <option value="Composition">Composition</option>
+            <option value="Unregistered">Unregistered</option>
+            <option value="Exempted">Exempted</option>
+          </select>
+        </div> -->
+
+        <!-- Status -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Status</label>
+          <select class="form-select" formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+
+        <!-- Profile Image -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Profile Image</label>
+          <input
+            type="file"
+            class="form-control"
+            accept="image/*"
+            (change)="onProfileSelected($event)"
+          />
+          <div *ngIf="profilePreview" class="mt-2">
+            <img
+              [src]="profilePreview"
+              alt="Profile Preview"
+              class="img-thumbnail"
+              style="max-height: 150px"
+            />
+          </div>
+        </div>
+
+        <!-- Logo -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Shop Logo</label>
+          <input
+            type="file"
+            class="form-control"
+            accept="image/*"
+            (change)="onLogoSelected($event)"
+          />
+          <div *ngIf="imagePreview" class="mt-2">
+            <img
+              [src]="imagePreview"
+              alt="Logo Preview"
+              class="img-thumbnail"
+              style="max-height: 150px"
+            />
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="uploadError">
+            {{ uploadError }}
+          </div>
         </div>
       </div>
 
-      <!-- Status -->
-      <div class="mb-3">
-        <label class="form-label">Status</label>
-        <select class="form-select" formControlName="status">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="blocked">Blocked</option>
-        </select>
-      </div>
-
+      <!-- Submit Button -->
       <button
         class="btn btn-primary"
         type="submit"

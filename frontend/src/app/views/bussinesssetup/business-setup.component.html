@@ -7,39 +7,86 @@
       <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
       <div *ngIf="success" class="alert alert-success">{{ success }}</div>
 
-      <div class="mb-3">
-        <label class="form-label"><strong>Company Name:</strong></label>
-        <input type="text" class="form-control" name="companyName" [(ngModel)]="business.companyName" required />
+      <div class="row">
+        <div class="mb-3 col-md-4">
+          <label class="form-label"><strong>Company Name:</strong></label>
+          <input
+            type="text"
+            class="form-control"
+            name="companyName"
+            [(ngModel)]="business.companyName"
+            required
+          />
+        </div>
+
+        <div class="mb-3 col-md-4">
+          <label class="form-label"><strong>Phone:</strong></label>
+          <input
+            type="text"
+            class="form-control"
+            name="phone"
+            [(ngModel)]="business.phone"
+            required
+          />
+        </div>
+
+        <div class="mb-3 col-md-4">
+          <label class="form-label"><strong>Company Email:</strong></label>
+          <input
+            type="email"
+            class="form-control"
+            name="companyEmail"
+            [(ngModel)]="business.companyEmail"
+            required
+          />
+        </div>
+
+        <div class="mb-3 col-md-4">
+          <label class="form-label"><strong>Company Address:</strong></label>
+          <textarea
+            class="form-control"
+            name="companyAddress"
+            [(ngModel)]="business.companyAddress"
+            rows="2"
+            required
+          ></textarea>
+        </div>
+
+        <div class="mb-3 col-md-4">
+          <label class="form-label"><strong>Country:</strong></label>
+          <input
+            type="text"
+            class="form-control"
+            name="country"
+            [(ngModel)]="business.country"
+            required
+          />
+        </div>
+
+        <div class="mb-3 col-md-4 d-none">
+          <label class="form-label"><strong>Timezone:</strong></label>
+          <input
+            type="text"
+            class="form-control"
+            name="timezone"
+            [(ngModel)]="business.timezone"
+            required
+          />
+        </div>
       </div>
 
-      <div class="mb-3">
-        <label class="form-label"><strong>Phone:</strong></label>
-        <input type="text" class="form-control" name="phone" [(ngModel)]="business.phone" required />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label"><strong>Company Email:</strong></label>
-        <input type="email" class="form-control" name="companyEmail" [(ngModel)]="business.companyEmail" required />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label"><strong>Company Address:</strong></label>
-        <textarea class="form-control" name="companyAddress" [(ngModel)]="business.companyAddress" required></textarea>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label"><strong>Country:</strong></label>
-        <input type="text" class="form-control" name="country" [(ngModel)]="business.country" required />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label"><strong>Timezone:</strong></label>
-        <input type="text" class="form-control" name="timezone" [(ngModel)]="business.timezone" required />
-      </div>
-
-      <div class="d-flex gap-2">
-        <button type="button" class="btn btn-primary" (click)="onUpdate()" [disabled]="isLoading">Update</button>
-        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      <div class="d-flex gap-2 mt-3">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onUpdate()"
+          [disabled]="isLoading"
+        >
+          Update
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">
+          Cancel
+        </button>
       </div>
     </form>
   </div>
@@ -47,6 +94,7 @@
 
 <ng-template #loadingOrError>
   <div class="text-center p-4">
-    <p>Loading company data...</p>
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Loading company data...</p>
   </div>
 </ng-template>

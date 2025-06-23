@@ -32,7 +32,7 @@ const cartSchema = new Schema(
     selected_variant: {
       type: Map,
       of: String,
-      default: {},
+      default: null,
     },
     total_price: {
       type: Number,
@@ -78,10 +78,11 @@ const cartSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Seller",
     },
-    added_by: {
+    seller_is: {
       type: String,
       enum: ["admin", "seller"],
       required: true,
+      default: "admin",
     },
     shipping_cost: {
       type: Number,
@@ -94,9 +95,6 @@ const cartSchema = new Schema(
     timestamps: true,
   }
 );
-cartSchema.index(
-  { customer_id: 1, product_id: 1, selected_variant: 1 },
-  { unique: true }
-);
+cartSchema.index({ customer_id: 1, product_id: 1 }, { unique: true });
 
 module.exports = mongoose.model("Cart", cartSchema);

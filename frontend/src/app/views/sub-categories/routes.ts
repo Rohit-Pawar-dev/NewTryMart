@@ -5,8 +5,24 @@ import { SubCategoryEditComponent } from './sub-category-edit/sub-category-edit.
 import { SubCategoryViewComponent } from './sub-category-view/sub-category-view.component';
 
 export const routes: Routes = [
-  { path: '', component: SubCategoryListComponent },
-  { path: 'add', component: SubCategoryAddComponent },
-  { path: 'edit/:id', component: SubCategoryEditComponent },
-  { path: 'view/:id', component: SubCategoryViewComponent },
+  {
+    path: '',
+    component: SubCategoryListComponent,
+    data: { title: 'Subcategory List' },
+  },
+  {
+    path: 'add',
+    component: SubCategoryAddComponent,
+    data: { title: 'Add Subcategory' },
+  },
+  {
+    path: 'edit/:id',
+    component: SubCategoryEditComponent,
+    data: { title: 'Edit Subcategory' },
+  },
+  {
+    path: 'view/:id',
+    component: SubCategoryViewComponent,
+    data: { title: 'View Subcategory' },
+  },
 ];

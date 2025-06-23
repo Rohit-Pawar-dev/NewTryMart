@@ -4,122 +4,150 @@
   </div>
   <div class="card-body">
     <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-      <!-- Name -->
-      <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
-        <input
-          type="text"
-          id="name"
-          class="form-control"
-          formControlName="name"
-          [class.is-invalid]="
-            userForm.get('name')?.invalid && userForm.get('name')?.touched
-          "
-        />
-        <div
-          class="invalid-feedback"
-          *ngIf="userForm.get('name')?.errors?.['required']"
-        >
-          Name is required.
+      <div class="row">
+        <!-- Name -->
+        <div class="col-md-6 mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            formControlName="name"
+            [class.is-invalid]="
+              userForm.get('name')?.invalid && userForm.get('name')?.touched
+            "
+          />
+          <div
+            class="invalid-feedback"
+            *ngIf="userForm.get('name')?.errors?.['required']"
+          >
+            Name is required.
+          </div>
         </div>
-      </div>
 
-      <!-- Email -->
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input
-          type="email"
-          id="email"
-          class="form-control"
-          formControlName="email"
-          [class.is-invalid]="
-            userForm.get('email')?.invalid && userForm.get('email')?.touched
-          "
-        />
-        <div
-          class="invalid-feedback"
-          *ngIf="userForm.get('email')?.errors?.['required']"
-        >
-          Email is required.
+        <!-- Email -->
+        <div class="col-md-6 mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+            [class.is-invalid]="
+              userForm.get('email')?.invalid && userForm.get('email')?.touched
+            "
+          />
+          <div
+            class="invalid-feedback"
+            *ngIf="userForm.get('email')?.errors?.['required']"
+          >
+            Email is required.
+          </div>
+          <div
+            class="invalid-feedback"
+            *ngIf="userForm.get('email')?.errors?.['email']"
+          >
+            Enter a valid email address.
+          </div>
         </div>
-        <div
-          class="invalid-feedback"
-          *ngIf="userForm.get('email')?.errors?.['email']"
-        >
-          Enter a valid email address.
-        </div>
-      </div>
 
-      <!-- Mobile -->
-      <div class="mb-3">
-        <label for="mobile" class="form-label">Mobile</label>
-        <input
-          type="text"
-          id="mobile"
-          class="form-control"
-          formControlName="mobile"
-          [class.is-invalid]="
-            userForm.get('mobile')?.invalid && userForm.get('mobile')?.touched
-          "
-        />
-        <div
-          class="invalid-feedback"
-          *ngIf="userForm.get('mobile')?.errors?.['required']"
-        >
-          Mobile number is required.
+        <!-- Mobile -->
+        <div class="col-md-6 mb-3">
+          <label for="mobile" class="form-label">Mobile</label>
+          <input
+            type="text"
+            id="mobile"
+            class="form-control"
+            formControlName="mobile"
+            [class.is-invalid]="
+              userForm.get('mobile')?.invalid && userForm.get('mobile')?.touched
+            "
+          />
+          <div
+            class="invalid-feedback"
+            *ngIf="userForm.get('mobile')?.errors?.['required']"
+          >
+            Mobile number is required.
+          </div>
         </div>
-      </div>
 
-      <!-- Profile Picture -->
-      <div class="mb-3">
-        <label for="profileUpload" class="form-label">Profile Picture</label>
-        <input
-          type="file"
-          id="profileUpload"
-          class="form-control"
-          accept="image/*"
-          (change)="onImageSelected($event)"
-          [disabled]="isUploading"
-        />
-        <div *ngIf="imagePreview" class="mt-2">
-          <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
+        <!-- Gender -->
+        <div class="col-md-6 mb-3">
+          <label for="gender" class="form-label">Gender</label>
+          <select
+            id="gender"
+            class="form-select"
+            formControlName="gender"
+            [class.is-invalid]="
+              userForm.get('gender')?.invalid && userForm.get('gender')?.touched
+            "
+          >
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="userForm.get('gender')?.errors?.['required']"
+          >
+            Gender is required.
+          </div>
         </div>
-        <div class="invalid-feedback d-block" *ngIf="uploadError">
-          {{ uploadError }}
-        </div>
-      </div>
 
-      <!-- Status -->
-      <div class="mb-3">
-        <label for="status" class="form-label">Status</label>
-        <select
-          id="status"
-          class="form-select"
-          formControlName="status"
-          [class.is-invalid]="
-            userForm.get('status')?.invalid && userForm.get('status')?.touched
-          "
-        >
-          <option value="">Select status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-        <div
-          class="invalid-feedback"
-          *ngIf="userForm.get('status')?.errors?.['required']"
-        >
-          Status is required.
+        <!-- Status -->
+        <div class="col-md-6 mb-3">
+          <label for="status" class="form-label">Status</label>
+          <select
+            id="status"
+            class="form-select"
+            formControlName="status"
+            [class.is-invalid]="
+              userForm.get('status')?.invalid && userForm.get('status')?.touched
+            "
+          >
+            <option value="">Select status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="userForm.get('status')?.errors?.['required']"
+          >
+            Status is required.
+          </div>
+        </div>
+
+        <!-- Profile Picture -->
+        <div class="col-md-6 mb-3">
+          <label for="profileUpload" class="form-label">Profile Picture</label>
+          <input
+            type="file"
+            id="profileUpload"
+            class="form-control"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            [disabled]="isUploading"
+          />
+          <div *ngIf="imagePreview" class="mt-2">
+            <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="uploadError">
+            {{ uploadError }}
+          </div>
         </div>
       </div>
 
       <!-- Submit Button -->
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="isSubmitting || userForm.invalid"
-      >
-        {{ isSubmitting ? "Saving..." : "Update User" }}
-      </button>
+      <div class="text-end">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isSubmitting || userForm.invalid"
+        >
+          {{ isSubmitting ? "Saving..." : "Update User" }}
+        </button>
+      </div>
     </form>
   </div>
 </div>

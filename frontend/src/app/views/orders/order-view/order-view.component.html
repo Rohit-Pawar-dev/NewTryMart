@@ -1,58 +1,216 @@
 <div class="container mt-4" *ngIf="!isLoading && order">
-  <h3>Order Details</h3>
+  <h3 class="mb-4">Order Details</h3>
 
-  <div *ngIf="order as o">
-  <strong>Order ID:</strong> {{ o._id }}<br />
-  <strong>Customer Name:</strong> {{ o.customer_id?.name || 'N/A' }}<br />
-  <strong>Mobile:</strong> {{ o.customer_id?.mobile || 'N/A' }}<br />
-  <strong>Total Price:</strong> ₹{{ o.total_price }}<br />
-  <strong>Payment Method:</strong> {{ o.payment_method }}<br />
-  <strong>Status:</strong> {{ o.status }}<br />
-  <strong>Created At:</strong> {{ o.createdAt | date: 'medium' }}<br />
-</div>
+  <div class="row">
+    <!-- Left Panel: Main Content -->
+    <div class="col-md-8">
+      <div *ngIf="order as o" class="mb-4">
+        <div class="d-flex justify-content-between flex-wrap">
+          <!-- Left Column -->
+          <div class="mb-2">
+            <div><strong>Order ID:</strong> {{ o._id }}</div>
+            <div>
+              <strong>Date:</strong>
+              {{ o.createdAt | date : "dd MMM yyyy, hh:mm a" }}
+            </div>
+          </div>
 
+          <!-- Right Column -->
+          <div class="mb-2 text-end">
+            <div>
+              <strong>Status:</strong>
+              <span class="badge bg-info text-dark">{{ o.status }}</span>
+            </div>
+            <div><strong>Payment Method:</strong> {{ o.payment_method }}</div>
+            <div>
+              <strong>Payment Status:</strong>
+              <span
+                [ngClass]="{
+                  'text-success': o.payment_status === 'Paid',
+                  'text-danger': o.payment_status === 'Unpaid'
+                }"
+              >
+                {{ o.payment_status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <!-- Linked Orders Placeholder -->
+      <div class="mb-3">
+        <span class="badge bg-info text-white">Linked Orders (0)</span>
+      </div>
 
-  <h5>Items</h5>
-  <table class="table table-bordered table-hover mt-2">
-    <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Product</th>
-        <th>Thumbnail</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
-        <th>Total Price</th>
-        <!-- <th>Variant</th> -->
-        <th>Seller</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of order.order_items; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ item.name }}</td>
-        <td>
+      <!-- Item Table -->
+      <div class="table-responsive">
+        <table class="table table-bordered text-nowrap">
+          <thead class="table-light">
+            <tr>
+              <th>SL</th>
+              <th>Item Details</th>
+              <th>Tax</th>
+              <th>Discount</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of order.order_items; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <img
+                    [src]="item.product_id?.thumbnail || item.thumbnail"
+                    alt="thumb"
+                    width="50"
+                    height="50"
+                  />
+                  <div>
+                    <div class="fw-semibold">{{ item.name }}</div>
+                    <div class="text-muted small">
+                      Price : {{ item.unit_price | number : "1.2-2" }}₹
+                    </div>
+                    <div class="text-muted small">
+                      Qty : {{ item.quantity }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ item.tax || 0 }}₹</td>
+              <td>{{ item.discount || 0 }}₹</td>
+              <td>{{ item.total_price | number : "1.2-2" }}₹</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Totals -->
+      <div class="mt-3">
+        <div class="d-flex justify-content-between">
+          <div>Shipping</div>
+          <div><strong>0.00₹</strong></div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <div>Coupon discount</div>
+          <div>
+            <strong>- {{ order.coupon_amount || 0 }}₹</strong>
+          </div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-between fs-5 fw-bold">
+          <div>Total</div>
+          <div>{{ order.total_price | number : "1.2-2" }}₹</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Order & Shipping Info -->
+    <div class="col-md-4">
+      <div class="border rounded p-3 bg-white">
+        <h6 class="fw-bold mb-3">Order & Shipping Info</h6>
+
+        <!-- Order Status -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Order Status</label>
+          <select class="form-select" [(ngModel)]="order.status">
+            <option>Pending</option>
+            <option>Processing</option>
+            <option>Delivered</option>
+            <option>Cancelled</option>
+          </select>
+        </div>
+
+        <!-- Payment Status -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Payment Status</label>
+          <select class="form-select" [(ngModel)]="order.payment_status">
+            <option>Paid</option>
+            <option>Unpaid</option>
+          </select>
+        </div>
+
+        <!-- Shipping -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold"
+            >Shipping Type (Order Wise)</label
+          >
+          <p class="text-muted small">Shipping Method (NORMAL SHIPPING)</p>
+          <select class="form-select">
+            <option>Choose Delivery Type</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="border rounded p-3 mt-3 bg-white">
+        <h6 class="fw-bold mb-3">Customer information</h6>
+        <div class="d-flex align-items-center gap-2 mb-2">
           <img
-            [src]="item.product_id?.thumbnail || item.thumbnail"
-            alt="thumb"
-            width="50"
-            height="50"
+            [src]="
+              order.customer_id?.profilePicture ||
+              '/assets/img/default-user.png'
+            "
+            class="rounded-circle"
+            width="48"
+            height="48"
+            alt="profile"
           />
-        </td>
-        <td>{{ item.quantity }}</td>
-        <td>₹{{ item.unit_price }}</td>
-        <td>₹{{ item.total_price }}</td>
-        <!-- <td>{{ item.selected_variant || '-' }}</td> -->
-        <td>{{ item.seller_id?.shop_name || 'In_house' }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+          <div>
+            <div class="fw-semibold text-capitalize">
+              {{ order.customer_id?.name || "N/A" }}
+            </div>
+            <div class="text-muted small">
+              {{ order.customer_order_count || 0 }} Orders
+            </div>
+          </div>
+        </div>
+        <div class="small">{{ order.customer_id?.mobile }}</div>
+        <div class="small">{{ order.customer_id?.email }}</div>
+      </div>
 
-<div *ngIf="isLoading" class="text-center mt-4">
-  Loading order details...
-</div>
+      <!-- Shipping Address -->
+      <div
+        class="border rounded p-3 mt-3 bg-white"
+        *ngIf="
+          order.shipping_address && isAddressObject(order.shipping_address);
+          else noAddress
+        "
+      >
+        <h6 class="fw-bold mb-3">Shipping Address</h6>
 
-<div *ngIf="!isLoading && errorMessage" class="alert alert-danger mt-4">
-  {{ errorMessage }}
+        <div class="mb-1">
+          <strong>Name:</strong> {{ order.shipping_address.name || "N/A" }}
+        </div>
+        <div class="mb-1">
+          <strong>Contact:</strong> {{ order.shipping_address.phone || "N/A" }}
+        </div>
+        <div class="mb-1">
+          <strong>City:</strong> {{ order.shipping_address.city || "N/A" }}
+        </div>
+        <div class="mb-1">
+          <strong>Pincode:</strong>
+          {{ order.shipping_address.pincode || "N/A" }}
+        </div>
+        <div class="mb-1">
+          <strong>Address:</strong>
+          {{ order.shipping_address.address || "N/A" }}
+        </div>
+      </div>
+
+      <ng-template #noAddress>
+        <div class="border rounded p-3 mt-3 bg-white text-muted">
+          No shipping address available.
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="text-center mt-4">Loading order details...</div>
+
+  <!-- Error -->
+  <div *ngIf="!isLoading && errorMessage" class="alert alert-danger mt-4">
+    {{ errorMessage }}
+  </div>
 </div>

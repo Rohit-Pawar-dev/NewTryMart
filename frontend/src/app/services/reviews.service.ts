@@ -25,11 +25,13 @@ export class ReviewsService {
   constructor(private http: HttpClient) {}
 
   // Fetch all reviews with optional query params (pagination or search)
-  getReviews(params: { search?: string; limit?: number; offset?: number } = {}): Observable<Review[]> {
+  getReviews(
+    params: { search?: string; limit?: number; offset?: number } = {}
+  ): Observable<Review[]> {
     const query = new URLSearchParams({ ...params } as any).toString();
-    return this.http.get<{ data: Review[] }>(`${this.apiUrl}?${query}`).pipe(
-      map(response => response.data)
-    );
+    return this.http
+      .get<{ data: Review[] }>(`${this.apiUrl}?${query}`)
+      .pipe(map((response) => response.data));
   }
 
   // Get a single review by ID

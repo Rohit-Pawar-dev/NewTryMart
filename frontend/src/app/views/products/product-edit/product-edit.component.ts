@@ -11,15 +11,20 @@ import {
   SubCategory,
   Product,
 } from '../../../services/product.service';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Swal from 'sweetalert2';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-product-edit',
   standalone: true,
   templateUrl: './product-edit.component.html',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, CKEditorModule],
 })
 export class ProductEditComponent implements OnInit {
+  public Editor = ClassicEditor;
+
   form: FormGroup;
   productId: string = '';
   isSubmitting = false;
@@ -29,7 +34,6 @@ export class ProductEditComponent implements OnInit {
 
   imagePreview: string | null = null;
   photoPreviews: string[] = [];
-  photoInputs: number[] = [0];
 
   categories: Category[] = [];
   subcategories: SubCategory[] = [];
@@ -66,15 +70,61 @@ export class ProductEditComponent implements OnInit {
 
     this.form.get('name')?.valueChanges.subscribe((name) => {
       if (!this.form.get('slug')?.value) {
-        this.form.patchValue({ slug: this.generateSlug(name) }, { emitEvent: false });
+        this.form.patchValue(
+          { slug: this.generateSlug(name) },
+          { emitEvent: false }
+        );
       }
     });
   }
 
   ngOnInit(): void {
     this.productId = this.route.snapshot.params['id'];
-    this.loadCategories();
-    this.loadProduct();
+
+    forkJoin({
+      product: this.productService.getProductById(this.productId),
+      categories: this.productService.getAllCategories(),
+    }).subscribe({
+      next: ({ product, categories }) => {
+        // Set categories
+        this.categories = categories.data;
+
+        // --- Extract categoryId safely ---
+        const categoryId: string =
+          typeof product.category_id === 'string'
+            ? product.category_id
+            : (product.category_id as any)?._id;
+
+        // --- Extract subCategoryId safely ---
+        const subCategoryId: string =
+          typeof product.sub_category_id === 'string'
+            ? product.sub_category_id
+            : (product.sub_category_id as any)?._id;
+
+        // --- Patch base product fields ---
+        this.form.patchValue({
+          ...product,
+          category_id: categoryId || '',
+          sub_category_id: subCategoryId || '',
+          images: product.images || [],
+          thumbnail: product.thumbnail || '',
+        });
+
+        // --- Preview setup ---
+        this.imagePreview = product.thumbnail || '';
+        this.photoPreviews = product.images || [];
+
+        // --- Load subcategories based on selected category ---
+        const selectedCat = this.categories.find(
+          (cat: Category) => cat._id === categoryId
+        );
+        this.subcategories = selectedCat?.sub_categories || [];
+      },
+      error: (err) => {
+        console.error('Failed to load product or categories', err);
+        Swal.fire('Error', 'Failed to load product or categories', 'error');
+      },
+    });
   }
 
   loadProduct(): void {
@@ -84,7 +134,9 @@ export class ProductEditComponent implements OnInit {
 
         if (product.category_id) {
           this.onCategoryChange();
-          this.form.patchValue({ sub_category_id: product.sub_category_id || '' });
+          this.form.patchValue({
+            sub_category_id: product.sub_category_id || '',
+          });
         }
 
         this.imagePreview = product.thumbnail;
@@ -125,7 +177,7 @@ export class ProductEditComponent implements OnInit {
 
     this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
       next: (res) => {
-        const url = res.file.replace(/\\/g, '/');
+        const url = res?.file?.replace(/\\/g, '/');
         this.form.patchValue({ thumbnail: url });
         this.imagePreview = url;
         this.isUploading = false;
@@ -134,71 +186,60 @@ export class ProductEditComponent implements OnInit {
         console.error('Thumbnail upload error:', err);
         this.uploadError = 'Failed to upload thumbnail';
         this.isUploading = false;
-        Swal.fire('Upload Failed', 'Failed to upload thumbnail. Please try again.', 'error');
+        Swal.fire(
+          'Upload Failed',
+          'Failed to upload thumbnail. Please try again.',
+          'error'
+        );
       },
     });
   }
 
-  onCancel() {
-    this.router.navigate(['/products']);
-  }
-
-  disableScroll(event: WheelEvent): void {
-    event.preventDefault();
-  }
-
-  disableArrowKeys(event: KeyboardEvent): void {
-    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-      event.preventDefault();
-    }
-  }
-
-  onSinglePhotoSelected(event: Event, index: number): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('type', 'product');
-    formData.append('file', file);
+  onMultiplePhotosSelected(event: Event): void {
+    const files = (event.target as HTMLInputElement).files;
+    if (!files || files.length === 0) return;
 
     this.isPhotosUploading = true;
+    const formDataArray: FormData[] = [];
 
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const url = res.file.replace(/\\/g, '/');
-        this.photoPreviews.push(url);
-        const images = this.form.get('images')?.value || [];
-        this.form.patchValue({ images: [...images, url] });
+    for (let i = 0; i < files.length; i++) {
+      const formData = new FormData();
+      formData.append('type', 'product');
+      formData.append('file', files[i]);
+      formDataArray.push(formData);
+    }
 
-        if (index === this.photoInputs.length - 1) {
-          this.photoInputs.push(this.photoInputs.length);
-        }
+    const uploadPromises = formDataArray.map((fd) =>
+      this.http.post<{ file: string }>(this.uploadUrl, fd).toPromise()
+    );
 
+    Promise.all(uploadPromises)
+      .then((responses) => {
+        const urls = responses
+          .map((res) => res?.file?.replace(/\\/g, '/'))
+          .filter((url): url is string => !!url);
+        this.photoPreviews.push(...urls);
+        this.form.patchValue({
+          images: [...(this.form.get('images')?.value || []), ...urls],
+        });
         this.isPhotosUploading = false;
-      },
-      error: (err) => {
+      })
+      .catch((err) => {
         console.error('Photo upload error:', err);
         this.isPhotosUploading = false;
-        Swal.fire('Upload Failed', 'Failed to upload photo. Please try again.', 'error');
-      },
-    });
+        Swal.fire(
+          'Upload Failed',
+          'Failed to upload one or more images. Please try again.',
+          'error'
+        );
+      });
   }
 
   removePhoto(index: number): void {
     if (index < 0 || index >= this.photoPreviews.length) return;
 
     this.photoPreviews.splice(index, 1);
-    this.form.patchValue({ images: this.photoPreviews });
-
-    if (this.photoInputs.length > this.photoPreviews.length + 1) {
-      this.photoInputs.pop();
-    }
-  }
-
-  removeAllPhotos(): void {
-    this.photoPreviews = [];
-    this.photoInputs = [0];
-    this.form.patchValue({ images: [] });
+    this.form.patchValue({ images: [...this.photoPreviews] });
   }
 
   removeThumbnail(): void {
@@ -229,7 +270,11 @@ export class ProductEditComponent implements OnInit {
     }
 
     if (this.form.invalid) {
-      Swal.fire('Invalid', 'Please fill in all required fields correctly.', 'warning');
+      Swal.fire(
+        'Invalid',
+        'Please fill in all required fields correctly.',
+        'warning'
+      );
       return;
     }
 
@@ -238,8 +283,7 @@ export class ProductEditComponent implements OnInit {
       this.form.patchValue({ slug: this.generateSlug(name) });
     }
 
-    let formData = { ...this.form.value };
-    formData = this.cleanObjectIdFields(formData);
+    let formData = this.cleanObjectIdFields(this.form.value);
 
     Swal.fire({
       title: 'Confirm Product Update',
@@ -259,7 +303,7 @@ export class ProductEditComponent implements OnInit {
     this.isSubmitting = true;
 
     this.productService.updateProduct(this.productId, formData).subscribe({
-      next: (res) => {
+      next: () => {
         this.isSubmitting = false;
         Swal.fire({
           icon: 'success',
@@ -274,8 +318,16 @@ export class ProductEditComponent implements OnInit {
       error: (err) => {
         console.error('Product update error:', err);
         this.isSubmitting = false;
-        Swal.fire('Update Failed', 'Failed to update product. Please try again.', 'error');
+        Swal.fire(
+          'Update Failed',
+          'Failed to update product. Please try again.',
+          'error'
+        );
       },
     });
+  }
+
+  onCancel() {
+    this.router.navigate(['/products']);
   }
 }

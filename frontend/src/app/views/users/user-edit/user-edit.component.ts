@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
@@ -38,8 +43,9 @@ export class UserEditComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', Validators.required],
+      gender: ['', Validators.required], // ✅ Add gender
       status: ['active', Validators.required],
-      profilePicture: ['']
+      profilePicture: [''],
     });
   }
 
@@ -53,7 +59,7 @@ export class UserEditComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error loading user:', err);
-        }
+        },
       });
     }
   }
@@ -89,7 +95,7 @@ export class UserEditComponent implements OnInit {
           console.error('Error updating user:', error);
           Swal.fire('Error', 'Failed to update user.', 'error');
           this.isSubmitting = false;
-        }
+        },
       });
     };
 
@@ -112,7 +118,7 @@ export class UserEditComponent implements OnInit {
           this.uploadError = 'Failed to upload image';
           this.isUploading = false;
           this.isSubmitting = false;
-        }
+        },
       });
     } else {
       finalizeUpdate(); // ✅ Continue directly if no new image

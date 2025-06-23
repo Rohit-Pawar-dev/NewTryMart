@@ -8,7 +8,7 @@ import { UserService, User } from '../../../services/user.service';
   selector: 'app-user-view',
   templateUrl: './user-view.component.html',
   // styleUrls: ['./user-view.component.scss'],
-  imports: [CommonModule]
+  imports: [CommonModule],
 })
 export class UserViewComponent implements OnInit {
   user: User | null = null;
@@ -27,12 +27,14 @@ export class UserViewComponent implements OnInit {
       this.userService.getUser(this.userId).subscribe({
         next: (userData) => {
           this.user = userData;
+          console.log(this.user);
+
           this.isLoading = false;
         },
         error: (err) => {
           this.error = 'User not found or failed to fetch.';
           this.isLoading = false;
-        }
+        },
       });
     } else {
       this.error = 'Invalid user ID.';

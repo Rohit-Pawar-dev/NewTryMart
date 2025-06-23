@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const allowedTypes = [
-  'image/jpeg', 'image/png', 'image/jpg', 'image/gif',
+  'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
   'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm'
 ];
 

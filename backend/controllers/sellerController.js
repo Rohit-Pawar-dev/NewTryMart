@@ -5,13 +5,22 @@ const nlogger = require('../logger');
 exports.createSeller = async (req, res) => {
   try {
     nlogger.info('Create Seller');
+
+    // Generate a random 4-digit OTP (e.g., 1234 to 9999)
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    // Override any OTP sent by client
+    req.body.otp = otp;
+
     const seller = await Seller.create(req.body);
+
     res.status(201).json(seller);
   } catch (err) {
     nlogger.error('Create Seller Error: ' + err.message);
     res.status(400).json({ error: err.message });
   }
 };
+
 
 // Get All Sellers with pagination + search
 exports.getAllSellers = async (req, res) => {

@@ -163,32 +163,45 @@ module.exports = {
       let variant = null;
       let finalPrice = product.unit_price;
       let stock = product.current_stock;
+      let selectedVariant = null;
 
+      // Variant logic
       if (is_variant && variantId) {
-        variant = product.variation_options.find(
-          (v) => v._id.toString() === variantId
-        );
+        variant = await VariantOption.findOne({
+          _id: variantId,
+          product_id: productId,
+        });
+
         if (!variant) {
           return res
             .status(404)
             .json({ status: false, message: "Variant not found" });
         }
+
         finalPrice = variant.price;
         stock = variant.stock;
+        selectedVariant =
+          variant.options && Object.keys(variant.options).length > 0
+            ? variant.options
+            : null;
       }
 
-      // Check if already in cart
+      // Enforce single cart item per customer-product
       const existingItem = await Cart.findOne({
         customer_id: userId,
         product_id: productId,
-        variant_id: is_variant ? variantId : null,
       });
 
       if (existingItem) {
-        return res.status(400).json({
-          status: false,
-          message: "Product already in cart. Update quantity instead.",
-        });
+        if (existingItem.save_for_later === true) {
+          // Allow replacing save-for-later
+          await Cart.deleteOne({ _id: existingItem._id });
+        } else {
+          return res.status(400).json({
+            status: false,
+            message: "Product already in cart. Update quantity instead.",
+          });
+        }
       }
 
       if (quantity > stock) {
@@ -203,6 +216,7 @@ module.exports = {
         product_id: productId,
         variant_id: is_variant ? variantId : null,
         is_variant: !!is_variant,
+        selected_variant: selectedVariant,
         quantity,
         total_price: finalPrice,
         unit_price: finalPrice,
@@ -211,7 +225,8 @@ module.exports = {
         discount: product.discount,
         discount_type: product.discount_type,
         thumbnail: product.thumbnail,
-        added_by: product.added_by || "admin",
+        seller_id: product.seller_id,
+        seller_is: product.added_by || "admin",
       });
 
       res.json({
@@ -220,6 +235,7 @@ module.exports = {
         data: cartItem,
       });
     } catch (error) {
+      console.error("Add to cart error:", error); // helpful for debugging
       res.status(500).json({ status: false, message: error.message });
     }
   },

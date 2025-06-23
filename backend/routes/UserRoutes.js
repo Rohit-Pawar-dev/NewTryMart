@@ -9,6 +9,7 @@ const {
 } = require("../controllers/usersController/OrderController");
 const productController = require("../controllers/usersController/ProductController");
 const sellerController = require("../controllers/usersController/SellerController");
+const NotificationController = require("../controllers/usersController/NotificationController");
 
 // Routes
 
@@ -36,6 +37,9 @@ router.delete("/delete/:id", userController.deleteUser); // DELETE  /api/users/d
 // seller routes
 router.get("/sellers", sellerController.getAllSellers);
 router.get("/sellers/details/:sellerId", sellerController.getSellerDetails);
+
+// GET /api/notifications - get logged-in user's notifications
+router.get("/notifications", auth, NotificationController.getUserNotifications);
 
 router.post(
   "/upload-profile",
