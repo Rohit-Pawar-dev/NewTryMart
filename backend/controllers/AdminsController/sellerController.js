@@ -1,10 +1,10 @@
-const Seller = require('../models/Seller');
-const nlogger = require('../logger');
+const Seller = require("../../models/Seller");
+const nlogger = require("../../logger");
 
 // Create Seller
 exports.createSeller = async (req, res) => {
   try {
-    nlogger.info('Create Seller');
+    nlogger.info("Create Seller");
 
     // Generate a random 4-digit OTP (e.g., 1234 to 9999)
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -16,16 +16,15 @@ exports.createSeller = async (req, res) => {
 
     res.status(201).json(seller);
   } catch (err) {
-    nlogger.error('Create Seller Error: ' + err.message);
+    nlogger.error("Create Seller Error: " + err.message);
     res.status(400).json({ error: err.message });
   }
 };
 
-
 // Get All Sellers with pagination + search
 exports.getAllSellers = async (req, res) => {
   try {
-    const searchText = req.query.search ?? '';
+    const searchText = req.query.search ?? "";
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
 
@@ -33,12 +32,12 @@ exports.getAllSellers = async (req, res) => {
 
     const filter = {
       $or: [
-        { name: { $regex: searchText, $options: 'i' } },
-        { mobile: { $regex: searchText, $options: 'i' } },
-        { email: { $regex: searchText, $options: 'i' } },
-        { shop_name: { $regex: searchText, $options: 'i' } },
-        { business_category: { $regex: searchText, $options: 'i' } }
-      ]
+        { name: { $regex: searchText, $options: "i" } },
+        { mobile: { $regex: searchText, $options: "i" } },
+        { email: { $regex: searchText, $options: "i" } },
+        { shop_name: { $regex: searchText, $options: "i" } },
+        { business_category: { $regex: searchText, $options: "i" } },
+      ],
     };
 
     const total = await Seller.countDocuments(filter);
@@ -50,17 +49,16 @@ exports.getAllSellers = async (req, res) => {
 
     res.json({
       status: true,
-      message: 'Sellers fetched successfully',
+      message: "Sellers fetched successfully",
       data: sellers,
       total,
       limit,
       offset,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     });
-
   } catch (err) {
-    nlogger.error('Error retrieving sellers: ' + err.message);
-    res.status(500).json({ status: false, message: 'Internal server error' });
+    nlogger.error("Error retrieving sellers: " + err.message);
+    res.status(500).json({ status: false, message: "Internal server error" });
   }
 };
 
@@ -68,7 +66,7 @@ exports.getAllSellers = async (req, res) => {
 exports.getSellerById = async (req, res) => {
   try {
     const seller = await Seller.findById(req.params.id);
-    if (!seller) return res.status(404).json({ msg: 'Seller not found' });
+    if (!seller) return res.status(404).json({ msg: "Seller not found" });
     res.json(seller);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -80,7 +78,7 @@ exports.updateSeller = async (req, res) => {
   try {
     const seller = await Seller.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
     res.json(seller);
   } catch (err) {
@@ -92,7 +90,7 @@ exports.updateSeller = async (req, res) => {
 exports.deleteSeller = async (req, res) => {
   try {
     await Seller.findByIdAndDelete(req.params.id);
-    res.json({ msg: 'Seller deleted' });
+    res.json({ msg: "Seller deleted" });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -105,10 +103,10 @@ exports.uploadLogo = async (req, res) => {
     const filePath = req.file.path;
 
     await Seller.findByIdAndUpdate(sellerId, {
-      logo: filePath
+      logo: filePath,
     });
 
-    res.status(200).json({ message: 'Logo uploaded successfully', filePath });
+    res.status(200).json({ message: "Logo uploaded successfully", filePath });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

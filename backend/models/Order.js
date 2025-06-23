@@ -35,7 +35,15 @@ const orderSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
+      enum: [
+        "Pending",
+        "Confirmed",
+        "Processing",
+        "Shipped",
+        "Delivered",
+        "Cancelled",
+        "Returned",
+      ],
       default: "Pending",
     },
 
@@ -47,7 +55,7 @@ const orderSchema = new Schema(
 
     payment_method: {
       type: String,
-      enum: ["COD", "Online"],
+      // enum: ["COD", "Online"],
       default: "COD",
     },
     coupon_code: { type: String, default: null },

@@ -23,10 +23,10 @@ export class BusinessSetupComponent implements OnInit {
     companyEmail: '',
     companyAddress: '',
     country: '',
-    timezone: ''
+    timezone: '',
   };
 
-  private apiUrl = `${environment.apiUrl}/business-setup`;
+  private apiUrl = `${environment.apiUrl}/admin/setting/business-setup`;
 
   constructor(private http: HttpClient) {}
 
@@ -57,7 +57,7 @@ export class BusinessSetupComponent implements OnInit {
         this.error = 'Failed to load business setup information.';
         console.error('Fetch Error:', err);
         Swal.fire('Error', this.error, 'error');
-      }
+      },
     });
   }
 
@@ -76,8 +76,7 @@ export class BusinessSetupComponent implements OnInit {
         this.isLoading = false;
         this.error = err.error?.message || 'Failed to update business setup.';
         Swal.fire('Error', this.error ?? 'An unknown error occurred.', 'error');
-
-      }
+      },
     });
   }
 

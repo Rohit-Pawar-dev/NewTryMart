@@ -6,7 +6,6 @@ const app = express();
 const path = require("path");
 // const logger = require('./logger');
 
-const User = require("./models/User");
 const userRoutes = require("./routes/UserRoutes");
 const sellerRoutes = require("./routes/SellerRoutes");
 const authRoutes = require("./routes/AuthRoutes");
@@ -24,8 +23,7 @@ const CouponRoutes = require("./routes/CouponRoutes.js");
 const OrderRoutes = require("./routes/OrderRoutes.js");
 const deliveryManRoutes = require("./routes/DeliverManRoutes.js");
 const adminRoutes = require("./routes/AdminRoutes.js");
-const bussinessSetup = require("./routes/BussinessRoutes.js");
-
+const paymentRoutes = require("./routes/paymentRoutes.js");
 app.use(cors());
 // app.use(express.json());
 
@@ -33,6 +31,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // CRUD OPERATION ROUTES
+app.use("/api", adminRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sellers", sellerRoutes);
 app.use("/api/page", pageRoutes);
@@ -42,6 +41,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/subcategories", subCategoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/review", reviewRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // CART ROUTES
 app.use("/api", cartRoutes);
@@ -54,10 +54,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api", accountRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-app.use("/api", adminRoutes);
-
-app.use("/api", bussinessSetup);
 
 // COUPON ROUTES
 app.use("/api/coupons", CouponRoutes);

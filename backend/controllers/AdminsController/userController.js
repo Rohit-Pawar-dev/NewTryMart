@@ -1,17 +1,17 @@
-const User = require('../models/User');
-const nlogger = require('../logger');
-const upload = require('../utils/multer');
-const getCustomMulter = require('../utils/customMulter');
+const User = require("../../models/User");
+const nlogger = require("../../logger");
+const upload = require("../../utils/multer");
+const getCustomMulter = require("../../utils/customMulter");
 
-require('dotenv').config();
+require("dotenv").config();
 // Create User
 exports.createUser = async (req, res) => {
   try {
-    nlogger.info('Create User');
+    nlogger.info("Create User");
     const user = await User.create(req.body);
     res.status(201).json(user);
   } catch (err) {
-    nlogger.info('Create User Error: ' + err);
+    nlogger.info("Create User Error: " + err);
     res.status(400).json({ error: err.message });
   }
 };
@@ -19,19 +19,19 @@ exports.createUser = async (req, res) => {
 // Get All Users (with search + pagination)
 exports.getAllUsers = async (req, res) => {
   try {
-    const searchText = req.query.search ?? '';
+    const searchText = req.query.search ?? "";
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
 
     nlogger.info(`Retrieving Users List ${searchText}`);
 
     const filter = {
-      role: 'user',
+      role: "user",
       $or: [
-        { name: { $regex: searchText, $options: 'i' } },
-        { mobile: { $regex: searchText, $options: 'i' } },
-        { email: { $regex: searchText, $options: 'i' } }
-      ]
+        { name: { $regex: searchText, $options: "i" } },
+        { mobile: { $regex: searchText, $options: "i" } },
+        { email: { $regex: searchText, $options: "i" } },
+      ],
     };
 
     const total = await User.countDocuments(filter);
@@ -42,16 +42,16 @@ exports.getAllUsers = async (req, res) => {
 
     res.json({
       status: true,
-      message: 'Users fetched successfully',
+      message: "Users fetched successfully",
       data: users,
       total,
       limit,
       offset,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
-    nlogger.error('Error retrieving users', err);
-    res.status(500).json({ status: false, message: 'Internal server error' });
+    nlogger.error("Error retrieving users", err);
+    res.status(500).json({ status: false, message: "Internal server error" });
   }
 };
 
@@ -59,7 +59,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ msg: 'User not found' });
+    if (!user) return res.status(404).json({ msg: "User not found" });
     res.json(user);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -69,7 +69,9 @@ exports.getUserById = async (req, res) => {
 // Update User
 exports.updateUser = async (req, res) => {
   try {
-    const updated = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updated = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -80,7 +82,7 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.json({ msg: 'User deleted' });
+    res.json({ msg: "User deleted" });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -93,53 +95,64 @@ exports.uploadProfilePicture = async (req, res) => {
     const filePath = req.file.path;
 
     await User.findByIdAndUpdate(userId, {
-      profilePicture: filePath
+      profilePicture: filePath,
     });
 
-    res.status(200).json({ message: 'File uploaded successfully', filePath });
+    res.status(200).json({ message: "File uploaded successfully", filePath });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).lean();
     if (!user) {
-      return res.status(404).json({ status: false, message: 'User not found', data: {} });
+      return res
+        .status(404)
+        .json({ status: false, message: "User not found", data: {} });
     }
 
     // Append MEDIA_URL to profilePicture path if it exists
     if (user.profilePicture) {
-      const baseUrl = process.env.MEDIA_URL || '';
-      user.profilePicture = baseUrl + user.profilePicture.replace(/\\/g, '/');
+      const baseUrl = process.env.MEDIA_URL || "";
+      user.profilePicture = baseUrl + user.profilePicture.replace(/\\/g, "/");
     }
 
     res.json({
       status: true,
-      message: 'User Profile',
+      message: "User Profile",
       data: user,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ status: false, message: 'Internal server error', data: {} });
+    res
+      .status(500)
+      .json({ status: false, message: "Internal server error", data: {} });
   }
 };
 
 exports.updateProfile = (req, res) => {
-  const upload = getCustomMulter('user'); // ✅ easy: define folder here
+  const upload = getCustomMulter("user"); // ✅ easy: define folder here
 
-  upload.single('profilePicture')(req, res, async function (err) {
+  upload.single("profilePicture")(req, res, async function (err) {
     if (err) {
-      return res.status(400).json({ status: false, message: 'Image upload failed', error: err.message });
+      return res
+        .status(400)
+        .json({
+          status: false,
+          message: "Image upload failed",
+          error: err.message,
+        });
     }
 
     try {
       const userId = req.user.id;
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).json({ status: false, message: 'User not found' });
+        return res
+          .status(404)
+          .json({ status: false, message: "User not found" });
       }
 
       const {
@@ -158,7 +171,7 @@ exports.updateProfile = (req, res) => {
       if (!mobile || mobile.length !== 10) {
         return res.status(400).json({
           status: false,
-          message: 'Valid 10-digit mobile number is required',
+          message: "Valid 10-digit mobile number is required",
         });
       }
 
@@ -166,7 +179,7 @@ exports.updateProfile = (req, res) => {
       if (existingUser) {
         return res.status(409).json({
           status: false,
-          message: 'Mobile number already in use by another user',
+          message: "Mobile number already in use by another user",
         });
       }
 
@@ -184,19 +197,23 @@ exports.updateProfile = (req, res) => {
       };
 
       if (req.file) {
-        updateData.profilePicture = req.file.path.replace(/\\/g, '/');
+        updateData.profilePicture = req.file.path.replace(/\\/g, "/");
       }
 
-      const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+      });
 
       return res.status(200).json({
         status: true,
-        message: 'Profile updated successfully',
+        message: "Profile updated successfully",
         data: updatedUser,
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ status: false, message: 'Internal server error' });
+      return res
+        .status(500)
+        .json({ status: false, message: "Internal server error" });
     }
   });
 };

@@ -1,4 +1,4 @@
-const Review = require('../models/Review');
+const Review = require("../../models/Review");
 
 // Create
 exports.create = async (req, res) => {
@@ -13,11 +13,17 @@ exports.create = async (req, res) => {
 // Read All with search, filter, pagination
 exports.getAll = async (req, res) => {
   try {
-    const { search = '', status, product_id, limit = 10, offset = 0 } = req.query;
+    const {
+      search = "",
+      status,
+      product_id,
+      limit = 10,
+      offset = 0,
+    } = req.query;
     const filter = {};
 
     if (search) {
-      filter.comment = { $regex: search, $options: 'i' };
+      filter.comment = { $regex: search, $options: "i" };
     }
 
     if (status) {
@@ -31,19 +37,19 @@ exports.getAll = async (req, res) => {
     const total = await Review.countDocuments(filter);
 
     const reviews = await Review.find(filter)
-      .populate('product_id user_id')// add order_id here when orders added
+      .populate("product_id user_id") // add order_id here when orders added
       .sort({ createdAt: -1 })
       .skip(parseInt(offset))
       .limit(parseInt(limit));
 
     res.json({
       status: true,
-      message: 'Reviews fetched successfully',
+      message: "Reviews fetched successfully",
       data: reviews,
       total,
       limit: parseInt(limit),
       offset: parseInt(offset),
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -53,8 +59,10 @@ exports.getAll = async (req, res) => {
 // Read One
 exports.getOne = async (req, res) => {
   try {
-    const review = await Review.findById(req.params.id).populate('product_id user_id'); // add order_id here when orders added
-    if (!review) return res.status(404).json({ message: 'Review not found' });
+    const review = await Review.findById(req.params.id).populate(
+      "product_id user_id"
+    ); // add order_id here when orders added
+    if (!review) return res.status(404).json({ message: "Review not found" });
     res.json(review);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -64,7 +72,9 @@ exports.getOne = async (req, res) => {
 // Update
 exports.update = async (req, res) => {
   try {
-    const review = await Review.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const review = await Review.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.json(review);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -75,7 +85,7 @@ exports.update = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     await Review.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Review deleted' });
+    res.json({ message: "Review deleted" });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

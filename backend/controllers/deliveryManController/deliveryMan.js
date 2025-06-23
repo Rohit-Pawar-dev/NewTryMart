@@ -1,4 +1,4 @@
-const DeliveryMan = require("../models/DeliveryMan");
+const DeliveryMan = require("../../models/DeliveryMan");
 
 // Utility to normalize file paths and optionally return full URL
 const normalizePath = (req, filePath) => {
@@ -16,7 +16,10 @@ exports.createDeliveryMan = async (req, res) => {
       ...req.body,
       image: normalizePath(req, files?.image?.[0]?.path),
       licensePhoto: normalizePath(req, files?.licensePhoto?.[0]?.path),
-      identityProofPhoto: normalizePath(req, files?.identityProofPhoto?.[0]?.path),
+      identityProofPhoto: normalizePath(
+        req,
+        files?.identityProofPhoto?.[0]?.path
+      ),
     };
 
     const deliveryMan = new DeliveryMan(deliveryManData);
@@ -95,7 +98,10 @@ exports.updateDeliveryMan = async (req, res) => {
         licensePhoto: normalizePath(req, files.licensePhoto[0].path),
       }),
       ...(files?.identityProofPhoto && {
-        identityProofPhoto: normalizePath(req, files.identityProofPhoto[0].path),
+        identityProofPhoto: normalizePath(
+          req,
+          files.identityProofPhoto[0].path
+        ),
       }),
     };
 
