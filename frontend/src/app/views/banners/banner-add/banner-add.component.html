@@ -2,6 +2,7 @@
   <div class="card-header">
     <h3>Add New Banner</h3>
   </div>
+
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="row">
@@ -13,14 +14,9 @@
             id="title"
             class="form-control"
             formControlName="title"
-            [class.is-invalid]="
-              form.get('title')?.invalid && form.get('title')?.touched
-            "
+            [class.is-invalid]="form.get('title')?.invalid && form.get('title')?.touched"
           />
-          <div
-            class="invalid-feedback"
-            *ngIf="form.get('title')?.errors?.['required']"
-          >
+          <div class="invalid-feedback" *ngIf="form.get('title')?.errors?.['required']">
             Title is required.
           </div>
         </div>
@@ -32,64 +28,61 @@
             id="bannerType"
             class="form-select"
             formControlName="banner_type"
-            [class.is-invalid]="
-              form.get('banner_type')?.invalid &&
-              form.get('banner_type')?.touched
-            "
+            [class.is-invalid]="form.get('banner_type')?.invalid && form.get('banner_type')?.touched"
           >
             <option value="main_banner">Main Banner</option>
             <option value="popup_banner">Popup Banner</option>
             <option value="ads_img_banner">Advertisement Image</option>
             <option value="ads_video_banner">Advertisement Video</option>
           </select>
-          <div
-            class="invalid-feedback"
-            *ngIf="form.get('banner_type')?.errors?.['required']"
-          >
+          <div class="invalid-feedback" *ngIf="form.get('banner_type')?.errors?.['required']">
             Advertisement type is required.
           </div>
         </div>
 
-        <!-- File Upload (Image or Video) -->
+        <!-- Image Upload (always for image and ads_video_banner) -->
         <div class="mb-3 col-lg-6">
-          <label for="fileUpload" class="form-label">
-            {{
-              form.get("banner_type")?.value === "ads_video_banner"
-                ? "Upload Video"
-                : "Upload Image"
-            }}
-          </label>
+          <label for="imageUpload" class="form-label">Upload Image</label>
           <input
             type="file"
-            id="fileUpload"
+            id="imageUpload"
             class="form-control"
-            [accept]="
-              form.get('banner_type')?.value === 'ads_video_banner'
-                ? 'video/*'
-                : 'image/*'
-            "
-            (change)="onFileSelected($event)"
+            accept="image/*"
+            (change)="onFileSelected($event, 'image')"
             [disabled]="isUploading"
           />
+          <div class="mt-2" *ngIf="previewImage">
+            <img
+              [src]="previewImage"
+              alt="Image Preview"
+              style="max-height: 150px; max-width: 100%"
+            />
+          </div>
+          <div class="invalid-feedback d-block" *ngIf="form.get('image')?.invalid && form.get('image')?.touched">
+            Image is required.
+          </div>
+        </div>
 
-          <!-- Preview -->
-          <div class="mt-2" *ngIf="preview">
+        <!-- Video Upload (only for ads_video_banner) -->
+        <div class="mb-3 col-lg-6" *ngIf="form.get('banner_type')?.value === 'ads_video_banner'">
+          <label for="videoUpload" class="form-label">Upload Video</label>
+          <input
+            type="file"
+            id="videoUpload"
+            class="form-control"
+            accept="video/*"
+            (change)="onFileSelected($event, 'video')"
+            [disabled]="isUploading"
+          />
+          <div class="mt-2" *ngIf="previewVideo">
             <video
-              *ngIf="form.get('banner_type')?.value === 'ads_video_banner'"
-              [src]="preview"
+              [src]="previewVideo"
               controls
               style="max-height: 200px; max-width: 100%"
             ></video>
-            <img
-              *ngIf="form.get('banner_type')?.value !== 'ads_video_banner'"
-              [src]="preview"
-              alt="Preview"
-              style="max-height: 150px"
-            />
           </div>
-
-          <div class="invalid-feedback d-block" *ngIf="uploadError">
-            {{ uploadError }}
+          <div class="invalid-feedback d-block" *ngIf="form.get('video')?.invalid && form.get('video')?.touched">
+            Video is required.
           </div>
         </div>
 
@@ -100,21 +93,65 @@
             id="status"
             class="form-select"
             formControlName="status"
-            [class.is-invalid]="
-              form.get('status')?.invalid && form.get('status')?.touched
-            "
+            [class.is-invalid]="form.get('status')?.invalid && form.get('status')?.touched"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <div
-            class="invalid-feedback"
-            *ngIf="form.get('status')?.errors?.['required']"
-          >
+          <div class="invalid-feedback" *ngIf="form.get('status')?.errors?.['required']">
             Status is required.
           </div>
         </div>
+
+        <!-- Start Date (for non-main banners) -->
+        <div class="mb-3 col-lg-6" *ngIf="form.get('banner_type')?.value !== 'main_banner'">
+          <label for="startDate" class="form-label">Start Date</label>
+          <input
+            type="date"
+            id="startDate"
+            class="form-control"
+            formControlName="start_date"
+            [min]="todayString"
+            [class.is-invalid]="form.get('start_date')?.invalid && form.get('start_date')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="form.get('start_date')?.errors?.['required']">
+            Start date is required.
+          </div>
+        </div>
+
+        <!-- End Date (for non-main banners) -->
+        <div class="mb-3 col-lg-6" *ngIf="form.get('banner_type')?.value !== 'main_banner'">
+          <label for="endDate" class="form-label">End Date</label>
+          <input
+            type="date"
+            id="endDate"
+            class="form-control"
+            formControlName="end_date"
+            [min]="form.get('start_date')?.value"
+            [class.is-invalid]="form.get('end_date')?.invalid && form.get('end_date')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="form.get('end_date')?.errors?.['required']">
+            End date is required.
+          </div>
+        </div>
+
+        <!-- Popup Time (only for popup_banner) -->
+        <div class="mb-3 col-lg-6" *ngIf="form.get('banner_type')?.value === 'popup_banner'">
+          <label for="popupTime" class="form-label">Popup Time (in seconds)</label>
+          <input
+            type="number"
+            id="popupTime"
+            class="form-control"
+            formControlName="pop_up_time"
+            min="1"
+            [class.is-invalid]="form.get('pop_up_time')?.invalid && form.get('pop_up_time')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="form.get('pop_up_time')?.errors?.['required']">
+            Popup time is required.
+          </div>
+        </div>
       </div>
+
       <!-- Submit Button -->
       <div class="text-center">
         <button
@@ -122,7 +159,7 @@
           class="btn btn-primary"
           [disabled]="isSubmitting || form.invalid"
         >
-          {{ isSubmitting ? "Submitting..." : "Create Banner" }}
+          {{ isSubmitting ? 'Submitting...' : 'Create Banner' }}
         </button>
       </div>
     </form>

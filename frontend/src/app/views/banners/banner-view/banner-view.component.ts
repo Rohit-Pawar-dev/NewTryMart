@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BannerService, Banner } from '../../../../app/services/banner.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -12,23 +12,30 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 })
 export class BannerViewComponent implements OnInit {
   banner: Banner | null = null;
-  isLoading: boolean = true;
+  isLoading = true;
   error: string | null = null;
 
-  constructor(private route: ActivatedRoute, private bannerService: BannerService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private bannerService: BannerService,
+    public router: Router // made public for template use
+  ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
-
     this.bannerService.getBanner(id).subscribe({
       next: (data) => {
         this.banner = data;
         this.isLoading = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Failed to load banner.';
         this.isLoading = false;
-      }
+      },
     });
+  }
+
+  get bannerTypeDisplay(): string {
+    return this.banner?.banner_type.replace(/_/g, ' ') || '';
   }
 }

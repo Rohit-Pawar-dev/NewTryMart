@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -9,8 +9,9 @@ export interface Address {
   city: string;
   pincode: string;
   address: string;
-  [key: string]: any; // Optional fallback for any extra fields
+  [key: string]: any;
 }
+
 export interface Order {
   _id?: string;
   customer_id?: {
@@ -23,17 +24,16 @@ export interface Order {
   seller_id?: {
     shop_name: string;
     mobile: string;
-    // optionally:
     email?: string;
   };
-  seller_is?: string;
+  seller_is?: string; // enum: 'admin' | 'seller'
   order_items?: any[];
   shipping_address: Address | string | null;
   total_price?: number;
   shipping_cost?: number;
   coupon_amount?: number;
   customer_order_count?: number;
-  status?: string;
+  status?: string; // enum in backend schema
   payment_status?: string;
   payment_method?: string;
   createdAt?: string;
@@ -48,12 +48,24 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
-  // Get All Orders with search + pagination + status filter
+  /**
+   * Get all orders with optional filters, pagination, and date range.
+   *
+   * @param search search text (default empty string)
+   * @param limit items per page (default 10)
+   * @param offset pagination offset (default 0)
+   * @param status order status filter (default 'all' means no filtering)
+   * @param startDate filter orders created on or after this date (ISO string)
+   * @param endDate filter orders created on or before this date (ISO string)
+   * @returns observable with orders and pagination data
+   */
   getAllOrders(
     search: string = '',
     limit: number = 10,
     offset: number = 0,
-    status: string = 'all'
+    status: string = 'all',
+    startDate?: string,
+    endDate?: string
   ): Observable<{
     status: boolean;
     message: string;
@@ -63,25 +75,41 @@ export class OrderService {
     offset: number;
     totalPages: number;
   }> {
-    const params: any = {
-      search,
-      limit,
-      offset,
-    };
+    let params = new HttpParams()
+      .set('search', search)
+      .set('limit', limit.toString())
+      .set('offset', offset.toString());
 
-    if (status && status !== 'all') {
-      params.status = status;
+    if (status && status.toLowerCase() !== 'all') {
+      params = params.set('order_status', status);
     }
 
-    return this.http.get<any>(this.apiUrl, { params });
+    if (startDate) {
+      params = params.set('startDate', startDate);
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate);
+    }
+
+    return this.http.get<{
+      status: boolean;
+      message: string;
+      data: Order[];
+      total: number;
+      limit: number;
+      offset: number;
+      totalPages: number;
+    }>(this.apiUrl, { params });
   }
 
-  // Get Order by ID
-  getOrderById(
-    id: string
-  ): Observable<{ status: boolean; message: string; data: Order }> {
-    return this.http.get<{ status: boolean; message: string; data: Order }>(
-      `${this.apiUrl}/${id}`
-    );
+  /**
+   * Get order details by ID.
+   * Backend returns enriched data including customer_order_count and nested population.
+   *
+   * @param id Order ID
+   * @returns observable with order data
+   */
+  getOrderById(id: string): Observable<{ status: boolean; message: string; data: Order }> {
+    return this.http.get<{ status: boolean; message: string; data: Order }>(`${this.apiUrl}/${id}`);
   }
 }

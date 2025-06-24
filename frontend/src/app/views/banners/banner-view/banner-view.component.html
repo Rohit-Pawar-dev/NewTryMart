@@ -2,34 +2,89 @@
   <div class="card-header">
     <h3>Banner Details</h3>
   </div>
+
   <div class="card-body">
-    <p><strong>Title:</strong> {{ banner.title }}</p>
-
-    <p><strong>Type:</strong> {{ banner.banner_type | titlecase }}</p>
-
-    <p><strong>Content:</strong></p>
-    <div *ngIf="banner.image; else showVideo">
-      <img [src]="banner.image" [alt]="banner.title" width="300" class="img-thumbnail" />
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label fw-semibold">Title:</label>
+      <div class="col-sm-9">{{ banner.title }}</div>
     </div>
 
-    <ng-template #showVideo>
-      <video *ngIf="banner.video" width="300" controls>
-        <source [src]="banner.video" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <p *ngIf="!banner.video">No image or video available</p>
-    </ng-template>
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label fw-semibold">Advertisement Type:</label>
+      <div class="col-sm-9 text-capitalize">{{ bannerTypeDisplay }}</div>
+    </div>
 
-    <p>
-      <strong>Status:</strong>
-      <span class="badge"
-            [ngClass]="{
-              'bg-success': banner.status === 'active',
-              'bg-danger': banner.status === 'inactive'
-            }">
-        {{ banner.status | titlecase }}
-      </span>
-    </p>
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label fw-semibold">Content:</label>
+      <div class="col-sm-9">
+        <ng-container *ngIf="banner.image; else showVideo">
+          <img [src]="banner.image" [alt]="banner.title" class="img-thumbnail" style="max-width: 300px" />
+        </ng-container>
+        <ng-template #showVideo>
+          <ng-container *ngIf="banner.video; else noMedia">
+            <video width="300" controls>
+              <source [src]="banner.video" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </ng-container>
+          <ng-template #noMedia>
+            <p class="text-muted">No image or video available</p>
+          </ng-template>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label fw-semibold">Status:</label>
+      <div class="col-sm-9">
+        <span
+          class="badge"
+          [ngClass]="{
+            'bg-success': banner.status === 'active',
+            'bg-danger': banner.status === 'inactive'
+          }"
+          >{{ banner.status | titlecase }}</span
+        >
+      </div>
+    </div>
+
+    <!-- Dates: show only if type !== main_banner -->
+    <ng-container *ngIf="banner.banner_type !== 'main_banner'">
+      <div class="row mb-3">
+        <label class="col-sm-3 col-form-label fw-semibold">Start Date:</label>
+        <div class="col-sm-9">{{ banner.start_date || 'N/A' }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <label class="col-sm-3 col-form-label fw-semibold">End Date:</label>
+        <div class="col-sm-9">{{ banner.end_date || 'N/A' }}</div>
+      </div>
+    </ng-container>
+
+    <!-- Popup Time: only for popup_banner -->
+    <ng-container *ngIf="banner.banner_type === 'popup_banner'">
+      <div class="row mb-3">
+        <label class="col-sm-3 col-form-label fw-semibold">Popup Time (seconds):</label>
+        <div class="col-sm-9">{{ banner.pop_up_time ?? 'N/A' }}</div>
+      </div>
+    </ng-container>
+
+    <!-- Video: only for ads_video_banner -->
+    <ng-container *ngIf="banner.banner_type === 'ads_video_banner' && banner.video">
+      <div class="row mb-3">
+        <label class="col-sm-3 col-form-label fw-semibold">Video Preview:</label>
+        <div class="col-sm-9">
+          <video width="300" controls>
+            <source [src]="banner.video" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="card-footer text-end">
+    <button class="btn btn-outline-primary" (click)="router.navigate(['/banners'])">Back to List</button>
   </div>
 </div>
 
@@ -37,7 +92,5 @@
   <div class="text-center p-4" *ngIf="isLoading">
     <p>Loading banner data...</p>
   </div>
-  <div class="alert alert-danger" *ngIf="error">
-    {{ error }}
-  </div>
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
 </ng-template>

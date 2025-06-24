@@ -9,7 +9,11 @@ async function getOrders(req, res) {
     const searchText = req.query.search ?? "";
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
+    const status = req.query.order_status;
+    const startDate = req.query.startDate; // Expecting ISO string or YYYY-MM-DD
+    const endDate = req.query.endDate;
 
+    // Build user search filter
     const userFilter = {
       $or: [
         { name: { $regex: searchText, $options: "i" } },
@@ -20,7 +24,32 @@ async function getOrders(req, res) {
     const matchingUsers = await User.find(userFilter).select("_id");
     const userIds = matchingUsers.map((u) => u._id);
 
-    const filter = searchText ? { customer_id: { $in: userIds } } : {};
+    // Build main order filter
+    const filter = {};
+
+    // Filter by customer_id if searchText is present
+    if (searchText) {
+      filter.customer_id = { $in: userIds };
+    }
+
+    // Filter by status if provided
+    if (status) {
+      filter.status = status;
+    }
+
+    // Filter orders between dates if both provided
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        // Add one day to include the endDate fully (optional)
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
+    }
 
     const total = await Order.countDocuments(filter);
 
