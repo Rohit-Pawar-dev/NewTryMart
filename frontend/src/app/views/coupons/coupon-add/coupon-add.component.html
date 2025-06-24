@@ -4,129 +4,138 @@
   </div>
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <!-- Title -->
-      <div class="mb-3">
-        <label class="form-label">Title</label>
-        <input
-          type="text"
-          class="form-control"
-          formControlName="couponTitle"
-          [class.is-invalid]="
-            form.get('couponTitle')?.invalid && form.get('couponTitle')?.touched
-          "
-        />
-        <div
-          class="invalid-feedback"
-          *ngIf="form.get('couponTitle')?.errors?.['required']"
-        >
-          Title is required.
-        </div>
-      </div>
-
-      <!-- Coupon Code + Generate Button -->
-      <div class="mb-3 d-flex align-items-start">
-        <div class="flex-grow-1 me-2">
-          <label class="form-label">Coupon Code</label>
+      <div class="row">
+        <!-- Title -->
+        <div class="mb-3 col-lg-6">
+          <label class="form-label">Title</label>
           <input
             type="text"
             class="form-control"
-            formControlName="couponCode"
+            formControlName="couponTitle"
             [class.is-invalid]="
-              form.get('couponCode')?.invalid && form.get('couponCode')?.touched
+              form.get('couponTitle')?.invalid &&
+              form.get('couponTitle')?.touched
             "
           />
           <div
             class="invalid-feedback"
-            *ngIf="form.get('couponCode')?.errors?.['required']"
+            *ngIf="form.get('couponTitle')?.errors?.['required']"
           >
-            Code is required.
+            Title is required.
           </div>
         </div>
-        <button
-          type="button"
-          class="btn btn-secondary mt-4"
-          (click)="generateCode()"
-        >
-          Generate Code
-        </button>
-      </div>
 
-      <!-- Discount Type -->
-      <div class="mb-3">
-        <label class="form-label">Discount Type</label>
-        <select class="form-select" formControlName="discountType">
-          <option value="percentage">Percentage</option>
-          <option value="flat">Flat</option>
-        </select>
-      </div>
+        <!-- Coupon Code + Generate Button -->
+        <div class="mb-3 d-flex align-items-start col-lg-6">
+          <div class="flex-grow-1 me-2">
+            <label class="form-label">Coupon Code</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="couponCode"
+              [class.is-invalid]="
+                form.get('couponCode')?.invalid &&
+                form.get('couponCode')?.touched
+              "
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="form.get('couponCode')?.errors?.['required']"
+            >
+              Code is required.
+            </div>
+          </div>
+          <button
+            type="button"
+            class="btn btn-secondary mt-4"
+            (click)="generateCode()"
+          >
+            Generate Code
+          </button>
+        </div>
 
-      <!-- Discount Amount -->
-      <div class="mb-3">
-        <label class="form-label">
-          {{
-            form.get("discountType")?.value === "percentage"
-              ? "Discount Percentage"
-              : "Discount Amount"
-          }}
-        </label>
-        <input
-          type="number"
-          class="form-control"
-          formControlName="discountAmount"
-          [class.is-invalid]="
-            form.get('discountAmount')?.invalid &&
-            form.get('discountAmount')?.touched
-          "
-        />
-        <div
-          class="invalid-feedback"
-          *ngIf="form.get('discountAmount')?.errors"
-        >
-          {{
-            form.get("discountType")?.value === "percentage"
-              ? "Valid percentage is required."
-              : "Valid amount is required."
-          }}
+        <!-- Discount Type -->
+        <div class="mb-3 col-lg-4">
+          <label class="form-label">Discount Type</label>
+          <select class="form-select" formControlName="discountType">
+            <option value="percentage">Percentage</option>
+            <option value="flat">Flat</option>
+          </select>
+        </div>
+
+        <!-- Discount Amount -->
+        <div class="mb-3 col-lg-4">
+          <label class="form-label">
+            {{
+              form.get("discountType")?.value === "percentage"
+                ? "Discount Percentage"
+                : "Discount Amount"
+            }}
+          </label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="discountAmount"
+            [class.is-invalid]="
+              form.get('discountAmount')?.invalid &&
+              form.get('discountAmount')?.touched
+            "
+          />
+          <div
+            class="invalid-feedback"
+            *ngIf="form.get('discountAmount')?.errors"
+          >
+            {{
+              form.get("discountType")?.value === "percentage"
+                ? "Valid percentage is required."
+                : "Valid amount is required."
+            }}
+          </div>
+        </div>
+
+        <!-- Minimum Purchase -->
+        <div class="mb-3 col-lg-4">
+          <label class="form-label">Minimum Purchase</label>
+          <input
+            type="number"
+            class="form-control"
+            formControlName="minimumPurchase"
+          />
+        </div>
+
+        <!-- Start / Expire Dates -->
+        <div class="mb-3 col-lg-4">
+          <label class="form-label">Start Date</label>
+          <input type="date" class="form-control" formControlName="startDate" />
+        </div>
+        <div class="mb-3 col-lg-4">
+          <label class="form-label">Expire Date</label>
+          <input
+            type="date"
+            class="form-control"
+            formControlName="expireDate"
+          />
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3 col-lg-4">
+          <label class="form-label">Status</label>
+          <select class="form-select" formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
       </div>
-
-      <!-- Minimum Purchase -->
-      <div class="mb-3">
-        <label class="form-label">Minimum Purchase</label>
-        <input
-          type="number"
-          class="form-control"
-          formControlName="minimumPurchase"
-        />
-      </div>
-
-      <!-- Start / Expire Dates -->
-      <div class="mb-3">
-        <label class="form-label">Start Date</label>
-        <input type="date" class="form-control" formControlName="startDate" />
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Expire Date</label>
-        <input type="date" class="form-control" formControlName="expireDate" />
-      </div>
-
-      <!-- Status -->
-      <div class="mb-3">
-        <label class="form-label">Status</label>
-        <select class="form-select" formControlName="status">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-      </div>
-
       <!-- Submit -->
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="form.invalid || isSubmitting"
-      >
-        {{ isSubmitting ? "Submitting..." : "Create Coupon" }}
-      </button>
+      <div class="text-center">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="form.invalid || isSubmitting"
+        >
+          {{ isSubmitting ? "Submitting..." : "Create Coupon" }}
+        </button>
+      </div>
     </form>
   </div>
 </div>
