@@ -5,8 +5,24 @@ import { CategoryEditComponent } from './category-edit/category-edit.component';
 import { CategoryViewComponent } from './category-view/category-view.component';
 
 export const routes: Routes = [
-  { path: '', component: CategoryListComponent },
-  { path: 'add', component: CategoryAddComponent },
-  { path: 'edit/:id', component: CategoryEditComponent },
-  { path: 'view/:id', component: CategoryViewComponent },
+  {
+    path: '',
+    component: CategoryListComponent,
+    data: { title: 'Category List' },
+  },
+  {
+    path: 'add',
+    component: CategoryAddComponent,
+    data: { title: 'Add Category' },
+  },
+  {
+    path: 'edit/:id',
+    component: CategoryEditComponent,
+    data: { title: 'Edit Category' },
+  },
+  {
+    path: 'view/:id',
+    component: CategoryViewComponent,
+    data: { title: 'View Category' },
+  },
 ];

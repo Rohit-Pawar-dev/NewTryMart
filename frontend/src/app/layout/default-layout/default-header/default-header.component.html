@@ -6,7 +6,7 @@
       cHeaderToggler
       class="btn"
       toggle="visible"
-      style="margin-inline-start: -14px;"
+      style="margin-inline-start: -14px"
       aria-label="Toggle sidebar navigation"
     >
       <svg cIcon name="cilMenu" size="lg"></svg>
@@ -22,7 +22,7 @@
         <a cNavLink routerLink="/settings" routerLinkActive="active">Settings</a>
       </c-nav-item>
     </c-header-nav> -->
-<!-- 
+    <!--
     <c-header-nav class="d-none d-md-flex ms-auto ">
       <a cNavLink>
         <svg cIcon class="my-1" name="cilBell" size="lg"></svg>
@@ -48,7 +48,6 @@
     <c-header-nav class="mx-0">
       <ng-container *ngTemplateOutlet="userDropdown" />
     </c-header-nav>
-
   </c-container>
   <c-container [fluid]="true" class="px-4">
     <c-breadcrumb-router />
@@ -57,17 +56,26 @@
 <!--</c-header>-->
 
 <ng-template #userDropdown>
-  <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
-    <button [caret]="false" cDropdownToggle class="py-0 pe-0" aria-label="Open user menu">
+  <c-dropdown
+    [popperOptions]="{ placement: 'bottom-start' }"
+    variant="nav-item"
+  >
+    <button
+      [caret]="false"
+      cDropdownToggle
+      class="py-0 pe-0"
+      aria-label="Open user menu"
+    >
       <c-avatar
         shape="rounded-1"
         [size]="'md'"
-        src="./assets/images/avatars/8.jpg"
+        [src]="admin?.image || './assets/images/avatars/default.jpg'"
         status="success"
         textColor="primary"
         alt="User avatar"
       />
     </button>
+
     <ul cDropdownMenu class="pt-0 w-auto">
       <li>
         <a cDropdownItem routerLink="/admin-profile">
@@ -101,15 +109,15 @@
     </button>
     <div cDropdownMenu>
       @for (mode of colorModes; track mode.name) {
-        <button
-          (click)="colorMode.set(mode.name)"
-          [active]="colorMode()===mode.name"
-          cDropdownItem
-          class="d-flex align-items-center"
-        >
-          <svg cIcon class="me-2" [name]="mode.icon" size="lg"></svg>
-          {{ mode.text }}
-        </button>
+      <button
+        (click)="colorMode.set(mode.name)"
+        [active]="colorMode() === mode.name"
+        cDropdownItem
+        class="d-flex align-items-center"
+      >
+        <svg cIcon class="me-2" [name]="mode.icon" size="lg"></svg>
+        {{ mode.text }}
+      </button>
       }
     </div>
   </c-dropdown>

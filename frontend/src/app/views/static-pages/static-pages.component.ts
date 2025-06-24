@@ -6,16 +6,17 @@ import { FormsModule } from '@angular/forms';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { environment } from '../../../environments/environment';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-static-pages',
   standalone: true,
   imports: [CommonModule, FormsModule, CKEditorModule],
-  templateUrl: './static-pages.component.html'
+  templateUrl: './static-pages.component.html',
 })
 export class StaticPagesComponent {
   public Editor = ClassicEditor;
-  
+  selectedTab = 0; // Initially show the first page tab
+
   public pages: any[] = [];
   public loading = false;
 
@@ -36,14 +37,30 @@ export class StaticPagesComponent {
   }
 
   updatePage(page: any) {
-    this.http.put(`${environment.apiUrl}/page/${page._id}`, {
-      title: page.title,
-      slug: page.slug,
-      content: page.content,
-      status: page.status
-    }).subscribe({
-      next: () => alert(`${page.title} updated successfully.`),
-      error: () => alert(`Failed to update ${page.title}.`)
-    });
+    this.http
+      .put(`${environment.apiUrl}/page/${page._id}`, {
+        title: page.title,
+        slug: page.slug,
+        content: page.content,
+        status: page.status,
+      })
+      .subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            text: `${page.title} updated successfully.`,
+            confirmButtonColor: '#2563eb',
+          });
+        },
+        error: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: `Failed to update ${page.title}.`,
+            confirmButtonColor: '#ef4444',
+          });
+        },
+      });
   }
 }

@@ -1,3 +1,4 @@
+// seller-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { SellerService, Seller } from '../../../services/seller.service';
 import { CommonModule } from '@angular/common';

@@ -22,7 +22,7 @@ import { ProductEditComponent } from './product-edit/product-edit.component'; //
     ReactiveFormsModule,
     RouterModule,
     RouterModule.forChild(routes),
-    ProductEditComponent // ✅ import standalone component here
-  ]
+    ProductEditComponent, // ✅ import standalone component here
+  ],
 })
 export class ProductModule {}

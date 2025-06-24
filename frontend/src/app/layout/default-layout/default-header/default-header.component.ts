@@ -1,7 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-
+import { AdminProfileService } from '../../../services/adminProfile.service';
+import { environment } from '../../../../environments/environment';
 import {
   AvatarComponent,
   BadgeComponent,
@@ -30,8 +31,12 @@ import { IconDirective } from '@coreui/icons-angular';
   imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective]
 })
 export class DefaultHeaderComponent extends HeaderComponent {
+adminId: string = '';
+admin: any = null;
+error: string | null = null;
+isLoading = false;
 
-  constructor( private router: Router) {
+  constructor( private router: Router, private adminService: AdminProfileService) {
     super();
   }
 
@@ -55,7 +60,54 @@ export class DefaultHeaderComponent extends HeaderComponent {
     return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
+ngOnInit(): void {
+  const storedProfile = localStorage.getItem('profile');
+  try {
+    if (storedProfile) {
+      const parsedProfile = JSON.parse(storedProfile);
+      this.adminId = parsedProfile?.id || parsedProfile?._id || '';
+    }
+  } catch (e) {
+    console.error('Invalid profile JSON in localStorage');
+    this.error = 'Invalid admin profile stored.';
+    return;
+  }
 
+  if (!this.adminId) {
+    this.error = 'Admin ID not found in local storage.';
+    return;
+  }
+
+  this.fetchAdmin();
+}
+
+fetchAdmin() {
+  this.isLoading = true;
+  this.adminService.getAdminById(this.adminId).subscribe({
+    next: (res) => {
+      const adminData = res?.data || res?.admin;
+
+      if (res?.status && adminData) {
+        this.admin = adminData;
+
+        // Fix image path if needed
+        if (this.admin.image && !this.admin.image.startsWith('http')) {
+          const baseUrl = environment.apiUrl.replace('/api', '');
+          this.admin.image = `${baseUrl}${this.admin.image}`;
+        }
+      } else {
+        this.error = 'Unexpected API response';
+      }
+
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch Error:', err);
+      this.error = 'Failed to fetch profile';
+      this.isLoading = false;
+    }
+  });
+}
   sidebarId = input('sidebar1');
 
   public newMessages = [

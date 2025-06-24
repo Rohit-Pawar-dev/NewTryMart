@@ -3,12 +3,16 @@ const Schema = mongoose.Schema;
 
 const orderItemDetailSchema = new Schema(
   {
+    order_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+    },
     product_id: {
       type: Schema.Types.ObjectId,
       ref: "Product",
       required: true,
     },
-   product_detail: {
+    product_detail: {
       type: Schema.Types.Mixed, // Removed `ref` because we're storing snapshot
       required: true,
     },

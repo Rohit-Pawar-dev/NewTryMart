@@ -4,27 +4,56 @@
   </div>
   <div class="card-body">
     <form (ngSubmit)="onProfileSubmit()">
-      <div class="mb-3">
-        <label class="form-label"><strong>Name:</strong></label>
-        <input type="text" class="form-control" [(ngModel)]="admin.name" name="name" required />
-      </div>
+      <div class="row">
+        <div class="mb-3 col-lg-6">
+          <label class="form-label"><strong>Name:</strong></label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="admin.name"
+            name="name"
+            required
+          />
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label"><strong>Email:</strong></label>
-        <input type="email" class="form-control" [(ngModel)]="admin.email" name="email" required />
-      </div>
+        <div class="mb-3 col-lg-6">
+          <label class="form-label"><strong>Email:</strong></label>
+          <input
+            type="email"
+            class="form-control"
+            [(ngModel)]="admin.email"
+            name="email"
+            required
+          />
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label"><strong>Mobile:</strong></label>
-        <input type="text" class="form-control" [(ngModel)]="admin.mobile" name="mobile" required />
-      </div>
+        <div class="mb-3 col-lg-6">
+          <label class="form-label"><strong>Mobile:</strong></label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="admin.mobile"
+            name="mobile"
+            required
+          />
+        </div>
 
-      <div class="mb-3">
-        <label class="form-label"><strong>Profile Image:</strong></label>
-        <input type="file" class="form-control" (change)="onFileChange($event)" />
-        <img *ngIf="admin.image" [src]="admin.image" alt="admin-img" width="100" class="mt-2" />
+        <div class="mb-3 col-lg-6">
+          <label class="form-label"><strong>Profile Image:</strong></label>
+          <input
+            type="file"
+            class="form-control"
+            (change)="onFileChange($event)"
+          />
+          <img
+            *ngIf="admin.image"
+            [src]="admin.image"
+            alt="admin-img"
+            width="100"
+            class="mt-2"
+          />
+        </div>
       </div>
-
       <button type="submit" class="btn btn-primary">Update Profile</button>
     </form>
   </div>
@@ -34,13 +63,27 @@
   <div class="card-body">
     <h5>Change Password</h5>
     <form (ngSubmit)="onPasswordChange()">
-      <div class="mb-3">
-        <label><strong>Old Password:</strong></label>
-        <input type="password" class="form-control" [(ngModel)]="passwordForm.oldPassword" name="oldPassword" required />
-      </div>
-      <div class="mb-3">
-        <label><strong>New Password:</strong></label>
-        <input type="password" class="form-control" [(ngModel)]="passwordForm.newPassword" name="newPassword" required />
+      <div class="row">
+        <div class="mb-3 col-lg-6">
+          <label><strong>Old Password:</strong></label>
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="passwordForm.oldPassword"
+            name="oldPassword"
+            required
+          />
+        </div>
+        <div class="mb-3 col-lg-6">
+          <label><strong>New Password:</strong></label>
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="passwordForm.newPassword"
+            name="newPassword"
+            required
+          />
+        </div>
       </div>
       <button type="submit" class="btn btn-warning">Change Password</button>
     </form>

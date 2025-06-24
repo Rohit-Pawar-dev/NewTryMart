@@ -3,26 +3,72 @@
     <h3>Seller Details</h3>
   </div>
   <div class="card-body">
-    <p><strong>Name:</strong> {{ seller.name }}</p>
-    <p><strong>Gender:</strong> {{ seller.gender }}</p>
-    <p><strong>Mobile:</strong> {{ seller.mobile }}</p>
-    <p><strong>Email:</strong> {{ seller.email }}</p>
-    <p><strong>OTP:</strong> {{ seller.otp }}</p>
-    <p><strong>Shop Name:</strong> {{ seller.shop_name }}</p>
-    <p><strong>Address:</strong> {{ seller.address }}</p>
-    <p><strong>Country:</strong> {{ seller.country }}</p>
-    <p><strong>State:</strong> {{ seller.state }}</p>
-    <p><strong>City:</strong> {{ seller.city }}</p>
-    <p><strong>Pincode:</strong> {{ seller.pincode }}</p>
-    <p><strong>Business Category:</strong> {{ seller.business_category }}</p>
-    <p><strong>GST Number:</strong> {{ seller.gst_number }}</p>
-    <p><strong>GST Registration Type:</strong> {{ seller.gst_registration_type }}</p>
-    <p><strong>GST Verified:</strong> {{ seller.gst_verified ? 'Yes' : 'No' }}</p>
-    <p><strong>Status:</strong> {{ seller.status }}</p>
+    <div class="row">
+      <div class="col-md-6 mb-3"><strong>Name:</strong> {{ seller.name }}</div>
+      <div class="col-md-6 mb-3">
+        <strong>Gender:</strong> {{ seller.gender }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>Mobile:</strong> {{ seller.mobile }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>Email:</strong> {{ seller.email }}
+      </div>
+      <div class="col-md-6 mb-3"><strong>OTP:</strong> {{ seller.otp }}</div>
+      <div class="col-md-6 mb-3">
+        <strong>Shop Name:</strong> {{ seller.shop_name }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>Address:</strong> {{ seller.address }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>Country:</strong> {{ seller.country }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>State:</strong> {{ seller.state }}
+      </div>
+      <div class="col-md-6 mb-3"><strong>City:</strong> {{ seller.city }}</div>
+      <div class="col-md-6 mb-3">
+        <strong>Pincode:</strong> {{ seller.pincode }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>Business Category:</strong> {{ seller.business_category }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>GST Number:</strong> {{ seller.gst_number }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>GST Registration Type:</strong>
+        {{ seller.gst_registration_type }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>GST Verified:</strong> {{ seller.gst_verified ? "Yes" : "No" }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <strong>Status:</strong> {{ seller.status }}
+      </div>
 
-    <div *ngIf="seller.logo">
-      <p><strong>Logo:</strong></p>
-      <img [src]="seller.logo" alt="Seller Logo" width="150" />
+      <!-- Profile Image -->
+      <div class="col-md-6 mb-3" *ngIf="seller.profile_image">
+        <p><strong>Profile Image:</strong></p>
+        <img
+          [src]="seller.profile_image"
+          alt="Profile"
+          class="img-thumbnail"
+          style="max-height: 150px"
+        />
+      </div>
+
+      <!-- Logo -->
+      <div class="col-md-6 mb-3" *ngIf="seller.logo">
+        <p><strong>Shop Logo:</strong></p>
+        <img
+          [src]="seller.logo"
+          alt="Logo"
+          class="img-thumbnail"
+          style="max-height: 150px"
+        />
+      </div>
     </div>
   </div>
 </div>

@@ -7,6 +7,7 @@ const allowedTypes = [
   'image/png',
   'image/jpg',
   'image/gif',
+  'image/webp',
   'video/mp4',
   'video/quicktime', // .mov
   'video/x-msvideo', // .avi

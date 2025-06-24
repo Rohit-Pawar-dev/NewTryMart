@@ -42,7 +42,7 @@ export const navItems: INavData[] = [
   },
   {
     title: true,
-    name: 'Promotion management',
+    name: 'Advertisement management',
   },
   {
     name: 'Banners',

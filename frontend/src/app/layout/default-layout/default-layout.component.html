@@ -6,17 +6,36 @@
   id="sidebar1"
   visible
 >
-  <c-sidebar-header class="border-bottom" style="   text-align: center;
-    color: #fff;
-    font-weight: 700;
-    text-transform: capitalize;
-    letter-spacing: 2px;
-    margin: 0 auto;
-    /* width: 100%; */
-    text-align: center;
-    font-size: 23px;
-">
-    E-trymart
+  <c-sidebar-header
+    class="border-bottom"
+    style="
+      text-align: center;
+      color: #fff;
+      font-weight: 700;
+      text-transform: capitalize;
+      letter-spacing: 2px;
+      margin: 0 auto;
+      /* width: 100%; */
+      text-align: center;
+      font-size: 23px;
+    "
+  >
+    <c-sidebar-brand [routerLink]="['/dashboard']">
+      <img
+        src="assets/images/etrymartlogo.png"
+        alt="Logo"
+        class="sidebar-brand-full"
+        height="32"
+      />
+      <!-- Optional narrow version for collapsed sidebar -->
+      <!-- <img
+    src="assets/signet.png"
+    alt="Signet"
+    class="sidebar-brand-narrow"
+    height="32"
+  /> -->
+    </c-sidebar-brand>
+
     <!-- <c-sidebar-brand [routerLink]="[]">
       <svg [class]="{icon: false}" cIcon class="sidebar-brand-full" height="32" name="logo" title="CoreUI Logo"></svg>
       <svg cIcon class="sidebar-brand-narrow" height="32" name="signet" title="CoreUI Logo"></svg>

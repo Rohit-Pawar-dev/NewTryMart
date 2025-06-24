@@ -23,6 +23,7 @@
           <tr>
             <th>#</th>
             <th>Name</th>
+            <th>Image</th>
             <th>Email</th>
             <th>Mobile</th>
             <th>Status</th>
@@ -33,6 +34,13 @@
           <tr *ngFor="let seller of sellers; let i = index">
             <td>{{ i + 1 }}</td>
             <td>{{ seller.name }}</td>
+            <td>
+              <img
+                [src]="seller.profile_image"
+                width="100"
+                class="img-thumbnail"
+              />
+            </td>
             <td>{{ seller.email }}</td>
             <td>{{ seller.mobile }}</td>
             <td>

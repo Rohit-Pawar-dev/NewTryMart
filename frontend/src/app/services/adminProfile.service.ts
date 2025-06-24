@@ -10,11 +10,11 @@ export class AdminProfileService {
   constructor(private http: HttpClient) {}
 
   getAdminById(id: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
+    return this.http.get(`${this.apiUrl}/edit/${id}`);
   }
 
   updateAdmin(id: string, formData: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, formData);
+    return this.http.put(`${this.apiUrl}/update/${id}`, formData);
   }
 
   changePassword(id: string, data: any): Observable<any> {

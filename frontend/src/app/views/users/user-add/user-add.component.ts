@@ -40,6 +40,7 @@ export class UserAddComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', Validators.required],
+      gender: ['', Validators.required], // <-- Added gender
       status: ['active', Validators.required],
       profilePicture: [''],
     });

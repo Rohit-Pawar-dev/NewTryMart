@@ -29,6 +29,9 @@ export class BannerListComponent implements OnInit {
     ads_video_banner: 'Advertisement Video'
   };
 
+
+
+
   constructor(private bannerService: BannerService, private router: Router) {}
 
   ngOnInit() {
