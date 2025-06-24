@@ -19,9 +19,14 @@ export class BannerAddComponent implements OnDestroy {
   isSubmitting = false;
   isUploading = false;
   uploadError: string | null = null;
-  preview: string | null = null;
-  selectedFile: File | null = null;
 
+  selectedImageFile: File | null = null;
+  selectedVideoFile: File | null = null;
+
+  previewImage: string | null = null;
+  previewVideo: string | null = null;
+
+  todayString = new Date().toISOString().split('T')[0];
   private uploadUrl = `${environment.apiUrl}/upload-media`;
 
   constructor(
@@ -36,44 +41,85 @@ export class BannerAddComponent implements OnDestroy {
       video: [''],
       status: ['active', Validators.required],
       banner_type: ['main_banner', Validators.required],
+      start_date: [null],
+      end_date: [null],
+      pop_up_time: [null],
     });
 
     this.form.get('banner_type')?.valueChanges.subscribe((type) => {
-      if (type === 'ads_video_banner') {
-        this.form.get('video')?.setValidators([Validators.required]);
-        this.form.get('image')?.clearValidators();
-        this.form.get('image')?.setValue('');
-      } else {
-        this.form.get('image')?.setValidators([Validators.required]);
-        this.form.get('video')?.clearValidators();
-        this.form.get('video')?.setValue('');
-      }
-      this.form.get('image')?.updateValueAndValidity();
-      this.form.get('video')?.updateValueAndValidity();
+      this.setConditionalValidators(type);
     });
+
+    this.setConditionalValidators(this.form.get('banner_type')?.value);
   }
 
-  onFileSelected(event: Event): void {
+  private setConditionalValidators(type: string): void {
+    const image = this.form.get('image');
+    const video = this.form.get('video');
+    const start = this.form.get('start_date');
+    const end = this.form.get('end_date');
+    const popup = this.form.get('pop_up_time');
+
+    image?.clearValidators();
+    video?.clearValidators();
+    start?.clearValidators();
+    end?.clearValidators();
+    popup?.clearValidators();
+
+    // Ads Video: Image + Video + Dates
+    if (type === 'ads_video_banner') {
+      image?.setValidators([Validators.required]);
+      video?.setValidators([Validators.required]);
+      start?.setValidators([Validators.required]);
+      end?.setValidators([Validators.required]);
+    }
+
+    // Popup: Image + Dates + Pop-up Time
+    else if (type === 'popup_banner') {
+      image?.setValidators([Validators.required]);
+      start?.setValidators([Validators.required]);
+      end?.setValidators([Validators.required]);
+      popup?.setValidators([Validators.required]);
+    }
+
+    // Image banner: Image + Dates
+    else if (type === 'ads_img_banner') {
+      image?.setValidators([Validators.required]);
+      start?.setValidators([Validators.required]);
+      end?.setValidators([Validators.required]);
+    }
+
+    // Main banner: Image only
+    else if (type === 'main_banner') {
+      image?.setValidators([Validators.required]);
+      this.form.patchValue({ start_date: null, end_date: null, pop_up_time: null });
+    }
+
+    image?.updateValueAndValidity();
+    video?.updateValueAndValidity();
+    start?.updateValueAndValidity();
+    end?.updateValueAndValidity();
+    popup?.updateValueAndValidity();
+  }
+
+  onFileSelected(event: Event, type: 'image' | 'video'): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    this.selectedFile = file;
-    const type = this.form.get('banner_type')?.value;
-
-    // Set preview as blob URL for image/video
-    this.preview = URL.createObjectURL(file);
-
-    if (type === 'ads_video_banner') {
-      this.form.patchValue({ video: 'selected' });
-    } else {
+    if (type === 'image') {
+      this.selectedImageFile = file;
+      this.previewImage = URL.createObjectURL(file);
       this.form.patchValue({ image: 'selected' });
+    } else {
+      this.selectedVideoFile = file;
+      this.previewVideo = URL.createObjectURL(file);
+      this.form.patchValue({ video: 'selected' });
     }
   }
 
   submit(): void {
     if (this.form.invalid || this.isSubmitting) return;
 
-    // SweetAlert2 confirmation
     Swal.fire({
       title: 'Confirm Submission',
       text: 'Are you sure you want to add this banner?',
@@ -83,85 +129,94 @@ export class BannerAddComponent implements OnDestroy {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.executeSubmit();
+        this.uploadAndSubmit();
       }
     });
   }
 
-  private executeSubmit(): void {
+  private uploadAndSubmit(): void {
     this.isSubmitting = true;
     this.uploadError = null;
 
-    const createBanner = () => {
-      this.bannerService.createBanner(this.form.value).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Banner created successfully!',
-          }).then(() => {
-            this.router.navigate(['/banners']);
-          });
-        },
-        error: (err) => {
-          console.error('Banner creation failed', err);
-          this.isSubmitting = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to create banner. Please try again.',
-          });
-        },
-      });
+    const uploadFiles = async (): Promise<void> => {
+      try {
+        if (this.selectedImageFile) {
+          const imgUrl = await this.uploadFile(this.selectedImageFile);
+          this.form.patchValue({ image: imgUrl });
+        }
+
+        if (this.selectedVideoFile) {
+          const vidUrl = await this.uploadFile(this.selectedVideoFile);
+          this.form.patchValue({ video: vidUrl });
+        }
+
+        this.finalizeSubmit();
+      } catch (err) {
+        console.error('Upload failed', err);
+        this.uploadError = 'File upload failed. Please try again.';
+        this.isUploading = false;
+        this.isSubmitting = false;
+        Swal.fire('Upload Failed', this.uploadError, 'error');
+      }
     };
 
-    if (this.selectedFile) {
+    uploadFiles();
+  }
+
+  private uploadFile(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append('type', 'banner');
-      formData.append('file', this.selectedFile);
+      formData.append('file', file);
 
       this.isUploading = true;
 
       this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
-          const normalizedUrl = res.file.replace(/\\/g, '/');
-          const type = this.form.get('banner_type')?.value;
-
-          if (type === 'ads_video_banner') {
-            this.form.patchValue({ video: normalizedUrl });
-          } else {
-            this.form.patchValue({ image: normalizedUrl });
-          }
-
           this.isUploading = false;
-          createBanner();
+          resolve(res.file.replace(/\\/g, '/'));
         },
         error: (err) => {
-          console.error('File upload failed', err);
-          this.uploadError = 'Upload failed';
-          this.isUploading = false;
-          this.isSubmitting = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Upload Failed',
-            text: 'Failed to upload the file. Please try again.',
-          });
+          reject(err);
         },
       });
-    } else {
-      this.uploadError = 'Please select a file';
-      this.isSubmitting = false;
-      Swal.fire({
-        icon: 'warning',
-        title: 'No File Selected',
-        text: 'Please select a file before submitting.',
-      });
+    });
+  }
+
+  private finalizeSubmit(): void {
+    const payload = { ...this.form.value };
+
+    // Cleanup unnecessary fields
+    if (payload.banner_type === 'main_banner') {
+      payload.start_date = null;
+      payload.end_date = null;
+      payload.pop_up_time = null;
     }
+
+    if (payload.banner_type !== 'popup_banner') {
+      payload.pop_up_time = null;
+    }
+
+    if (payload.banner_type !== 'ads_video_banner') {
+      payload.video = null;
+    }
+
+    this.bannerService.createBanner(payload).subscribe({
+      next: () => {
+        Swal.fire('Success', 'Banner created successfully!', 'success').then(() =>
+          this.router.navigate(['/banners'])
+        );
+      },
+      error: (err) => {
+        console.error('Create failed', err);
+        this.isSubmitting = false;
+        Swal.fire('Error', 'Failed to create banner. Please try again.', 'error');
+      },
+    });
   }
 
   ngOnDestroy(): void {
-    if (this.preview) {
-      URL.revokeObjectURL(this.preview);
-    }
+    if (this.previewImage) URL.revokeObjectURL(this.previewImage);
+    if (this.previewVideo) URL.revokeObjectURL(this.previewVideo);
   }
 }
