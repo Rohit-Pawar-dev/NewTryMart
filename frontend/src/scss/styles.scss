@@ -25,7 +25,6 @@
   min-height: 250px;
 }
 
-
 .static_pages-container {
   padding: 1rem;
   max-width: 1000px;
@@ -60,7 +59,7 @@
   border-bottom: 2px solid #2563eb;
 }
 
-.static_pages-content  {
+.static_pages-content {
   text-align: right;
 }
 .static_pages-content {
@@ -96,4 +95,20 @@
   padding: 1rem;
   color: #6b7280;
 }
+.static_pages-editor .ck-editor__editable_inline {
+  min-height: 100px;
+  max-height: 500px;
+  overflow-y: auto;
+}
 
+.form-label {
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.previewImgDiv {
+  width: fit-content;
+  padding: 15px;
+  border: 1px solid #d5d5d5;
+  border-radius: 5px;
+}

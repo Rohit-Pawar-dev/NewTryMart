@@ -130,7 +130,7 @@
             (change)="onImageSelected($event)"
             [disabled]="isUploading"
           />
-          <div *ngIf="imagePreview" class="mt-2">
+          <div *ngIf="imagePreview" class="mt-2 previewImgDiv">
             <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
           </div>
           <div class="invalid-feedback d-block" *ngIf="uploadError">
@@ -140,7 +140,7 @@
       </div>
 
       <!-- Submit Button -->
-      <div class="text-end">
+      <div class="text-center">
         <button
           type="submit"
           class="btn btn-primary"
