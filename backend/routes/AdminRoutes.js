@@ -1,22 +1,33 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const adminController = require('../controllers/AdminsController/Auth/authController');
-const getCustomMulter = require('../utils/customMulter'); // utility to configure multer
-const upload = getCustomMulter('admin'); // uploads/admin
+const adminController = require("../controllers/AdminsController/Auth/authController");
+const businessSetupController = require("../controllers/AdminsController/bussinessController");
+const getCustomMulter = require("../utils/customMulter"); // utility to configure multer
+const upload = getCustomMulter("admin"); // uploads/admin
 
-// Create Admin (with image upload)
-router.post('/admin', upload.single('image'), adminController.createAdmin);
+// admin create and login routes
+router.post("/admin", upload.single("image"), adminController.createAdmin);
+router.post("/admin/login", adminController.loginAdmin);
+router.get("/admin/edit/:id", adminController.getAdmin);
+router.put(
+  "/admin/update/:id",
+  upload.single("image"),
+  adminController.updateAdmin
+);
+router.put("/admin/change-password/:id", adminController.changePassword);
 
-// Login Admin
-router.post('/admin/login', adminController.loginAdmin);
-
-// Get Admin by ID
-router.get('/admin/:id', adminController.getAdmin);
-
-// Update Admin details (optional image)
-router.put('/admin/:id', upload.single('image'), adminController.updateAdmin);
-
-// Change Admin password (requires oldPassword + newPassword in body)
-router.put('/admin/change-password/:id', adminController.changePassword);
+// bussiness setup routes
+router.get(
+  "/admin/setting/business-setup",
+  businessSetupController.getBusinessSetup
+);
+router.post(
+  "/admin/setting/business-setup",
+  businessSetupController.createBusinessSetup
+);
+router.put(
+  "/admin/setting/business-setup",
+  businessSetupController.updateBusinessSetup
+);
 
 module.exports = router;

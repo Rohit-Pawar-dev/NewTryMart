@@ -44,3 +44,28 @@ exports.getUserNotifications = async (req, res) => {
     });
   }
 };
+
+exports.getUnreadNotificationCount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const filter = {
+      user_id: userId,
+      status: "unread",
+    };
+
+    const total = await Notification.countDocuments(filter);
+
+    return res.status(200).json({
+      status: true,
+      message: "Unread notification count fetched successfully",
+      total,
+    });
+  } catch (err) {
+    console.error("Error fetching unread notification count:", err);
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error",
+    });
+  }
+};

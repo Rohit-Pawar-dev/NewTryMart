@@ -1,46 +1,7 @@
-const Cart = require("../models/Cart");
-const Product = require("../models/Product");
-const VariantOption = require("../models/VariantOption");
+const Cart = require("../../models/Cart");
+const Product = require("../../models/Product");
+const VariantOption = require("../../models/VariantOption");
 const mongoose = require("mongoose");
-
-// Helper to calculate price with discount, tax etc.
-async function calculatePrice(productId, variantId = null, isVariant = false) {
-  const product = await Product.findById(productId);
-  if (!product) throw new Error("Product not found");
-
-  let basePrice = product.unit_price;
-  let stock = product.current_stock;
-
-  if (isVariant && variantId) {
-    const variation = product.variation_options.find(
-      (v) => v._id.toString() === variantId
-    );
-    if (!variation) throw new Error("Variant not found");
-
-    basePrice = variation.price;
-    stock = variation.stock;
-  }
-
-  let discountAmount = 0;
-  if (product.discount_type === "percent") {
-    discountAmount = (product.discount / 100) * basePrice;
-  } else {
-    discountAmount = product.discount;
-  }
-  discountAmount = Math.min(discountAmount, basePrice);
-
-  const priceAfterDiscount = basePrice - discountAmount;
-  const taxAmount = (product.tax / 100) * priceAfterDiscount;
-  const finalPrice = priceAfterDiscount + taxAmount;
-
-  return {
-    basePrice,
-    discountAmount,
-    taxAmount,
-    finalPrice,
-    stock,
-  };
-}
 
 module.exports = {
   // Get all cart items for a user

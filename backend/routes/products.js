@@ -1,17 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const productController = require("../controllers/productController");
-
-
+const productController = require("../controllers/AdminsController/productController");
+const UserProductController = require("../controllers/usersController/ProductController");
 
 // Frontend
-router.get("/all", productController.getActiveProducts);
-router.get("/top-products", productController.getTopProducts);
-router.get("/new-products", productController.getNewProducts);
-router.get("/category/:category_id", productController.getProductsByCategory);
-router.get("/subcategory/:sub_category_id", productController.getProductsBySubCategory);
-router.get("/details/:id", productController.getProductDetails);
-
+router.get("/all", UserProductController.getActiveProducts);
+router.get("/top-products", UserProductController.getTopProducts);
+router.get("/new-products", UserProductController.getNewProducts);
+router.get(
+  "/category/:category_id",
+  UserProductController.getProductsByCategory
+);
+router.get(
+  "/subcategory/:sub_category_id",
+  UserProductController.getProductsBySubCategory
+);
+router.get("/details/:id", UserProductController.getProductDetails);
 
 // Admin
 router.post("/", productController.createProduct);

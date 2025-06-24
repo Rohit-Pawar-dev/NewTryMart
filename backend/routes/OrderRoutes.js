@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const {
-  placeOrder,
   getOrders,
   getOrderById,
-} = require("../controllers/OrderController");
+} = require("../controllers/AdminsController/OrderController");
+const {
+  placeOrder,
+} = require("../controllers/usersController/OrderController");
 
 // const authenticateUser = require("../middlewares/authenticateUser");
 
