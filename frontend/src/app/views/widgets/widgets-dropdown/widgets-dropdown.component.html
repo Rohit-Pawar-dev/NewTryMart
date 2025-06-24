@@ -1,49 +1,84 @@
 <!-- Row for 3 Big Stats -->
 <c-row class="g-4">
-  <c-col sm="12" md="4" xl="4" >
-    <c-widget-stat-a color="primary" [title]="'Users'" [value]="(userCount ?? '...') + ''"></c-widget-stat-a>
+  <c-col sm="12" md="4" xl="4">
+    <a [routerLink]="['/users']" style="text-decoration: none" aria-label="Go to Users">
+      <c-widget-stat-a color="primary" class="pb-3" [title]="'Users'"
+        [value]="userCount !== null ? userCount.toString() : '...'" style="cursor: pointer"></c-widget-stat-a>
+    </a>
   </c-col>
 
-  <c-col sm="12" md="4" xl="4" >
-    <c-widget-stat-a color="info" [title]="'Sellers'" [value]="(sellerCount ?? '...') + ''"></c-widget-stat-a>
+  <c-col sm="12" md="4" xl="4">
+    <a [routerLink]="['/sellers']" style="text-decoration: none" aria-label="Go to Sellers">
+      <c-widget-stat-a color="info" class="pb-3" [title]="'Sellers'"
+        [value]="sellerCount !== null ? sellerCount.toString() : '...'" style="cursor: pointer"></c-widget-stat-a>
+    </a>
   </c-col>
 
-  <c-col sm="12" md="4" xl="4"  >
-    <c-widget-stat-a color="success" [title]="'Products'" [value]="(allProductCount ?? '...') + ''"></c-widget-stat-a>
+  <c-col sm="12" md="4" xl="4">
+    <a [routerLink]="['/products']" style="text-decoration: none" aria-label="Go to Products">
+      <c-widget-stat-a color="success" class="pb-3" [title]="'Products'"
+        [value]="allProductCount !== null ? allProductCount.toString() : '...'"
+        style="cursor: pointer"></c-widget-stat-a>
+    </a>
   </c-col>
 </c-row>
 
 <!-- Row for 8 Smaller Stats -->
 <c-row class="g-4 mt-2">
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="success" [title]="'Total Orders'" [value]="(allOrderCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="success" class="pb-3" title="Total Orders"
+      [value]="allOrderCount !== null ? allOrderCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('all')" role="button" tabindex="0" (keydown.enter)="onStatusClick('all')"
+      aria-label="Filter Total Orders"></c-widget-stat-a>
   </c-col>
 
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="warning" [title]="'Pending Orders'" [value]="(pendingOrderCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="warning" class="pb-3" title="Pending Orders"
+      [value]="pendingOrderCount !== null ? pendingOrderCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('Pending')" role="button" tabindex="0" (keydown.enter)="onStatusClick('Pending')"
+      aria-label="Filter Pending Orders"></c-widget-stat-a>
   </c-col>
 
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="secondary" [title]="'Delivered Orders'" [value]="(deliveredOrderCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="primary" class="pb-3" title="Confirmed Orders"
+      [value]="confirmedOrderCount !== null ? confirmedOrderCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('Confirmed')" role="button" tabindex="0" (keydown.enter)="onStatusClick('Confirmed')"
+      aria-label="Filter Confirmed Orders"></c-widget-stat-a>
   </c-col>
 
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="danger" [title]="'Cancelled Orders'" [value]="(cancelledOrderCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="info" class="pb-3" title="Shipped Orders"
+      [value]="shippedOrderCount !== null ? shippedOrderCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('Shipped')" role="button" tabindex="0" (keydown.enter)="onStatusClick('Shipped')"
+      aria-label="Filter Shipped Orders"></c-widget-stat-a>
   </c-col>
 
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="dark" [title]="'Returned Orders'" [value]="(returnOrderCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="info" class="pb-3" title="Out of Delivery"
+      [value]="outOfDeliveryCount !== null ? outOfDeliveryCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('outOfDelivery')" role="button" tabindex="0"
+      (keydown.enter)="onStatusClick('outOfDelivery')" aria-label="Filter Out of Delivery Orders"></c-widget-stat-a>
   </c-col>
 
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="info" [title]="'Packaging Orders'" [value]="(packagingOrderCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="secondary" class="pb-3" title="Delivered Orders"
+      [value]="deliveredOrderCount !== null ? deliveredOrderCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('Delivered')" role="button" tabindex="0" (keydown.enter)="onStatusClick('Delivered')"
+      aria-label="Filter Delivered Orders"></c-widget-stat-a>
   </c-col>
 
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="primary" [title]="'Confirmed Orders'" [value]="(confirmedOrderCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="danger" class="pb-3" title="Cancelled Orders"
+      [value]="cancelledOrderCount !== null ? cancelledOrderCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('Cancelled')" role="button" tabindex="0" (keydown.enter)="onStatusClick('Cancelled')"
+      aria-label="Filter Cancelled Orders"></c-widget-stat-a>
   </c-col>
 
   <c-col sm="6" md="3" xl="3">
-    <c-widget-stat-a color="info" [title]="'Out For Delivery'" [value]="(outOfDeliveryCount ?? '...') + ''"></c-widget-stat-a>
+    <c-widget-stat-a color="dark" class="pb-3" title="Returned Orders"
+      [value]="returnOrderCount !== null ? returnOrderCount.toString() : '...'" style="cursor: pointer"
+      (click)="onStatusClick('Returned')" role="button" tabindex="0" (keydown.enter)="onStatusClick('Returned')"
+      aria-label="Filter Returned Orders"></c-widget-stat-a>
   </c-col>
+
 </c-row>

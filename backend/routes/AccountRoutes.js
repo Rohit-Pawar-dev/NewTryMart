@@ -37,12 +37,10 @@ router.post("/update-profile", auth, async (req, res) => {
 // Upload Media
 router.post("/upload-media", upload.single("file"), async (req, res) => {
   try {
-    res
-      .status(200)
-      .json({
-        message: "File uploaded successfully",
-        file: process.env.MEDIA_URL + req.file.path.replace(/\\/g, "/"),
-      });
+    res.status(200).json({
+      message: "File uploaded successfully",
+      file: process.env.MEDIA_URL + req.file.path.replace(/\\/g, "/"),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -50,45 +48,64 @@ router.post("/upload-media", upload.single("file"), async (req, res) => {
 
 router.get("/dashboard", async (req, res) => {
   try {
-    // Today's users
+    // Calculate today's time range
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    const todaysUsers = await User.countDocuments({
-      role: "user",
-      created_at: { $gte: startOfDay, $lte: endOfDay },
-    });
+    // Parallel user counts
+    const [totalUsers, activeUsers, inactiveUsers, todaysUsers] =
+      await Promise.all([
+        User.countDocuments({ role: "user" }),
+        User.countDocuments({ role: "user", status: "active" }),
+        User.countDocuments({ role: "user", status: "inactive" }),
+        User.countDocuments({
+          role: "user",
+          created_at: { $gte: startOfDay, $lte: endOfDay },
+        }),
+      ]);
 
-    const totalUsers = await User.countDocuments({ role: "user" });
-    const activeUsers = await User.countDocuments({
-      role: "user",
-      status: "active",
-    });
-    const inactiveUsers = await User.countDocuments({
-      role: "user",
-      status: "inactive",
-    });
-
+    // Seller count
     const totalSellers = await Seller.countDocuments();
 
-    // Explicitly count orders by status without looping
-    const pendingOrders = await Order.countDocuments({ status: "Pending" });
-    const processingOrders = await Order.countDocuments({
-      status: "Processing",
-    });
-    const shippedOrders = await Order.countDocuments({ status: "Shipped" });
-    const deliveredOrders = await Order.countDocuments({ status: "Delivered" });
-    const cancelledOrders = await Order.countDocuments({ status: "Cancelled" });
+    // Order status counts
+    const orderStatuses = [
+      "Pending",
+      "Confirmed",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+      "Returned",
+    ];
 
+    const statusCounts = await Promise.all(
+      orderStatuses.map((status) =>
+        Order.countDocuments({ status }).then((count) => ({ status, count }))
+      )
+    );
+
+    // Format order status counts
+    const orderStatusSummary = statusCounts.reduce((acc, item) => {
+      acc[item.status.toLowerCase()] = item.count;
+      return acc;
+    }, {});
+
+    // Total orders
     const totalOrders = await Order.countDocuments();
 
-    const totalProducts = await Product.countDocuments();
-    const activeProducts = await Product.countDocuments({ status: 1 });
-    const inactiveProducts = await Product.countDocuments({ status: 0 });
+    // Product counts
+    const [totalProducts, activeProducts, inactiveProducts] = await Promise.all(
+      [
+        Product.countDocuments(),
+        Product.countDocuments({ status: 1 }),
+        Product.countDocuments({ status: 0 }),
+      ]
+    );
 
+    // Final dashboard statistics
     const statistics = {
       users: {
         total: totalUsers,
@@ -96,14 +113,12 @@ router.get("/dashboard", async (req, res) => {
         inactive: inactiveUsers,
         today: todaysUsers,
       },
-      sellers: { total: totalSellers },
+      sellers: {
+        total: totalSellers,
+      },
       orders: {
         total: totalOrders,
-        pending: pendingOrders,
-        processing: processingOrders,
-        shipped: shippedOrders,
-        delivered: deliveredOrders,
-        cancelled: cancelledOrders,
+        ...orderStatusSummary, // dynamically spread in all status counts
       },
       products: {
         total: totalProducts,

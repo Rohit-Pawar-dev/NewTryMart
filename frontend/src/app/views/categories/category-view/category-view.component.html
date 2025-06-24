@@ -6,7 +6,12 @@
     <p><strong>Name:</strong> {{ category.name }}</p>
     <p>
       <strong>Image:</strong><br />
-      <img [src]="category.image" alt="{{ category.name }}" width="300" />
+      <img
+        [src]="category.image"
+        alt="{{ category.name }}"
+        width="200"
+        height="200"
+      />
     </p>
     <p><strong>Status:</strong> {{ category.status }}</p>
   </div>

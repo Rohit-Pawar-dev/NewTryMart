@@ -5,8 +5,13 @@
   <div class="card-body">
     <div class="table-responsive">
       <div class="mb-3 d-flex justify-content-between align-items-center">
-        <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()" class="form-control w-25"
-          placeholder="Search by product name" />
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          class="form-control w-25"
+          placeholder="Search by product name"
+        />
         <button class="btn btn-primary" routerLink="/products/add">
           Add New Product
         </button>
@@ -27,38 +32,60 @@
           <tr *ngFor="let product of products; let i = index">
             <td>{{ i + 1 }}</td>
             <td>
-              <img [src]="product.thumbnail" width="100" class="img-thumbnail" />
+              <img
+                [src]="product.thumbnail"
+                width="100"
+                class="img-thumbnail"
+              />
             </td>
             <td>{{ product.name }}</td>
             <td>{{ product.unit_price }}</td>
             <td>
-              <span class="badge" [ngClass]="{
+              <span
+                class="badge"
+                [ngClass]="{
                   'bg-success': product.status === 1,
                   'bg-danger': product.status === 0
-                }">
-                {{ product.status === 1 ? 'Active' : 'Inactive' }}
+                }"
+              >
+                {{ product.status === 1 ? "Active" : "Inactive" }}
               </span>
             </td>
             <td>
               <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-secondary" (click)="toggleStatus(product)" title="Toggle Status">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  (click)="toggleStatus(product)"
+                  title="Toggle Status"
+                >
                   <i class="cil-sync"></i>
                 </button>
-                <button class="btn btn-sm btn-info" [routerLink]="['/products/view', product._id]" title="View">
+                <button
+                  class="btn btn-sm btn-info"
+                  [routerLink]="['/products/view', product._id]"
+                  title="View"
+                >
                   <i class="cil-magnifying-glass"></i>
                 </button>
-                <button class="btn btn-sm btn-warning" [routerLink]="['/products/edit', product._id]" title="Edit">
+                <button
+                  class="btn btn-sm btn-warning"
+                  [routerLink]="['/products/edit', product._id]"
+                  title="Edit"
+                >
                   <i class="cil-pencil"></i>
                 </button>
-                <button class="btn btn-sm btn-danger" (click)="deleteProduct(product._id!)" title="Delete">
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteProduct(product._id!)"
+                  title="Delete"
+                >
                   <i class="cil-trash"></i>
                 </button>
               </div>
             </td>
-
           </tr>
           <tr *ngIf="products.length === 0 && !isLoading">
-            <td colspan="5" class="text-center">No products found</td>
+            <td colspan="6" class="text-center">No products found</td>
           </tr>
         </tbody>
       </table>

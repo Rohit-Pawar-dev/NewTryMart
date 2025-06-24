@@ -6,25 +6,25 @@
   [sellerCount]="sellerCount"
 ></app-widgets-dropdown> -->
 
-
 <app-widgets-dropdown
   [userCount]="userCount"
   [sellerCount]="sellerCount"
   [allOrderCount]="allOrderCount"
+  [allProductCount]="allProductCount"
   [pendingOrderCount]="pendingOrderCount"
+  [confirmedOrderCount]="confirmedOrderCount"
+  [shippedOrderCount]="shippedOrderCount"
   [deliveredOrderCount]="deliveredOrderCount"
   [cancelledOrderCount]="cancelledOrderCount"
   [returnOrderCount]="returnOrderCount"
-  [packagingOrderCount]="packagingOrderCount"
-  [confirmedOrderCount]="confirmedOrdeCount"
-  [outOfDeliveryCount]="outOfdeliveryCount"
-  [allProductCount]="allProductCount"
-></app-widgets-dropdown>
+  [outOfDeliveryCount]="outOfDeliveryCount"
+  (statusSelected)="onStatusFilter($event)">
+</app-widgets-dropdown>
 
-
-<section class="order-list-wrapper">
-  <app-order-list></app-order-list>
+<section class="order-list-wrapper" #orderListSection>
+  <app-order-list [status]="selectedStatus"></app-order-list>
 </section>
+
 
 
 <!-- <c-card class="my-4">

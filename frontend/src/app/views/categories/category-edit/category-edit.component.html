@@ -4,77 +4,82 @@
   </div>
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <!-- Name -->
-      <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
-        <input
-          type="text"
-          id="name"
-          class="form-control"
-          formControlName="name"
-          [class.is-invalid]="
-            form.get('name')?.invalid && form.get('name')?.touched
-          "
-        />
-        <div
-          class="invalid-feedback"
-          *ngIf="form.get('name')?.errors?.['required']"
-        >
-          Name is required.
-        </div>
-      </div>
-
-      <!-- Image Upload -->
-      <div class="mb-3">
-        <label for="imageUpload" class="form-label">Upload Image</label>
-        <input
-          type="file"
-          id="imageUpload"
-          class="form-control"
-          accept="image/*"
-          (change)="onImageSelected($event)"
-          [disabled]="isUploading"
-        />
-
-        <div *ngIf="imagePreview" class="mt-2">
-          <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
+      <div class="row">
+        <!-- Name -->
+        <div class="mb-3 col-lg-6">
+          <label for="name" class="form-label">Name</label>
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            formControlName="name"
+            [class.is-invalid]="
+              form.get('name')?.invalid && form.get('name')?.touched
+            "
+          />
+          <div
+            class="invalid-feedback"
+            *ngIf="form.get('name')?.errors?.['required']"
+          >
+            Name is required.
+          </div>
         </div>
 
-        <div class="invalid-feedback d-block" *ngIf="uploadError">
-          {{ uploadError }}
+        <!-- Status -->
+        <div class="mb-3 col-lg-6">
+          <label for="status" class="form-label">Status</label>
+          <select
+            id="status"
+            class="form-select"
+            formControlName="status"
+            [class.is-invalid]="
+              form.get('status')?.invalid && form.get('status')?.touched
+            "
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="form.get('status')?.errors?.['required']"
+          >
+            Status is required.
+          </div>
         </div>
-      </div>
 
-      <!-- Status -->
-      <div class="mb-3">
-        <label for="status" class="form-label">Status</label>
-        <select
-          id="status"
-          class="form-select"
-          formControlName="status"
-          [class.is-invalid]="
-            form.get('status')?.invalid && form.get('status')?.touched
-          "
-        >
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-        <div
-          class="invalid-feedback"
-          *ngIf="form.get('status')?.errors?.['required']"
-        >
-          Status is required.
+        <!-- Image Upload -->
+        <div class="mb-3 col-lg-6">
+          <label for="imageUpload" class="form-label">Upload Image</label>
+          <input
+            type="file"
+            id="imageUpload"
+            class="form-control"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            [disabled]="isUploading"
+          />
+
+          <div *ngIf="imagePreview" class="mt-2 previewImgDiv">
+            <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
+          </div>
+
+          <div class="invalid-feedback d-block" *ngIf="uploadError">
+            {{ uploadError }}
+          </div>
         </div>
       </div>
 
       <!-- Submit Button -->
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="isSubmitting || form.invalid"
-      >
-        {{ isSubmitting ? "Saving..." : "Update Category" }}
-      </button>
+
+      <div class="text-center mt-3">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isSubmitting || form.invalid"
+        >
+          {{ isSubmitting ? "Saving..." : "Update Category" }}
+        </button>
+      </div>
     </form>
   </div>
 </div>
