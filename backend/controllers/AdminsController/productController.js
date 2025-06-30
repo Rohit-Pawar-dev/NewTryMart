@@ -150,22 +150,33 @@ exports.getAllProducts = async (req, res) => {
       min_price,
       max_price,
       min_rating,
+      added_by, // Accept "admin", "seller", or comma-separated list
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
     const parsedOffset = Math.max(0, parseInt(offset));
 
-    const filter = {
-      ...(search && { name: { $regex: search, $options: "i" } }),
-    };
+    const filter = {};
 
-    // Apply price filters
+    // Text search on product name
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    // Filter by added_by (admin/seller)
+    if (added_by) {
+      const roles = added_by.split(",").map((r) => r.trim().toLowerCase());
+      filter.added_by = { $in: roles };
+    }
+
+    // Price filter
     if (min_price || max_price) {
       filter.unit_price = {};
       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
     }
 
+    // Get products with base filters
     let products = await Product.find(filter)
       .sort({ created_at: -1 })
       .skip(parsedOffset)
@@ -175,7 +186,7 @@ exports.getAllProducts = async (req, res) => {
 
     const productIds = products.map((p) => p._id);
 
-    // Filter by rating if required
+    // Filter by average rating if provided
     if (min_rating !== undefined) {
       const reviews = await Review.aggregate([
         { $match: { product_id: { $in: productIds }, status: "active" } },
@@ -198,12 +209,13 @@ exports.getAllProducts = async (req, res) => {
       });
     }
 
-    // Get variation options for the filtered products
+    // Get variant options per product
     const filteredProductIds = products.map((p) => p._id);
     const variantOptions = await VariantOption.find({
       product_id: { $in: filteredProductIds },
     }).lean();
 
+    // Group variant options by product ID
     const grouped = {};
     for (const variant of variantOptions) {
       const pid = variant.product_id.toString();
@@ -211,12 +223,13 @@ exports.getAllProducts = async (req, res) => {
       grouped[pid].push(variant);
     }
 
+    // Inject variant options into product
     const enriched = products.map((prod) => ({
       ...prod,
       variation_options: grouped[prod._id.toString()] || [],
     }));
 
-    // Adjust total count if min_rating is applied (only count matching IDs)
+    // Total count (adjusted if rating is filtered)
     const total =
       min_rating !== undefined
         ? enriched.length
@@ -264,21 +277,48 @@ exports.updateProduct = async (req, res) => {
     const productId = req.params.id;
     const data = req.body;
 
-    // 1. Update product
+    // 1. Find existing product
+    const existingProduct = await Product.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // 2. Business logic check: Prevent activating if not approved
+    const incomingStatus = data.status;
+    const incomingRequestStatus = data.request_status;
+
+    // If the product is pending approval, and someone tries to activate it
+    if (
+      existingProduct.request_status === 0 &&
+      incomingStatus === 1 &&
+      existingProduct.status === 0
+    ) {
+      return res.status(400).json({
+        error:
+          "Product must be approved (request_status = 1) before activating.",
+      });
+    }
+
+    // If admin approves the product (request_status = 1) — optionally auto-activate
+    if (
+      existingProduct.request_status === 0 &&
+      incomingRequestStatus === 1 &&
+      existingProduct.status === 0 &&
+      incomingStatus === undefined
+    ) {
+      // Auto set status to inactive (admin must explicitly activate later)
+      data.status = 0;
+    }
+
+    // 3. Update product
     const updatedProduct = await Product.findByIdAndUpdate(productId, data, {
       new: true,
     });
 
-    if (!updatedProduct) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    // 2. Update variation options if present
+    // 4. Handle variation options
     if (Array.isArray(data.variation_options)) {
-      // Delete existing variation options for this product
       await VariantOption.deleteMany({ product_id: productId });
 
-      // Insert new variation options
       const newVariants = data.variation_options.map((variant) => ({
         ...variant,
         product_id: productId,
@@ -289,6 +329,7 @@ exports.updateProduct = async (req, res) => {
 
     res.json(updatedProduct);
   } catch (err) {
+    console.error("Update error:", err);
     res.status(400).json({ error: err.message });
   }
 };
@@ -310,5 +351,51 @@ exports.deleteProduct = async (req, res) => {
     res.json({ msg: "Product and related variants deleted successfully" });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+
+// Change request status (0: pending, 1: approved, 2: denied)
+exports.changeProductRequestStatus = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { request_status } = req.body;
+
+    // Validate request_status value
+    if (![0, 1, 2].includes(request_status)) {
+      return res.status(400).json({ error: "Invalid request status value." });
+    }
+
+    // Find product by ID
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Update request_status
+    product.request_status = request_status;
+
+    // Update product active status based on request_status
+    if (request_status === 1) {
+      // Approved: activate product
+      product.status = 1;
+    } else if (request_status === 2) {
+      // Denied: deactivate product
+      product.status = 0;
+    } else if (request_status === 0) {
+      // Pending: optionally deactivate product or keep current
+      // Here I choose to deactivate product for safety
+      product.status = 0;
+    }
+
+    // Save updated product
+    await product.save();
+
+    return res.json({
+      message: "Request status updated successfully",
+      product,
+    });
+  } catch (err) {
+    console.error("Error updating request status:", err);
+    return res.status(500).json({ error: "Server error occurred" });
   }
 };

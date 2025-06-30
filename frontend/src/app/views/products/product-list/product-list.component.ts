@@ -25,7 +25,13 @@ export class ProductListComponent implements OnInit {
 
   loadProducts(): void {
     this.isLoading = true;
-    this.productService.getAllProducts({ search: this.searchTerm }).subscribe({
+
+    const queryParams = {
+      search: this.searchTerm,
+      added_by: 'admin', // ✅ Only admin-added products
+    };
+
+    this.productService.getAllProducts(queryParams).subscribe({
       next: (res) => {
         this.products = Array.isArray(res) ? res : res.data || [];
         this.isLoading = false;
@@ -86,7 +92,7 @@ export class ProductListComponent implements OnInit {
     this.productService.updateProduct(product._id!, { status: newStatus }).subscribe({
       next: () => {
         product.status = newStatus;
-         Swal.fire('Updated', `Status changed`, 'success');
+        Swal.fire('Updated', `Status changed`, 'success');
       },
       error: (err) => {
         console.error('Status Update Error:', err);

@@ -49,6 +49,12 @@ export const navItems: INavData[] = [
     url: '/products',
     iconComponent: { name: 'cil-tags' },
   },
+
+   {
+    name: 'Seller Products',
+    url: '/seller-products',
+    iconComponent: { name: 'cil-tags' },
+  },
   {
     title: true,
     name: 'Advertisement management',

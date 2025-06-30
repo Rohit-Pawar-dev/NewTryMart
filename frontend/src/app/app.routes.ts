@@ -139,6 +139,16 @@ export const routes: Routes = [
   data: {
     title: 'Transactions',
   },
+},
+{
+  path: 'seller-products',
+  loadComponent: ()=>
+    import('./views/sellerProducts/sellerProductList/seller-product-list.component').then(
+      (m) => m.SellerProductListComponent
+    ),
+  data: {
+    title: 'Seller Product',
+    },
 }
 
 ],
