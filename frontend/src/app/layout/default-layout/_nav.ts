@@ -23,6 +23,15 @@ export const navItems: INavData[] = [
 
   {
     title: true,
+    name: 'Transection Management',
+  },
+  {
+    name: 'Transactions',
+    url: '/transactions',
+    iconComponent: { name: 'cil-tags' },
+  },
+  {
+    title: true,
     name: 'Product management',
   },
   {

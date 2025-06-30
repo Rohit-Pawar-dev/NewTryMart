@@ -129,7 +129,19 @@ export const routes: Routes = [
   data: {
     title: 'Seller Register',
   }
-}],
+},
+{
+  path: 'transactions',
+  loadComponent: () =>
+    import('./views/orders/transaction-list/transaction-list.component').then(
+      (m) => m.TransactionComponent
+    ),
+  data: {
+    title: 'Transactions',
+  },
+}
+
+],
   },
 
 
