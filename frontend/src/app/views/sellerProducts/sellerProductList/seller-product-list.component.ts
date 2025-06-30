@@ -91,14 +91,14 @@ export class SellerProductListComponent implements OnInit {
     if (!product._id) return;
 
     this.productService.changeRequestStatus(product._id, status).subscribe({
-      next: (updatedProduct) => {
-        product.request_status = updatedProduct.request_status;
-        product.status = updatedProduct.status; // update product status too
+      next: () => {
         Swal.fire(
           'Success',
           `Request status updated to ${this.getRequestStatusLabel(status)}.`,
           'success'
-        );
+        ).then(() => {
+          this.loadProducts(); // ✅ Reload the product list with updated data
+        });
       },
       error: (err) => {
         console.error('Request Status Update Error:', err);
@@ -112,7 +112,6 @@ export class SellerProductListComponent implements OnInit {
   }
 
   getRequestStatusLabel(status?: number | string): string {
-    // normalize to number, since sometimes it may be string
     const s = Number(status);
     switch (s) {
       case 0:
