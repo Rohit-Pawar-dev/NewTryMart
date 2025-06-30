@@ -110,8 +110,26 @@ export const routes: Routes = [
       data: {
         title: 'Admin Profile'
       }
-    }
-    ],
+    },{ 
+      path : 'seller-login',
+      loadComponent:() =>
+       import('./views/sellers/seller-login/seller-login.component').then(
+        (m) => m.SellerLoginComponent   
+      ),
+      data: { 
+        title: 'Seller Login',
+      }
+      },
+    {
+  path: 'seller-register',
+  loadComponent: () =>
+    import('./views/sellers/seller-register/seller-register.component').then(
+      (m) => m.SellerRegisterComponent
+    ),
+  data: {
+    title: 'Seller Register',
+  }
+}],
   },
 
 
