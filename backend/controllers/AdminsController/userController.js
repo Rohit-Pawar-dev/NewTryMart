@@ -134,16 +134,15 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = (req, res) => {
   const upload = getCustomMulter("user"); // ✅ easy: define folder here
+  console.log("Update Profile Request:", req.body);
 
   upload.single("profilePicture")(req, res, async function (err) {
     if (err) {
-      return res
-        .status(400)
-        .json({
-          status: false,
-          message: "Image upload failed",
-          error: err.message,
-        });
+      return res.status(400).json({
+        status: false,
+        message: "Image upload failed",
+        error: err.message,
+      });
     }
 
     try {

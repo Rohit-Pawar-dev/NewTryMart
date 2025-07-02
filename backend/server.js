@@ -4,7 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const path = require("path");
-// const logger = require('./logger');
+const logger = require("./logger");
 
 const userRoutes = require("./routes/UserRoutes");
 const sellerRoutes = require("./routes/SellerRoutes");

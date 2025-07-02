@@ -210,7 +210,13 @@ export class BannerAddComponent implements OnDestroy {
       error: (err) => {
         console.error('Create failed', err);
         this.isSubmitting = false;
-        Swal.fire('Error', 'Failed to create banner. Please try again.', 'error');
+        // Swal.fire('Error', 'Failed to create banner. Please try again.', 'error');
+        Swal.fire({
+          title: 'Error',
+          text: err.error?.error || 'Failed to create banner. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
       },
     });
   }
