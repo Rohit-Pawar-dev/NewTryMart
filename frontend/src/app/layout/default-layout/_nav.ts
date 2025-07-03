@@ -104,20 +104,20 @@ export const navItems: INavData[] = [
     url: '/static-pages',
     iconComponent: { name: 'cil-star' },
   },
-   {
-    title: true,
-    name: 'Seller Management',
-  },
-  {
-    name: 'Seller SignIn',
-    url: '/seller-login',
-    iconComponent: { name: 'cil-star' },
-  },
-  {
-    name: 'Seller SignUp',
-    url: '/seller-register',
-    iconComponent: { name: 'cil-star' },
-  },
+  //  {
+  //   title: true,
+  //   name: 'Seller Management',
+  // },
+  // {
+  //   name: 'Seller SignIn',
+  //   url: '/seller-login',
+  //   iconComponent: { name: 'cil-star' },
+  // },
+  // {
+  //   name: 'Seller SignUp',
+  //   url: '/seller-register',
+  //   iconComponent: { name: 'cil-star' },
+  // },
 
 
   // {

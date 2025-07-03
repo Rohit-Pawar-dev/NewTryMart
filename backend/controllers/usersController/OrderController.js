@@ -180,6 +180,7 @@ async function placeOrder(req, res) {
 const getUserOrders = async (req, res) => {
   try {
     const userId = req.user.id;
+    // console.log("Fetching orders for user:", userId);
 
     const orders = await Order.find({ customer_id: userId })
       .populate({

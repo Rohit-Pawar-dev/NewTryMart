@@ -70,7 +70,7 @@ mongoose
     console.log("MongoDB connected");
   })
   .catch((err) => {
-    console.error(err), nlogger.info(err);
+    console.error(err), logger.info(err);
   });
 
 const PORT = process.env.PORT || 5000;
