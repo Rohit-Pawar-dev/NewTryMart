@@ -5,104 +5,223 @@ const mongoose = require("mongoose");
 
 module.exports = {
   // Get all cart items for a user
-  async getCart(req, res) {
-    const userId = req.params.userId;
+  // async getCart(req, res) {
+  //   const userId = req.params.userId;
 
-    try {
-      const cartItems = await Cart.find({
-        customer_id: userId,
-        save_for_later: false,
-      });
+  //   try {
+  //     const cartItems = await Cart.find({
+  //       customer_id: userId,
+  //       save_for_later: false,
+  //     });
 
-      let totalAmount = 0;
-      let totalDiscount = 0;
-      let totalTax = 0;
-      let couponAmount = 0;
-      let couponCode = null;
+  //     let totalAmount = 0;
+  //     let totalDiscount = 0;
+  //     let totalTax = 0;
+  //     let couponAmount = 0;
+  //     let couponCode = null;
 
-      const updatedCart = [];
+  //     const updatedCart = [];
 
-      for (const item of cartItems) {
-        let basePrice,
-          discountAmount = 0,
-          taxAmount = 0,
-          finalPrice = 0;
-        let variant = null;
+  //     for (const item of cartItems) {
+  //       let basePrice,
+  //         discountAmount = 0,
+  //         taxAmount = 0,
+  //         finalPrice = 0;
+  //       let variant = null;
 
-        const product = await Product.findById(item.product_id);
+  //       const product = await Product.findById(item.product_id);
 
-        if (!product) continue;
+  //       if (!product) continue;
 
-        console.log("test", item.is_variant && item.variant_id);
-        if (item.is_variant && item.variant_id) {
-          variant = await VariantOption.findOne({
-            _id: item.variant_id,
-            product_id: item.product_id,
-          });
+  //       console.log("test", item.is_variant && item.variant_id);
+  //       if (item.is_variant && item.variant_id) {
+  //         variant = await VariantOption.findOne({
+  //           _id: item.variant_id,
+  //           product_id: item.product_id,
+  //         });
 
-          if (!variant) continue;
+  //         if (!variant) continue;
 
-          basePrice = variant.price;
-        } else {
-          basePrice = product.unit_price;
-        }
+  //         basePrice = variant.price;
+  //       } else {
+  //         basePrice = product.unit_price;
+  //       }
 
-        // Calculate discount
-        if (product.discount_type === "percent") {
-          discountAmount = (product.discount / 100) * basePrice;
-        } else {
-          discountAmount = product.discount;
-        }
-        discountAmount = Math.min(discountAmount, basePrice);
+  //       // Calculate discount
+  //       if (product.discount_type === "percent") {
+  //         discountAmount = (product.discount / 100) * basePrice;
+  //       } else {
+  //         discountAmount = product.discount;
+  //       }
+  //       discountAmount = Math.min(discountAmount, basePrice);
 
-        const priceAfterDiscount = basePrice - discountAmount;
+  //       const priceAfterDiscount = basePrice - discountAmount;
 
-        // Calculate tax
-        taxAmount = (product.tax / 100) * priceAfterDiscount;
-        finalPrice = priceAfterDiscount + taxAmount;
+  //       // Calculate tax
+  //       taxAmount = (product.tax / 100) * priceAfterDiscount;
+  //       finalPrice = priceAfterDiscount + taxAmount;
 
-        totalDiscount += discountAmount * item.quantity;
-        totalTax += taxAmount * item.quantity;
-        totalAmount += finalPrice * item.quantity;
+  //       totalDiscount += discountAmount * item.quantity;
+  //       totalTax += taxAmount * item.quantity;
+  //       totalAmount += finalPrice * item.quantity;
 
-        // Extract coupon info (assuming it's stored on each cart item)
-        if (item.coupon_code && item.coupon_amount && couponAmount === 0) {
-          couponAmount = item.coupon_amount;
-          couponCode = item.coupon_code;
-        }
+  //       // Extract coupon info (assuming it's stored on each cart item)
+  //       if (item.coupon_code && item.coupon_amount && couponAmount === 0) {
+  //         couponAmount = item.coupon_amount;
+  //         couponCode = item.coupon_code;
+  //       }
 
-        updatedCart.push({
-          ...item._doc,
-          variant,
-          product_name: product.name,
-          thumbnail: product.thumbnail,
-          final_price: finalPrice,
+  //       updatedCart.push({
+  //         ...item._doc,
+  //         variant,
+  //         product_name: product.name,
+  //         thumbnail: product.thumbnail,
+  //         final_price: finalPrice,
+  //       });
+  //     }
+
+  //     // Subtract coupon amount once at the end
+  //     const finalTotalAmount = Math.max(0, totalAmount - couponAmount);
+
+  //     res.json({
+  //       status: true,
+  //       message: "Cart fetched successfully",
+  //       data: {
+  //         cartItems: updatedCart,
+  //         totalAmount: finalTotalAmount,
+  //         totalDiscount,
+  //         totalTax,
+  //         coupon: couponCode
+  //           ? {
+  //               code: couponCode,
+  //               discount: couponAmount,
+  //             }
+  //           : null,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({ status: false, message: error.message });
+  //   }
+  // },
+async getCart(req, res) {
+  const userId = req.params.userId;
+
+  try {
+    const cartItems = await Cart.find({
+      customer_id: userId,
+      save_for_later: false,
+    });
+
+    let totalAmount = 0;
+    let totalDiscount = 0;
+    let totalTax = 0;
+    let couponAmount = 0;
+    let couponCode = null;
+
+    // Added for breakdown
+    let totalBasePrice = 0;
+    let totalPriceAfterDiscount = 0;
+
+    const updatedCart = [];
+
+    for (const item of cartItems) {
+      let basePrice,
+        discountAmount = 0,
+        taxAmount = 0,
+        finalPrice = 0;
+      let variant = null;
+
+      const product = await Product.findById(item.product_id);
+      if (!product) continue;
+
+      if (item.is_variant && item.variant_id) {
+        variant = await VariantOption.findOne({
+          _id: item.variant_id,
+          product_id: item.product_id,
         });
+        if (!variant) continue;
+
+        basePrice = variant.price;
+      } else {
+        basePrice = product.unit_price;
       }
 
-      // Subtract coupon amount once at the end
-      const finalTotalAmount = Math.max(0, totalAmount - couponAmount);
+      // Calculate discount
+      if (product.discount_type === "percent") {
+        discountAmount = (product.discount / 100) * basePrice;
+      } else {
+        discountAmount = product.discount;
+      }
+      discountAmount = Math.min(discountAmount, basePrice);
 
-      res.json({
-        status: true,
-        message: "Cart fetched successfully",
-        data: {
-          cartItems: updatedCart,
-          totalAmount: finalTotalAmount,
-          totalDiscount,
-          totalTax,
-          coupon: couponCode
-            ? {
-                code: couponCode,
-                discount: couponAmount,
-              }
-            : null,
-        },
+      const priceAfterDiscount = basePrice - discountAmount;
+
+      // Calculate tax
+      taxAmount = (product.tax / 100) * priceAfterDiscount;
+      finalPrice = priceAfterDiscount + taxAmount;
+
+      // Add to totals (no change to original logic)
+      totalDiscount += discountAmount * item.quantity;
+      totalTax += taxAmount * item.quantity;
+      totalAmount += finalPrice * item.quantity;
+
+      // Add to new totals for breakdown
+      totalBasePrice += basePrice * item.quantity;
+      totalPriceAfterDiscount += priceAfterDiscount * item.quantity;
+
+      // Coupon info (once)
+      if (item.coupon_code && item.coupon_amount && couponAmount === 0) {
+        couponAmount = item.coupon_amount;
+        couponCode = item.coupon_code;
+      }
+
+      updatedCart.push({
+        ...item._doc,
+        variant,
+        product_name: product.name,
+        thumbnail: product.thumbnail,
+        base_price: basePrice,
+        discount: discountAmount,
+        price_after_discount: priceAfterDiscount,
+        tax: taxAmount,
+        final_price: finalPrice,
       });
-    } catch (error) {
-      res.status(500).json({ status: false, message: error.message });
     }
-  },
+
+    // Calculate final total after coupon
+    const finalTotalAmount = Math.max(0, totalAmount - couponAmount);
+
+    res.json({
+      status: true,
+      message: "Cart fetched successfully",
+      data: {
+        cartItems: updatedCart,
+        totalAmount: finalTotalAmount, // ✅ same as before
+        totalDiscount,                 // ✅ same
+        totalTax,                      // ✅ same
+        coupon: couponCode
+          ? {
+              code: couponCode,
+              discount: couponAmount,
+            }
+          : null,
+
+        // 🆕 Flipkart-style breakdown (optional use)
+        breakdown: {
+          totalBasePrice,
+          totalDiscount,
+          totalPriceAfterDiscount,
+          totalTax,
+          couponAmount,
+          finalPayable: finalTotalAmount,
+        },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+},
+
   // Add to cart or update quantity if already exists
   async addToCart(req, res) {
     const { userId, productId, variantId, is_variant, quantity = 1 } = req.body;
@@ -160,7 +279,7 @@ module.exports = {
         } else {
           return res.status(400).json({
             status: false,
-            message: "Product already in cart. Update quantity instead.",
+            message: "Product already in cart.",
           });
         }
       }
