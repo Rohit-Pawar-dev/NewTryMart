@@ -17,10 +17,7 @@ export class SellerProductListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
-  constructor(
-    private productService: ProductService,
-    private router: Router
-  ) {}
+  constructor(private productService: ProductService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -31,12 +28,12 @@ export class SellerProductListComponent implements OnInit {
 
     const queryParams = {
       search: this.searchTerm,
-      added_by: 'seller',
+      added_by: 'seller', // ✅ Fetch seller products only
     };
 
     this.productService.getAllProducts(queryParams).subscribe({
       next: (res) => {
-        this.products = Array.isArray(res) ? res : res?.data || [];
+        this.products = Array.isArray(res) ? res : res.data || [];
         this.isLoading = false;
       },
       error: (err) => {
@@ -51,9 +48,11 @@ export class SellerProductListComponent implements OnInit {
     this.loadProducts();
   }
 
-  deleteProduct(id?: string): void {
-    if (!id) return;
+  editProduct(id: string): void {
+    this.router.navigate(['/products/edit', id]);
+  }
 
+  deleteProduct(id: string): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'This action will permanently delete the product.',
@@ -67,6 +66,7 @@ export class SellerProductListComponent implements OnInit {
       if (result.isConfirmed) {
         this.productService.deleteProduct(id).subscribe({
           next: () => {
+            this.loadProducts();
             Swal.fire({
               title: 'Deleted!',
               text: 'Product deleted successfully.',
@@ -76,7 +76,6 @@ export class SellerProductListComponent implements OnInit {
               showConfirmButton: false,
               position: 'center',
             });
-            this.loadProducts();
           },
           error: (err) => {
             console.error('Delete Error:', err);
@@ -87,65 +86,28 @@ export class SellerProductListComponent implements OnInit {
     });
   }
 
-  updateRequestStatus(product: Product, status: 0 | 1 | 2): void {
-    if (!product._id) return;
+  toggleStatus(product: Product): void {
+    const newStatus = product.status === 1 ? 0 : 1;
 
-    this.productService.changeRequestStatus(product._id, status).subscribe({
-      next: () => {
-        Swal.fire(
-          'Success',
-          `Request status updated to ${this.getRequestStatusLabel(status)}.`,
-          'success'
-        ).then(() => {
-          this.loadProducts(); // ✅ Reload the product list with updated data
-        });
-      },
-      error: (err) => {
-        console.error('Request Status Update Error:', err);
-        Swal.fire('Error', 'Failed to update request status', 'error');
-      },
-    });
-  }
-
-  editProduct(id: string): void {
-    this.router.navigate(['/products/edit', id]);
-  }
-
-  getRequestStatusLabel(status?: number | string): string {
-    const s = Number(status);
-    switch (s) {
-      case 0:
-        return 'Pending';
-      case 1:
-        return 'Approved';
-      case 2:
-        return 'Denied';
-      default:
-        return 'Unknown';
-    }
-  }
-
-  getRequestStatusClass(status?: number | string): string {
-    const s = Number(status);
-    switch (s) {
-      case 0:
-        return 'badge bg-warning text-dark';
-      case 1:
-        return 'badge bg-success';
-      case 2:
-        return 'badge bg-danger';
-      default:
-        return 'badge bg-secondary';
-    }
-  }
-
-  getProductStatusLabel(status?: number | string): string {
-    const s = Number(status);
-    return s === 1 ? 'Active' : 'Inactive';
-  }
-
-  getProductStatusClass(status?: number | string): string {
-    const s = Number(status);
-    return s === 1 ? 'badge bg-primary' : 'badge bg-secondary';
+    this.productService
+      .updateProductStatus({ id: product._id!, status: newStatus })
+      .subscribe({
+        next: (res) => {
+          if (res.success === 1) {
+            product.status = newStatus;
+            Swal.fire('Updated', `Status changed`, 'success');
+          } else {
+            Swal.fire(
+              'Blocked',
+              'Product cannot be activated until approved by admin.',
+              'warning'
+            );
+          }
+        },
+        error: (err) => {
+          console.error('Status Update Error:', err);
+          Swal.fire('Error', 'Failed to update product status', 'error');
+        },
+      });
   }
 }

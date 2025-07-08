@@ -72,7 +72,7 @@ export interface SubCategory {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
   private apiUrl = `${environment.apiUrl}/products`;
@@ -83,15 +83,17 @@ export class ProductService {
   /**
    * Admin - Get all products
    */
-  getAllProducts(params: {
-    search?: string;
-    limit?: number;
-    offset?: number;
-    added_by?: 'admin' | 'seller' | string;
-    min_price?: number;
-    max_price?: number;
-    min_rating?: number;
-  } = {}): Observable<any> {
+  getAllProducts(
+    params: {
+      search?: string;
+      limit?: number;
+      offset?: number;
+      added_by?: 'admin' | 'seller' | string;
+      min_price?: number;
+      max_price?: number;
+      min_rating?: number;
+    } = {}
+  ): Observable<any> {
     let httpParams = new HttpParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
@@ -119,7 +121,10 @@ export class ProductService {
   /**
    * Admin - Update product
    */
-  updateProduct(id: string, product: Partial<Product> | FormData): Observable<Product> {
+  updateProduct(
+    id: string,
+    product: Partial<Product> | FormData
+  ): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/${id}`, product);
   }
 
@@ -138,14 +143,28 @@ export class ProductService {
     return this.http.get<CategoryResponse>(this.categoriesUrl, { params });
   }
 
-
-    /**
+  /**
    * Admin - Change product request status (0: pending, 1: approved, 2: denied)
    */
-  changeRequestStatus(productId: string, request_status: 0 | 1 | 2): Observable<Product> {
-    return this.http.patch<Product>(`${this.apiUrl}/change-request-status/${productId}`, {
-      request_status,
-    });
+  changeRequestStatus(
+    productId: string,
+    request_status: 0 | 1 | 2
+  ): Observable<Product> {
+    return this.http.patch<Product>(
+      `${this.apiUrl}/change-request-status/${productId}`,
+      {
+        request_status,
+      }
+    );
   }
 
+  updateProductStatus(data: {
+    id: string;
+    status: number;
+  }): Observable<{ success: number }> {
+    return this.http.post<{ success: number }>(
+      `${this.apiUrl}/status-update`,
+      data
+    );
+  }
 }

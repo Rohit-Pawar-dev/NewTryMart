@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './product-view.component.html',
-//   styleUrls: ['./product-view.component.css']
+  //   styleUrls: ['./product-view.component.css']
 })
 export class ProductViewComponent implements OnInit {
   product: Product | null = null;
@@ -40,7 +40,7 @@ export class ProductViewComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load product:', err);
-      }
+      },
     });
   }
 

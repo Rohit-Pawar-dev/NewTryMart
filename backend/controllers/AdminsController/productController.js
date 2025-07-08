@@ -399,3 +399,41 @@ exports.changeProductRequestStatus = async (req, res) => {
     return res.status(500).json({ error: "Server error occurred" });
   }
 };
+
+// status update
+exports.status_update = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ success: 0, message: "Product not found" });
+    }
+
+    let success = 1;
+
+    if (status === 1) {
+      if (
+        product.added_by === "seller" &&
+        (product.request_status === 0 || product.request_status === 2)
+      ) {
+        success = 0;
+      } else {
+        product.status = status;
+      }
+    } else {
+      product.status = status;
+    }
+
+    await product.save();
+
+    return res.status(200).json({ success });
+  } catch (err) {
+    console.error("Status Update Error:", err);
+    return res.status(500).json({
+      success: 0,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};

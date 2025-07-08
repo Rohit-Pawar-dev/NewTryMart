@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h3>Seller Product Management</h3>
+    <h3>Product Management</h3>
   </div>
   <div class="card-body">
     <div class="table-responsive">
@@ -12,6 +12,9 @@
           class="form-control w-25"
           placeholder="Search by product name"
         />
+        <button class="btn btn-primary" routerLink="/products/add">
+          Add New Product
+        </button>
       </div>
 
       <table class="table table-striped table-hover">
@@ -21,7 +24,7 @@
             <th>Thumbnail</th>
             <th>Name</th>
             <th>Price</th>
-            <th>Request Status</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -29,49 +32,48 @@
           <tr *ngFor="let product of products; let i = index">
             <td>{{ i + 1 }}</td>
             <td>
-              <img [src]="product.thumbnail" width="100" class="img-thumbnail" />
+              <img
+                [src]="product.thumbnail"
+                width="100"
+                class="img-thumbnail"
+              />
             </td>
             <td>{{ product.name }}</td>
             <td>{{ product.unit_price }}</td>
             <td>
-              <span [ngClass]="getRequestStatusClass(product.request_status)">
-                {{ getRequestStatusLabel(product.request_status) }}
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': product.status === 1,
+                  'bg-danger': product.status === 0
+                }"
+              >
+                {{ product.status === 1 ? "Active" : "Inactive" }}
               </span>
             </td>
             <td>
               <div class="btn-group" role="group">
-
-                <!-- Approve button -->
                 <button
-                  *ngIf="product.request_status !== 1"
-                  class="btn btn-sm btn-success"
-                  (click)="updateRequestStatus(product, 1)"
-                  title="Approve Request"
+                  class="btn btn-sm btn-secondary"
+                  (click)="toggleStatus(product)"
+                  title="Toggle Status"
                 >
-                  <i class="cil-check"></i> Approve
+                  <i class="cil-sync"></i>
                 </button>
-
-                <!-- Deny button -->
                 <button
-                  *ngIf="product.request_status !== 2"
-                  class="btn btn-sm btn-danger"
-                  (click)="updateRequestStatus(product, 2)"
-                  title="Deny Request"
+                  class="btn btn-sm btn-info"
+                  [routerLink]="['/products/view', product._id]"
+                  title="View"
                 >
-                  <i class="cil-ban"></i> Deny
-              </button>
-
-                <!-- Reset to Pending -->
+                  <i class="cil-magnifying-glass"></i>
+                </button>
                 <button
-                  *ngIf="product.request_status !== 0"
                   class="btn btn-sm btn-warning"
-                  (click)="updateRequestStatus(product, 0)"
-                  title="Reset to Pending"
+                  [routerLink]="['/products/edit', product._id]"
+                  title="Edit"
                 >
-                  <i class="cil-history"></i> Pending
+                  <i class="cil-pencil"></i>
                 </button>
-
-                <!-- Delete button -->
                 <button
                   class="btn btn-sm btn-danger"
                   (click)="deleteProduct(product._id!)"
@@ -82,7 +84,6 @@
               </div>
             </td>
           </tr>
-
           <tr *ngIf="products.length === 0 && !isLoading">
             <td colspan="6" class="text-center">No products found</td>
           </tr>
