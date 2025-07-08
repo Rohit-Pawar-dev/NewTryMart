@@ -1,0 +1,72 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h4>Seller Login</h4>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="loginForm">
+            <!-- Mobile Number -->
+            <div class="mb-3">
+              <label for="mobile" class="form-label">Mobile Number</label>
+              <input
+                type="text"
+                id="mobile"
+                maxlength="10"
+                class="form-control"
+                formControlName="mobile"
+                [readonly]="otpSent"
+                placeholder="Enter 10-digit mobile number"
+              />
+            </div>
+
+            <!-- ✅ Show Send OTP button only if OTP not sent -->
+            <button
+              *ngIf="!otpSent"
+              type="button"
+              class="btn btn-primary w-100 mb-2"
+              [disabled]="loading"
+              (click)="onSubmit()"
+            >
+              {{ loading ? 'Sending OTP...' : 'Send OTP' }}
+            </button>
+
+            <!-- OTP Section -->
+            <div *ngIf="otpSent" class="mt-3">
+              <div class="mb-3">
+                <label for="otp" class="form-label">Enter OTP</label>
+                <input
+                  type="text"
+                  id="otp"
+                  maxlength="4"
+                  class="form-control"
+                  formControlName="otp"
+                  placeholder="Enter 4-digit OTP"
+                />
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-success w-100 mb-2"
+                [disabled]="loading"
+                (click)="onVerifyOtp()"
+              >
+                {{ loading ? 'Verifying...' : 'Verify OTP' }}
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100"
+                [disabled]="loading"
+                (click)="onResendOtp()"
+              >
+                Resend OTP
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

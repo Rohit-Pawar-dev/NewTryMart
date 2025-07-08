@@ -110,8 +110,48 @@ export const routes: Routes = [
       data: {
         title: 'Admin Profile'
       }
-    }
-    ],
+    },{ 
+      path : 'seller-login',
+      loadComponent:() =>
+       import('./views/sellers/seller-login/seller-login.component').then(
+        (m) => m.SellerLoginComponent   
+      ),
+      data: { 
+        title: 'Seller Login',
+      }
+      },
+    {
+  path: 'seller-register',
+  loadComponent: () =>
+    import('./views/sellers/seller-register/seller-register.component').then(
+      (m) => m.SellerRegisterComponent
+    ),
+  data: {
+    title: 'Seller Register',
+  }
+},
+{
+  path: 'transactions',
+  loadComponent: () =>
+    import('./views/orders/transaction-list/transaction-list.component').then(
+      (m) => m.TransactionComponent
+    ),
+  data: {
+    title: 'Transactions',
+  },
+},
+{
+  path: 'seller-products',
+  loadComponent: ()=>
+    import('./views/sellerProducts/sellerProductList/seller-product-list.component').then(
+      (m) => m.SellerProductListComponent
+    ),
+  data: {
+    title: 'Seller Product',
+    },
+}
+
+],
   },
 
 

@@ -4,7 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const path = require("path");
-// const logger = require('./logger');
+const logger = require("./logger");
 
 const userRoutes = require("./routes/UserRoutes");
 const sellerRoutes = require("./routes/SellerRoutes");
@@ -70,7 +70,7 @@ mongoose
     console.log("MongoDB connected");
   })
   .catch((err) => {
-    console.error(err), nlogger.info(err);
+    console.error(err), logger.info(err);
   });
 
 const PORT = process.env.PORT || 5000;

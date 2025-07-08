@@ -24,13 +24,22 @@ export interface Product {
   status?: number;
   request_status?: number;
   created_at?: string;
-  sku_code?: string,
-  unit?: string,
+  sku_code?: string;
+  unit?: string;
   updated_at?: string;
   variants?: {
     name: string;
     values: string[];
   }[];
+  variation_options?: VariantOption[];
+}
+
+export interface VariantOption {
+  variant_values: { [key: string]: string };
+  price: number;
+  stock: number;
+  images: string[];
+  sku: string;
 }
 
 export interface CategoryResponse {
@@ -71,35 +80,72 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  /** Admin - Get all products */
-  getAllProducts(params: { search?: string; limit?: number; offset?: number } = {}): Observable<any> {
-    const query = new HttpParams({ fromObject: { ...params } });
-    return this.http.get<any>(this.apiUrl, { params: query });
+  /**
+   * Admin - Get all products
+   */
+  getAllProducts(params: {
+    search?: string;
+    limit?: number;
+    offset?: number;
+    added_by?: 'admin' | 'seller' | string;
+    min_price?: number;
+    max_price?: number;
+    min_rating?: number;
+  } = {}): Observable<any> {
+    let httpParams = new HttpParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        httpParams = httpParams.set(key, value.toString());
+      }
+    });
+
+    return this.http.get<any>(this.apiUrl, { params: httpParams });
   }
 
-  /** Admin - Get product by ID */
+  /**
+   * Admin - Get product by ID
+   */
   getProductById(id: string): Observable<Product> {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
 
-  /** Admin - Create product */
+  /**
+   * Admin - Create product
+   */
   createProduct(product: Product | FormData): Observable<Product> {
     return this.http.post<Product>(this.apiUrl, product);
   }
 
-  /** Admin - Update product */
+  /**
+   * Admin - Update product
+   */
   updateProduct(id: string, product: Partial<Product> | FormData): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/${id}`, product);
   }
 
-  /** Admin - Delete product */
+  /**
+   * Admin - Delete product
+   */
   deleteProduct(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  /** Admin - Get all categories and subcategories */
+  /**
+   * Admin - Get all categories and subcategories
+   */
   getAllCategories(): Observable<CategoryResponse> {
     const params = new HttpParams().set('all', 'true');
     return this.http.get<CategoryResponse>(this.categoriesUrl, { params });
   }
+
+
+    /**
+   * Admin - Change product request status (0: pending, 1: approved, 2: denied)
+   */
+  changeRequestStatus(productId: string, request_status: 0 | 1 | 2): Observable<Product> {
+    return this.http.patch<Product>(`${this.apiUrl}/change-request-status/${productId}`, {
+      request_status,
+    });
+  }
+
 }

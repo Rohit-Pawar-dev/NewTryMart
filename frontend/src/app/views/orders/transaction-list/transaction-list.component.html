@@ -1,0 +1,130 @@
+<div class="container mt-4">
+  <h2>Transactions</h2>
+
+  <!-- Filters Row -->
+  <div class="row g-3 align-items-end mb-4">
+    <div class="col-md-3">
+      <label for="searchInput" class="form-label">Search</label>
+      <input
+        id="searchInput"
+        type="text"
+        class="form-control"
+        placeholder="Customer name or mobile"
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+
+    <div class="col-md-3">
+      <label for="statusSelect" class="form-label">Status</label>
+      <select
+        id="statusSelect"
+        class="form-select"
+        [(ngModel)]="status"
+        (change)="onStatusChange()"
+      >
+        <option value="all">All Statuses</option>
+        <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="startDate" class="form-label">Start Date</label>
+      <input
+        id="startDate"
+        type="date"
+        class="form-control"
+        [value]="startDate"
+        (change)="onStartDateChange($event)"
+        max="{{ endDate || '' }}"
+      />
+    </div>
+
+    <div class="col-md-3">
+      <label for="endDate" class="form-label">End Date</label>
+      <input
+        id="endDate"
+        type="date"
+        class="form-control"
+        [value]="endDate"
+        (change)="onEndDateChange($event)"
+        min="{{ startDate || '' }}"
+      />
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center">Loading transactions...</div>
+
+  <div class="table-responsive" *ngIf="!isLoading && transactions.length > 0">
+    <table class="table table-bordered align-middle text-nowrap">
+      <thead class="table-light">
+        <tr>
+          <th>SL</th>
+          <th>Transaction ID</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Amount</th>
+          <th>Payment Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let txn of transactions; let i = index">
+          <td>{{ (currentPage - 1) * limit + i + 1 }}</td>
+          <td>{{ txn._id }}</td>
+          <td>{{ txn.createdAt | date: 'dd MMM yyyy, hh:mm a' }}</td>
+          <td>
+            <div class="fw-bold">{{ txn.user_id?.name || 'Guest' }}</div>
+            <div>{{ txn.user_id?.mobile || 'N/A' }}</div>
+          </td>
+          <td>₹{{ txn.amount | number: '1.2-2' }}</td>
+          <td>
+            <span
+              class="badge px-3 py-1"
+              [ngClass]="{
+                'bg-warning text-dark': txn.payment_status === 'Pending',
+                'bg-success': txn.payment_status === 'Paid',
+                'bg-danger': txn.payment_status === 'Failed'
+              }"
+            >
+              {{ txn.payment_status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!isLoading && transactions.length === 0" class="text-center text-muted mt-3">
+    No transactions found.
+  </div>
+
+  <nav *ngIf="totalPages > 1" class="mt-3">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button
+          class="page-link"
+          (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+        >
+          Previous
+        </button>
+      </li>
+      <li
+        class="page-item"
+        *ngFor="let page of [].constructor(totalPages); let idx = index"
+        [class.active]="currentPage === idx + 1"
+      >
+        <button class="page-link" (click)="changePage(idx + 1)">{{ idx + 1 }}</button>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button
+          class="page-link"
+          (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+        >
+          Next
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>
