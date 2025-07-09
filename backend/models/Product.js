@@ -45,7 +45,7 @@ const productSchema = new Schema(
     current_stock: { type: Number, default: 0 },
     description: { type: String }, // CKEditor content
     status: { type: Number, enum: [0, 1], default: 1 },
-    request_status: { type: Number, enum: [0, 1], default: 0 },
+    request_status: { type: Number, enum: [0, 1, 2], default: 0 },
 
     sku_code: { type: String },
     unit: { type: String },

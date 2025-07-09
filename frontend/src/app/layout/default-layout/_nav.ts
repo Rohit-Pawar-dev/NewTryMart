@@ -23,6 +23,15 @@ export const navItems: INavData[] = [
 
   {
     title: true,
+    name: 'Transection Management',
+  },
+  {
+    name: 'Transactions',
+    url: '/transactions',
+    iconComponent: { name: 'cil-tags' },
+  },
+  {
+    title: true,
     name: 'Product management',
   },
   {
@@ -38,6 +47,12 @@ export const navItems: INavData[] = [
   {
     name: 'Products',
     url: '/products',
+    iconComponent: { name: 'cil-tags' },
+  },
+
+   {
+    name: 'Seller Products',
+    url: '/seller-products',
     iconComponent: { name: 'cil-tags' },
   },
   {
@@ -89,6 +104,21 @@ export const navItems: INavData[] = [
     url: '/static-pages',
     iconComponent: { name: 'cil-star' },
   },
+  //  {
+  //   title: true,
+  //   name: 'Seller Management',
+  // },
+  // {
+  //   name: 'Seller SignIn',
+  //   url: '/seller-login',
+  //   iconComponent: { name: 'cil-star' },
+  // },
+  // {
+  //   name: 'Seller SignUp',
+  //   url: '/seller-register',
+  //   iconComponent: { name: 'cil-star' },
+  // },
+
 
   // {
   //   title: true,

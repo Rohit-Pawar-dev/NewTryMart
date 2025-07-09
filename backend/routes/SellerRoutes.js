@@ -8,6 +8,9 @@ const {
 const {
   loginSeller,
 } = require("../controllers/sellersController/Auth/LoginController");
+const {
+  verifyOtpSeller,
+} = require("../controllers/sellersController/Auth/VerifyController");
 // Routes
 router.post("/", sellerController.createSeller);
 router.get("/", sellerController.getAllSellers);
@@ -21,7 +24,7 @@ router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
 // Single file upload with field name 'logo'
 router.post("/register", upload.single("logo"), registerSeller);
 router.post("/login", loginSeller);
-
+router.post("/verify-otp", verifyOtpSeller);
 module.exports = router;
 
 module.exports = router;

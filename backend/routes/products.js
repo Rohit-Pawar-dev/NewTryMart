@@ -23,5 +23,12 @@ router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getProductById);
 router.put("/:id", productController.updateProduct);
 router.delete("/:id", productController.deleteProduct);
+router.post("/status-update", productController.status_update);
+
+// ✅ New Route: Change Request Status
+router.patch(
+  "/change-request-status/:id",
+  productController.changeProductRequestStatus
+);
 
 module.exports = router;

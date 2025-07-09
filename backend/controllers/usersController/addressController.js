@@ -138,12 +138,13 @@ const AddressController = {
       );
 
       return res.json({
+        success: true,
         message: "Address selected successfully",
         address: updatedAddress,
       });
     } catch (error) {
       console.error("Select address error:", error);
-      return res.status(500).json({ message: "Server error" });
+      return res.status(500).json({ success: false, message: "Server error" });
     }
   },
 };

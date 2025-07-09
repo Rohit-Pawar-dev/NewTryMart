@@ -46,13 +46,13 @@ export class ProductAddComponent implements OnInit {
       name: ['', Validators.required],
       slug: [''],
       seller_id: [null],
+      added_by: ['admin'], // ✅ Set default to admin
       category_id: ['', Validators.required],
       sub_category_id: [''],
       thumbnail: ['', Validators.required],
       images: [[]],
       unit: ['piece'],
       unit_price: [0, [Validators.required, Validators.min(0)]],
-      // tax_model: ['include'],
       tax: [0, Validators.min(0)],
       discount_type: ['percent'],
       discount: [0, Validators.min(0)],
@@ -190,6 +190,9 @@ export class ProductAddComponent implements OnInit {
 
   private executeSubmit(): void {
     this.isSubmitting = true;
+
+    // ✅ Enforce admin attribution in case form is tampered with
+    this.form.patchValue({ added_by: 'admin' });
 
     this.productService.createProduct(this.form.value).subscribe({
       next: () => {

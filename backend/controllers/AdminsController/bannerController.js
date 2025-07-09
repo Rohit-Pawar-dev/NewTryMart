@@ -38,6 +38,18 @@ exports.createBanner = async (req, res) => {
     if (banner_type === "popup_banner") {
       bannerData.pop_up_time = pop_up_time || null;
     }
+    if (banner_type === "popup_banner") {
+      const banners = await Banner.find();
+      // Check if there is already a popup banner
+      const existingPopupBanner = banners.find(
+        (banner) => banner.banner_type === "popup_banner"
+      );
+      if (existingPopupBanner) {
+        return res.status(400).json({
+          error: "Only one popup banner is allowed at a time.",
+        });
+      }
+    }
 
     const banner = await Banner.create(bannerData);
 

@@ -95,6 +95,16 @@ router.post("/verify-otp", async (req, res) => {
     let type = "login"; // default to login
 
     if (user) {
+      // console.log("User found:", user);
+
+      if (user.status == "inactive") {
+        return res.status(400).json({
+          status: false,
+          message: "Something went wrong please contact to admin",
+        });
+      }
+    }
+    if (user) {
       // Validate OTP
       if (otp != user.otp) {
         return res.status(400).json({ status: false, message: "Invalid OTP" });
