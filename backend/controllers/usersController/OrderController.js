@@ -49,7 +49,7 @@ async function placeOrder(req, res) {
     }
 
     // Step 2: Group cart items by seller_id (or 'admin')
-    console.log("Item:", cartItems);
+    // console.log("Item:", cartItems);
     const groupedItems = {};
     for (const item of cartItems) {
       const sellerKey =
@@ -163,9 +163,11 @@ async function placeOrder(req, res) {
         { order_id: order._id }
       );
     }
-
-    // Clear cart
-    await Cart.deleteMany({ customer_id: userId });
+    // Clear only the cart items (not saved for later)
+    await Cart.deleteMany({
+      customer_id: userId,
+      save_for_later: false
+    });
 
     return res.status(201).json({
       message: "Orders placed successfully",
@@ -396,8 +398,11 @@ async function placeOrderOnline(req, res) {
       );
     }
 
-    await Cart.deleteMany({ customer_id: userId });
-
+    // Clear only the cart items (not saved for later)
+    await Cart.deleteMany({
+      customer_id: userId,
+      save_for_later: false
+    });
     return res.status(201).json({
       message: "Online order placed successfully",
       order_ids: orderResults,
