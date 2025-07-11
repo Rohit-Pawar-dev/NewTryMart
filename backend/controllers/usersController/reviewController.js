@@ -1,30 +1,32 @@
 const Review = require("../../models/Review");
 const path = require('path');
 
-// Create
-// exports.create = async (req, res) => {
-//   try {
-//     const review = await Review.create(req.body);
-//     res.status(201).json(review);
-//   } catch (err) {
-//     res.status(400).json({ error: err.message });
-//   }
-// };
+// Create multiple
 exports.create = async (req, res) => {
   try {
-    const { product_id, user_id, order_id } = req.body;
-
-    const existingReview = await Review.findOne({ product_id, user_id, order_id });
-    if (existingReview) {
-      return res.status(400).json({ error: 'You have already reviewed this product in this order.' });
-    }
-
     const review = await Review.create(req.body);
     res.status(201).json(review);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
+
+// Create single
+// exports.create = async (req, res) => {
+//   try {
+//     const { product_id, user_id, order_id } = req.body;
+
+//     const existingReview = await Review.findOne({ product_id, user_id, order_id });
+//     if (existingReview) {
+//       return res.status(400).json({ error: 'You have already reviewed this product in this order.' });
+//     }
+
+//     const review = await Review.create(req.body);
+//     res.status(201).json(review);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// };
 
 // Read All with search, filter, pagination
 exports.getAll = async (req, res) => {
