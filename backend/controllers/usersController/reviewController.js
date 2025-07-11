@@ -1,8 +1,24 @@
 const Review = require("../../models/Review");
+const path = require('path');
 
 // Create
+// exports.create = async (req, res) => {
+//   try {
+//     const review = await Review.create(req.body);
+//     res.status(201).json(review);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// };
 exports.create = async (req, res) => {
   try {
+    const { product_id, user_id, order_id } = req.body;
+
+    const existingReview = await Review.findOne({ product_id, user_id, order_id });
+    if (existingReview) {
+      return res.status(400).json({ error: 'You have already reviewed this product in this order.' });
+    }
+
     const review = await Review.create(req.body);
     res.status(201).json(review);
   } catch (err) {
@@ -88,5 +104,35 @@ exports.remove = async (req, res) => {
     res.json({ message: "Review deleted" });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+
+
+
+
+exports.uploadImage = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  // Return relative path for frontend to use
+  const filePath = path.join('uploads', 'reviews', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
+};
+
+// Get reviews by order_id and user_id (for Angular to check submitted ones)
+exports.getByOrderAndUser = async (req, res) => {
+  try {
+    const { order_id, user_id } = req.query;
+
+    if (!order_id || !user_id) {
+      return res.status(400).json({ error: "order_id and user_id are required" });
+    }
+
+    const reviews = await Review.find({ order_id, user_id });
+
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
