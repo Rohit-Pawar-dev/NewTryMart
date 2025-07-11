@@ -3,7 +3,7 @@
 
   <div class="row">
     <!-- Left Panel: Main Content -->
-    <div class="col-md-8">
+    <div class="card shadow col-md-8 p-3">
       <div *ngIf="order as o" class="mb-4">
         <div class="d-flex justify-content-between flex-wrap">
           <!-- Left Column -->
@@ -67,7 +67,7 @@
                   />
                   <div>
                     <div class="fw-semibold">{{ item.name }}</div>
-                    <div class="text-muted small">
+                    <div class="small text-success">
                       Price : {{ item.unit_price | number : "1.2-2" }}₹
                     </div>
                     <div class="text-muted small">
@@ -76,7 +76,7 @@
                   </div>
                 </div>
               </td>
-              <td>{{ item.tax || 0 }}₹</td>
+              <td><div class="small text-success">{{ item.tax || 0 }}₹</div></td>
               <td>{{ item.discount || 0 }}₹</td>
               <td>{{ item.total_price | number : "1.2-2" }}₹</td>
             </tr>
@@ -107,7 +107,7 @@
 
     <!-- Right Panel: Order & Shipping Info -->
     <div class="col-md-4">
-      <div class="border rounded p-3 bg-white">
+      <div class="border rounded p-3 bg-white shadow">
         <h6 class="fw-bold mb-3">Order & Shipping Info</h6>
 
         <!-- Order Status -->
@@ -145,7 +145,7 @@
       </div>
 
       <!-- Customer Info -->
-      <div class="border rounded p-3 mt-3 bg-white">
+      <div class="border rounded p-3 mt-3 bg-white shadow">
         <h6 class="fw-bold mb-3">Customer information</h6>
         <div class="d-flex align-items-center gap-2 mb-2">
           <img
@@ -173,7 +173,7 @@
 
       <!-- Shipping Address -->
       <div
-        class="border rounded p-3 mt-3 bg-white"
+        class="border rounded p-3 mt-3 bg-white shadow"
         *ngIf="
           order.shipping_address && isAddressObject(order.shipping_address);
           else noAddress
