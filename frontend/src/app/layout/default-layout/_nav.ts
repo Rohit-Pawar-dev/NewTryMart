@@ -6,7 +6,7 @@ export const navItems: INavData[] = [
     url: '/dashboard',
     iconComponent: { name: 'cil-speedometer' },
     badge: {
-      color: 'info',
+      color: 'light',
       text: '',
     },
   },
@@ -23,12 +23,12 @@ export const navItems: INavData[] = [
 
   {
     title: true,
-    name: 'Transection Management',
+    name: 'Transaction Management',
   },
   {
     name: 'Transactions',
     url: '/transactions',
-    iconComponent: { name: 'cil-tags' },
+    iconComponent: { name: 'cil-list' },
   },
   {
     title: true,
@@ -37,7 +37,7 @@ export const navItems: INavData[] = [
   {
     name: 'Categories',
     url: '/categories',
-    iconComponent: { name: 'cil-tags' },
+    iconComponent: { name: 'cil-list' },
   },
   {
     name: 'SubCategories',
@@ -47,7 +47,7 @@ export const navItems: INavData[] = [
   {
     name: 'Products',
     url: '/products',
-    iconComponent: { name: 'cil-tags' },
+    iconComponent: { name: 'cil-list' },
   },
 
    {
@@ -62,12 +62,12 @@ export const navItems: INavData[] = [
   {
     name: 'Banners',
     url: '/banners',
-    iconComponent: { name: 'cil-bell' },
+    iconComponent: { name: 'cil-file' },
   },
   {
     name: 'Coupons',
     url: '/coupons',
-    iconComponent: { name: 'cil-bell' },
+    iconComponent: { name: 'cil-list' },
   },
 
   {

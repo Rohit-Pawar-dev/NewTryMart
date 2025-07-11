@@ -3,13 +3,13 @@
     <h3>Category Management</h3>
   </div>
   <div class="card-body">
-    <div class="table-responsive">
+    <div class="table-responsive table-bordered">
       <div class="mb-3 d-flex justify-content-between align-items-center">
         <input
           type="text"
           [(ngModel)]="searchTerm"
           (input)="onSearchChange()"
-          class="form-control w-25"
+          class="form-control w-25 border border-outline-primary"
           placeholder="Search by name"
         />
         <button class="btn btn-primary" routerLink="/categories/add">
@@ -32,7 +32,7 @@
             <td>{{ i + 1 }}</td>
             <td>{{ category.name }}</td>
             <td>
-              <img [src]="category.image" width="100" class="img-thumbnail" />
+              <img [src]="category.image" width="100" class="img-thumbnail" style="height:50px; width:100px;" />
             </td>
             <td>
               <span
@@ -47,25 +47,25 @@
             <td>
               <div class="btn-group" role="group">
                 <button
-                  class="btn btn-sm btn-secondary"
+                  class="btn btn-sm btn-outline-secondary"
                   (click)="toggleStatus(category)"
                 >
                   <i class="cil-sync"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-info"
+                  class="btn btn-sm btn-outline-info"
                   [routerLink]="['/categories/view', category._id]"
                 >
                   <i class="cil-magnifying-glass"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-warning"
+                  class="btn btn-sm btn-outline-warning"
                   [routerLink]="['/categories/edit', category._id]"
                 >
                   <i class="cil-pencil"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-danger"
+                  class="btn btn-sm btn-outline-danger"
                   (click)="deleteCategory(category._id!)"
                 >
                   <i class="cil-trash"></i>

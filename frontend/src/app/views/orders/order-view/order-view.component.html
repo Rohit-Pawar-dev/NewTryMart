@@ -18,16 +18,16 @@
           <!-- Right Column -->
           <div class="mb-2 text-end">
             <div>
-              <strong>Status:</strong>
-              <span class="badge bg-info text-dark">{{ o.status }}</span>
+              <strong>Status: </strong>
+              <span class="badge bg-warning text-light">{{ o.status }}</span>
             </div>
             <div><strong>Payment Method:</strong> {{ o.payment_method }}</div>
             <div>
-              <strong>Payment Status:</strong>
+              <strong>Payment Status: </strong>
               <span
                 [ngClass]="{
-                  'text-success': o.payment_status === 'Paid',
-                  'text-danger': o.payment_status === 'Unpaid'
+                  'text-success fw-bold': o.payment_status === 'Paid',
+                  'text-danger fw-bold': o.payment_status === 'Unpaid'
                 }"
               >
                 {{ o.payment_status }}
@@ -43,7 +43,7 @@
       </div>
 
       <!-- Item Table -->
-      <div class="table-responsive">
+      <div class="table-responsive table table-bordered">
         <table class="table table-bordered text-nowrap">
           <thead class="table-light">
             <tr>
