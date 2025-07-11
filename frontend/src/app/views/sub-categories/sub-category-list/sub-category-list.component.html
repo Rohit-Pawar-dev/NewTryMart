@@ -3,7 +3,7 @@
     <h3>SubCategory Management</h3>
   </div>
   <div class="card-body">
-    <div class="table-responsive">
+    <div class="table-responsive table-bordered">
       <div class="mb-3 d-flex justify-content-between align-items-center">
         <input
           type="text"
@@ -34,7 +34,7 @@
             <td>{{ sub.name }}</td>
             <td>{{ getCategoryName(sub.category_id) }}</td>
 
-            <td><img [src]="sub.image" width="100" class="img-thumbnail" /></td>
+            <td><img [src]="sub.image" width="100" class="img-thumbnail" style="width:100px; height:50px;" /></td>
             <td>
               <span
                 class="badge"
@@ -49,25 +49,25 @@
             <td>
               <div class="btn-group" role="group">
                 <button
-                  class="btn btn-sm btn-secondary"
+                  class="btn btn-sm btn-outline-secondary"
                   (click)="toggleStatus(sub)"
                 >
                   <i class="cil-sync"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-info"
+                  class="btn btn-sm btn-outline-info"
                   [routerLink]="['/sub-categories/view', sub._id]"
                 >
                   <i class="cil-magnifying-glass"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-warning"
+                  class="btn btn-sm btn-outline-warning"
                   [routerLink]="['/sub-categories/edit', sub._id]"
                 >
                   <i class="cil-pencil"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-danger"
+                  class="btn btn-sm btn-outline-danger"
                   (click)="deleteSubCategory(sub._id!)"
                 >
                   <i class="cil-trash"></i>

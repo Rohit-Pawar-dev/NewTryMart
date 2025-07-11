@@ -36,6 +36,7 @@
                 [src]="product.thumbnail"
                 width="100"
                 class="img-thumbnail"
+                style="width:100px; height:50px;"
               />
             </td>
             <td>{{ product.name }}</td>
@@ -54,28 +55,28 @@
             <td>
               <div class="btn-group" role="group">
                 <button
-                  class="btn btn-sm btn-secondary"
+                  class="btn btn-sm btn-outline-secondary"
                   (click)="toggleStatus(product)"
                   title="Toggle Status"
                 >
                   <i class="cil-sync"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-info"
+                  class="btn btn-sm btn-outline-info"
                   [routerLink]="['/products/view', product._id]"
                   title="View"
                 >
                   <i class="cil-magnifying-glass"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-warning"
+                  class="btn btn-sm btn-outline-warning"
                   [routerLink]="['/products/edit', product._id]"
                   title="Edit"
                 >
                   <i class="cil-pencil"></i>
                 </button>
                 <button
-                  class="btn btn-sm btn-danger"
+                  class="btn btn-sm btn-outline-danger"
                   (click)="deleteProduct(product._id!)"
                   title="Delete"
                 >

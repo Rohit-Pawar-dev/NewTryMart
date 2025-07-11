@@ -112,3 +112,70 @@
   border: 1px solid #d5d5d5;
   border-radius: 5px;
 }
+
+
+//Transaction component css 
+
+
+
+
+
+
+
+
+
+
+//widgets
+
+.dashboard-stat {
+  border: 1px solid #2563eb;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 1.2rem;
+  text-align: center;
+  transition: 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+}
+
+.dashboard-stat:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-icon {
+  font-size: 28px;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-title {
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}
+
+.table-bordered {
+  border: 1px solid #d0e7ff !important; /* Very light blue */
+}
+
+/* Apply same border to table header and all cells */
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #d0e7ff !important;
+}
+
+.sd-btn{
+background-color: #1d4ed8;
+color:white;
+}
+
+.pagination-ul{
+  border: 1px solid #d0e7ff ;
+
+}
