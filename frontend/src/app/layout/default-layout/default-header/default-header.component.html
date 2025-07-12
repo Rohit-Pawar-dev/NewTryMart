@@ -1,15 +1,15 @@
 <!--<c-header class="mb-4 d-print-none" position="sticky">-->
 <ng-container>
-  <c-container [fluid]="true" class="border-bottom px-4">
+  <c-container [fluid]="true" class="border-bottom px-4" style="background: linear-gradient(120deg, rgb(50, 50, 141), #2e6eaf);">
     <button
       [cSidebarToggle]="sidebarId()"
       cHeaderToggler
-      class="btn"
+      class="btn btn-info fw-bold"
       toggle="visible"
       style="margin-inline-start: -14px"
       aria-label="Toggle sidebar navigation"
     >
-      <svg cIcon name="cilMenu" size="lg"></svg>
+      <svg cIcon name="cilMenu" size="lg" class="text-white"></svg>
     </button>
     <!-- <c-header-nav class="d-none d-md-flex">
       <c-nav-item>
@@ -49,7 +49,7 @@
       <ng-container *ngTemplateOutlet="userDropdown" />
     </c-header-nav>
   </c-container>
-  <c-container [fluid]="true" class="px-4">
+  <c-container [fluid]="true" class="px-4 fw-bold" style="text-decoration: none;">
     <c-breadcrumb-router />
   </c-container>
 </ng-container>

@@ -1,24 +1,45 @@
-<div class="card" *ngIf="!isLoading && coupon; else loadingOrError">
+<div class="card shadow rounded-4 border-0" *ngIf="!isLoading && coupon; else loadingOrError">
   <div class="card-header">
-    <h3>Coupon Details</h3>
+    <h4 class="mb-0 fw-semibold">
+      <i class="fas fa-ticket-alt me-2"></i> Coupon Details
+    </h4>
   </div>
-  <div class="card-body">
-    <p><strong>Title:</strong> {{ coupon.couponTitle }}</p>
-    <p><strong>Code:</strong> {{ coupon.couponCode }}</p>
-    <p><strong>Discount Type:</strong> {{ coupon.discountType | titlecase }}</p>
-    <p><strong>Discount Amount:</strong> {{ coupon.discountAmount }}</p>
-    <p><strong>Minimum Purchase:</strong> {{ coupon.minimumPurchase }}</p>
-    <p><strong>Start Date:</strong> {{ coupon.startDate | date: 'mediumDate' }}</p>
-    <p><strong>Expire Date:</strong> {{ coupon.expireDate | date: 'mediumDate' }}</p>
-    <p><strong>Status:</strong> {{ coupon.status | titlecase }}</p>
+  <div class="card-body bg-light">
+    <div class="row mb-2">
+      <div class="col-md-6 mb-2"><strong>Title:</strong> {{ coupon.couponTitle }}</div>
+      <div class="col-md-6 mb-2"><strong>Code:</strong> <span class="text-uppercase text-primary fw-bold">{{ coupon.couponCode }}</span></div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-md-6 mb-2"><strong>Discount Type:</strong> {{ coupon.discountType | titlecase }}</div>
+      <div class="col-md-6 mb-2"><strong>Discount Amount:</strong> ₹{{ coupon.discountAmount }}</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-md-6 mb-2"><strong>Minimum Purchase:</strong> ₹{{ coupon.minimumPurchase }}</div>
+      <div class="col-md-6 mb-2"><strong>Status : </strong>
+        <span
+          class="badge px-3 py-2 rounded-pill"
+          [ngClass]="{
+            'bg-success': coupon.status === 'active',
+            'bg-danger': coupon.status === 'inactive'
+          }"
+        >
+          {{ coupon.status | titlecase }}
+        </span>
+      </div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-md-6 mb-2"><strong>Start Date:</strong> {{ coupon.startDate | date: 'mediumDate' }}</div>
+      <div class="col-md-6 mb-2"><strong>Expire Date:</strong> {{ coupon.expireDate | date: 'mediumDate' }}</div>
+    </div>
   </div>
 </div>
 
 <ng-template #loadingOrError>
   <div class="text-center p-4" *ngIf="isLoading">
-    <p>Loading coupon data...</p>
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Loading coupon data...</p>
   </div>
-  <div class="alert alert-danger" *ngIf="error">
+  <div class="alert alert-danger text-center" *ngIf="error">
     {{ error }}
   </div>
 </ng-template>

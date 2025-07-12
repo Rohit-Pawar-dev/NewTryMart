@@ -1,9 +1,9 @@
 <div class="container mt-4" *ngIf="!isLoading && order">
-  <h3 class="mb-4">Order Details</h3>
+  <h3 class="mb-4 fw-semibold fs-5">Order Details</h3>
 
   <div class="row">
     <!-- Left Panel: Main Content -->
-    <div class="card shadow col-md-8 p-3">
+    <div class="card shadow col-md-8 p-3 mb-2">
       <div *ngIf="order as o" class="mb-4">
         <div class="d-flex justify-content-between flex-wrap">
           <!-- Left Column -->
@@ -173,7 +173,7 @@
 
       <!-- Shipping Address -->
       <div
-        class="border rounded p-3 mt-3 bg-white shadow"
+        class="border rounded p-3 mt-3 bg-white shadow mb-2"
         *ngIf="
           order.shipping_address && isAddressObject(order.shipping_address);
           else noAddress
