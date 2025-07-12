@@ -39,7 +39,7 @@ export class OrderListComponent implements OnInit, OnChanges {
     private orderService: OrderService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const initialStatus = this.route.snapshot.queryParamMap.get('status');

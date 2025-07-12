@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   // Dashboard counts
   dashboardCounts = {

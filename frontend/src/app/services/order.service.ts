@@ -117,7 +117,7 @@ export class OrderService {
   private apiUrl = `${environment.apiUrl}/orders`;
   private transactionUrl = `${environment.apiUrl}/orders/transactions`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * ✅ Get all orders with optional filters, pagination, and date range.
@@ -224,4 +224,5 @@ export class OrderService {
       totalPages: number;
     }>(this.transactionUrl, { params });
   }
+
 }

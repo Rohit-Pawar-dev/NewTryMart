@@ -50,11 +50,11 @@ import { IconDirective } from '@coreui/icons-angular';
     RouterLink,
     DropdownDividerDirective,
     ChartjsComponent,
-    NgStyle ,
+    NgStyle,
   ],
 })
 export class WidgetsDropdownComponent implements OnInit, AfterContentInit {
-  constructor(private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private changeDetectorRef: ChangeDetectorRef) { }
 
   @Input() userCount: number | null = null;
   @Input() sellerCount: number | null = null;
@@ -67,7 +67,7 @@ export class WidgetsDropdownComponent implements OnInit, AfterContentInit {
   @Input() shippedOrderCount: number | null = null;
   @Input() confirmedOrderCount: number | null = null;
   @Input() outOfDeliveryCount: number | null = null;
-    @Input() packagingOrderCount: number | null = null;
+  @Input() packagingOrderCount: number | null = null;
 
   @Output() statusSelected = new EventEmitter<string>();
 
@@ -149,21 +149,21 @@ export class WidgetsDropdownComponent implements OnInit, AfterContentInit {
     },
   };
 
- orderStats: any[] = [];
+  orderStats: any[] = [];
 
-ngOnInit(): void {
-  this.setData();
-  this.orderStats = [
-    { title: 'Total Orders', value: this.allOrderCount, icon: 'cil-user', color: 'text-success', key: 'all' },
-    { title: 'Pending Orders', value: this.pendingOrderCount, icon: 'cil-clock', color: 'text-warning', key: 'Pending' },
-    { title: 'Confirmed Orders', value: this.confirmedOrderCount, icon: 'cil-check-circle', color: 'text-primary', key: 'Confirmed' },
-    { title: 'Shipped Orders', value: this.shippedOrderCount, icon: 'cil-truck', color: 'text-info', key: 'Shipped' },
-    { title: 'Out of Delivery', value: this.outOfDeliveryCount, icon: 'cil-paper-plane', color: 'text-info', key: 'outOfDelivery' },
-    { title: 'Delivered Orders', value: this.deliveredOrderCount, icon: 'cil-envelope-open', color: 'text-secondary', key: 'Delivered' },
-    { title: 'Cancelled Orders', value: this.cancelledOrderCount, icon: 'cil-ban', color: 'text-danger', key: 'Cancelled' },
-    { title: 'Returned Orders', value: this.returnOrderCount, icon: 'cil-loop-circular', color: 'text-dark', key: 'Returned' },
-  ];
-}
+  ngOnInit(): void {
+    this.setData();
+    this.orderStats = [
+      { title: 'Total Orders', value: this.allOrderCount, icon: 'cil-user', color: 'text-success', key: 'all' },
+      { title: 'Pending Orders', value: this.pendingOrderCount, icon: 'cil-clock', color: 'text-warning', key: 'Pending' },
+      { title: 'Confirmed Orders', value: this.confirmedOrderCount, icon: 'cil-check-circle', color: 'text-primary', key: 'Confirmed' },
+      { title: 'Shipped Orders', value: this.shippedOrderCount, icon: 'cil-truck', color: 'text-info', key: 'Shipped' },
+      { title: 'Out of Delivery', value: this.outOfDeliveryCount, icon: 'cil-paper-plane', color: 'text-info', key: 'outOfDelivery' },
+      { title: 'Delivered Orders', value: this.deliveredOrderCount, icon: 'cil-envelope-open', color: 'text-secondary', key: 'Delivered' },
+      { title: 'Cancelled Orders', value: this.cancelledOrderCount, icon: 'cil-ban', color: 'text-danger', key: 'Cancelled' },
+      { title: 'Returned Orders', value: this.returnOrderCount, icon: 'cil-loop-circular', color: 'text-dark', key: 'Returned' },
+    ];
+  }
 
 
   ngAfterContentInit(): void {
