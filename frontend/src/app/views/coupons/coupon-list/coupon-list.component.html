@@ -1,9 +1,9 @@
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
+  <div class="card-header d-flex justify-content-between align-items-center card-header">
     <h3>Coupon Management</h3>
   </div>
   <div class="card-body">
-    <div class="table-responsive table-bordered">
+    <div class=" text-center table-responsive table-bordered">
       <div class="mb-3 d-flex justify-content-between align-items-center">
         <input
           type="text"
@@ -55,23 +55,24 @@
             </td>
             <td>
               <div class="btn-group" role="group">
-                <button
-                  class="btn btn-sm btn-outline-secondary"
-                  (click)="toggleStatus(coupon)"
-                >
-                  <i class="cil-sync"></i>
-                </button>
+                
                 <button
                   class="btn btn-sm btn-outline-info"
                   [routerLink]="['/coupons/view', coupon._id]"
                 >
-                  <i class="cil-magnifying-glass"></i>
+                  <i class="far fa-eye fs-6"></i>
                 </button>
                 <button
                   class="btn btn-sm btn-outline-warning"
                   [routerLink]="['/coupons/edit', coupon._id]"
                 >
                   <i class="cil-pencil"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="toggleStatus(coupon)"
+                >
+                  <i class="cil-sync"></i>
                 </button>
                 <button
                   class="btn btn-sm btn-outline-danger"

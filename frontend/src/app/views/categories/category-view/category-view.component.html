@@ -3,17 +3,21 @@
     <h3>Category Details</h3>
   </div>
   <div class="card-body">
-    <p><strong>Name:</strong> {{ category.name }}</p>
-    <p>
-      <strong>Image:</strong><br />
-      <img
-        [src]="category.image"
-        alt="{{ category.name }}"
-        width="200"
-        height="200"
-      />
-    </p>
-    <p><strong>Status:</strong> {{ category.status }}</p>
+    <div class="row">
+      <div class="col-md-6">
+        <p>
+          <strong>Image:</strong><br />
+          <img [src]="category.image" alt="{{ category.name }}" width="200" height="200" />
+        </p>
+      </div>
+      <div class="col-md-6 d-flex flex-column">
+        <p><strong>Name:</strong> {{ category.name }}</p>
+        <p><strong>Status:  </strong><span class="badge" [ngClass]="{
+                  'bg-success': category.status === 'active',
+                  'bg-danger': category.status === 'inactive'
+                }">{{ category.status | titlecase }}</span></p>
+      </div>
+    </div>
   </div>
 </div>
 
