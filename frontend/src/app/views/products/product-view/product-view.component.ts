@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
   //   styleUrls: ['./product-view.component.css']
 })
 export class ProductViewComponent implements OnInit {
+  objectKeys = Object.keys;
   product: Product | null = null;
   categoryName: string = 'N/A';
 
@@ -18,7 +19,7 @@ export class ProductViewComponent implements OnInit {
     private route: ActivatedRoute,
     private productService: ProductService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const productId = this.route.snapshot.paramMap.get('id');
