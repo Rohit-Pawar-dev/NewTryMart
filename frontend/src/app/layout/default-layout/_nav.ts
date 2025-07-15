@@ -45,12 +45,17 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-tags' },
   },
   {
+    name: 'Attributes',
+    url: '/attributes',
+    iconComponent: { name: 'cil-list' },
+  },
+  {
     name: 'Products',
     url: '/products',
     iconComponent: { name: 'cil-list' },
   },
 
-   {
+  {
     name: 'Seller Products',
     url: '/seller-products',
     iconComponent: { name: 'cil-tags' },
@@ -99,7 +104,7 @@ export const navItems: INavData[] = [
     url: '/business-setup',
     iconComponent: { name: 'cil-star' },
   },
-{
+  {
     name: 'Static Pages',
     url: '/static-pages',
     iconComponent: { name: 'cil-star' },
