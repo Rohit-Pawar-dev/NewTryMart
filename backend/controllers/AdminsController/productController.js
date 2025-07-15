@@ -1,36 +1,53 @@
 const Product = require("../../models/Product");
 const VariantOption = require("../../models/VariantOption");
 const Review = require("../../models/Review");
+const mongoose = require('mongoose');
+
 // Create Product
-function generateSkuCode(name) {
-  const cleanName = name.toLowerCase().replace(/\s+/g, "-").substring(0, 10);
-  const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase(); // 4-char random
-  const randomNum = Math.floor(100 + Math.random() * 900); // 3-digit number
-  return `${cleanName}-${randomStr}${randomNum}`;
-}
-function generateVariantCombinations(variants) {
-  if (!variants || variants.length === 0) return [];
+// Helper to generate a SKU code
+const generateSkuCode = (base) => {
+  return (
+    base
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "") +
+    "-" +
+    Math.floor(Math.random() * 100000)
+  );
+};
 
-  const [first, ...rest] = variants;
-  let combinations = first.values.map((val) => ({ [first.name]: val }));
+// Helper to generate slug
+const generateSlug = (name) => {
+  return (
+    name
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "") +
+    "-" +
+    Math.floor(Math.random() * 10000)
+  );
+};
 
-  for (const variant of rest) {
-    combinations = combinations.flatMap((combo) =>
-      variant.values.map((val) => ({
-        ...combo,
-        [variant.name]: val,
-      }))
+// Helper to generate all combinations of variant values
+const generateVariantCombinations = (variants) => {
+  const combine = (index, current) => {
+    if (index === variants.length) return [current];
+
+    return variants[index].values.flatMap((value) =>
+      combine(index + 1, { ...current, [variants[index].name]: value })
     );
-  }
+  };
 
-  return combinations;
-}
+  return combine(0, {});
+};
+
 
 exports.createProduct = async (req, res) => {
   try {
     const data = req.body;
 
-    // Auto-fill seller/admin flags
+    // Set admin/seller flags
     if (data.added_by === "admin") {
       data.seller_id = null;
       data.status = 1;
@@ -40,53 +57,71 @@ exports.createProduct = async (req, res) => {
       data.request_status = 0;
     }
 
-    // Ensure name is present
+    // Validate required name
     if (!data.name) {
-      return res
-        .status(400)
-        .json({ error: "Product name is required to generate SKU." });
+      return res.status(400).json({ error: "Product name is required to generate SKU." });
     }
 
-    // Generate and attach unique product-level SKU
+    // Generate unique product-level SKU
     let sku = generateSkuCode(data.name);
     while (await Product.findOne({ sku_code: sku })) {
       sku = generateSkuCode(data.name);
     }
     data.sku_code = sku;
 
-    // Save product first
-    const product = await Product.create(data);
+    // Generate unique slug
+    let slug = generateSlug(data.name);
+    while (await Product.findOne({ slug })) {
+      slug = generateSlug(data.name);
+    }
+    data.slug = slug;
 
-    // If variants exist, handle variant options
+    // Save product (no session here)
+    const [product] = await Product.create([data]);
+
+    // Handle variants
     let variationOptions = [];
 
     if (data.variation_options?.length > 0) {
-      // Use provided variation options
-      variationOptions = data.variation_options.map((option) => ({
-        product_id: product._id,
-        variant_values: option.variant_values,
-        price: option.price,
-        stock: option.stock || 0,
-        images: option.images || [],
-        sku:
-          option.sku ||
-          generateSkuCode(
-            data.name + "-" + Object.values(option.variant_values).join("-")
-          ),
-      }));
+      // Manual variant options provided
+      for (const option of data.variation_options) {
+        let variantSku = option.sku || generateSkuCode(
+          data.name + "-" + Object.values(option.variant_values).join("-")
+        );
+
+        while (await VariantOption.findOne({ sku: variantSku })) {
+          variantSku = generateSkuCode(data.name + "-" + Object.values(option.variant_values).join("-"));
+        }
+
+        variationOptions.push({
+          product_id: product._id,
+          variant_values: option.variant_values,
+          price: option.price,
+          stock: option.stock || 0,
+          images: option.images || [],
+          sku: variantSku,
+        });
+      }
     } else if (data.variants?.length > 0) {
-      // Auto-generate variation combinations
+      // Auto-generate variant options from variant definitions
       const combinations = generateVariantCombinations(data.variants);
-      variationOptions = combinations.map((variant_values) => ({
-        product_id: product._id,
-        variant_values,
-        price: data.unit_price,
-        stock: 10,
-        images: [],
-        sku: generateSkuCode(
-          data.name + "-" + Object.values(variant_values).join("-")
-        ),
-      }));
+
+      for (const variant_values of combinations) {
+        let variantSku = generateSkuCode(data.name + "-" + Object.values(variant_values).join("-"));
+
+        while (await VariantOption.findOne({ sku: variantSku })) {
+          variantSku = generateSkuCode(data.name + "-" + Object.values(variant_values).join("-"));
+        }
+
+        variationOptions.push({
+          product_id: product._id,
+          variant_values,
+          price: data.unit_price,
+          stock: 10,
+          images: [],
+          sku: variantSku,
+        });
+      }
     }
 
     if (variationOptions.length > 0) {
@@ -108,37 +143,78 @@ exports.createProduct = async (req, res) => {
 //     const data = req.body;
 
 //     // Auto-fill seller/admin flags
-//     if (data.added_by === 'admin') {
+//     if (data.added_by === "admin") {
 //       data.seller_id = null;
 //       data.status = 1;
 //       data.request_status = 1;
-//     } else if (data.added_by === 'seller') {
+//     } else if (data.added_by === "seller") {
 //       data.status = 0;
 //       data.request_status = 0;
 //     }
 
 //     // Ensure name is present
 //     if (!data.name) {
-//       return res.status(400).json({ error: "Product name is required to generate SKU." });
+//       return res
+//         .status(400)
+//         .json({ error: "Product name is required to generate SKU." });
 //     }
 
-//     // Generate and attach unique SKU
+//     // Generate and attach unique product-level SKU
 //     let sku = generateSkuCode(data.name);
-
-//     // Ensure uniqueness in DB (in rare case of conflict)
-//     let skuExists = await Product.findOne({ sku_code: sku });
-//     while (skuExists) {
+//     while (await Product.findOne({ sku_code: sku })) {
 //       sku = generateSkuCode(data.name);
-//       skuExists = await Product.findOne({ sku_code: sku });
 //     }
 //     data.sku_code = sku;
 
+//     // Save product first
 //     const product = await Product.create(data);
-//     res.status(201).json(product);
+
+//     // If variants exist, handle variant options
+//     let variationOptions = [];
+
+//     if (data.variation_options?.length > 0) {
+//       // Use provided variation options
+//       variationOptions = data.variation_options.map((option) => ({
+//         product_id: product._id,
+//         variant_values: option.variant_values,
+//         price: option.price,
+//         stock: option.stock || 0,
+//         images: option.images || [],
+//         sku:
+//           option.sku ||
+//           generateSkuCode(
+//             data.name + "-" + Object.values(option.variant_values).join("-")
+//           ),
+//       }));
+//     } else if (data.variants?.length > 0) {
+//       // Auto-generate variation combinations
+//       const combinations = generateVariantCombinations(data.variants);
+//       variationOptions = combinations.map((variant_values) => ({
+//         product_id: product._id,
+//         variant_values,
+//         price: data.unit_price,
+//         stock: 10,
+//         images: [],
+//         sku: generateSkuCode(
+//           data.name + "-" + Object.values(variant_values).join("-")
+//         ),
+//       }));
+//     }
+
+//     if (variationOptions.length > 0) {
+//       await VariantOption.insertMany(variationOptions);
+//     }
+
+//     res.status(201).json({
+//       message: "Product created successfully",
+//       product,
+//       variant_count: variationOptions.length,
+//     });
 //   } catch (err) {
 //     res.status(400).json({ error: err.message });
 //   }
 // };
+
 
 // Admin - Get All Products
 exports.getAllProducts = async (req, res) => {
@@ -277,52 +353,57 @@ exports.updateProduct = async (req, res) => {
     const productId = req.params.id;
     const data = req.body;
 
-    // 1. Find existing product
     const existingProduct = await Product.findById(productId);
     if (!existingProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // 2. Business logic check: Prevent activating if not approved
-    const incomingStatus = data.status;
-    const incomingRequestStatus = data.request_status;
+    // Your existing status checks...
 
-    // If the product is pending approval, and someone tries to activate it
     if (
       existingProduct.request_status === 0 &&
-      incomingStatus === 1 &&
+      data.status === 1 &&
       existingProduct.status === 0
     ) {
       return res.status(400).json({
-        error:
-          "Product must be approved (request_status = 1) before activating.",
+        error: "Product must be approved (request_status = 1) before activating.",
       });
     }
 
-    // If admin approves the product (request_status = 1) — optionally auto-activate
     if (
       existingProduct.request_status === 0 &&
-      incomingRequestStatus === 1 &&
+      data.request_status === 1 &&
       existingProduct.status === 0 &&
-      incomingStatus === undefined
+      data.status === undefined
     ) {
-      // Auto set status to inactive (admin must explicitly activate later)
       data.status = 0;
     }
 
-    // 3. Update product
+    // Update product
     const updatedProduct = await Product.findByIdAndUpdate(productId, data, {
       new: true,
     });
 
-    // 4. Handle variation options
+    // Handle variation options
     if (Array.isArray(data.variation_options)) {
       await VariantOption.deleteMany({ product_id: productId });
 
-      const newVariants = data.variation_options.map((variant) => ({
-        ...variant,
-        product_id: productId,
-      }));
+      const newVariants = data.variation_options.map((variant, index) => {
+        // Use product name or something as base for SKU generation
+        const base = variant.name || `variant-${index + 1}`;
+
+        let sku = variant.sku;
+        if (typeof sku !== "string" || sku.trim() === "") {
+          // Generate SKU if missing or empty
+          sku = generateSkuCode(base);
+        }
+
+        return {
+          ...variant,
+          sku,
+          product_id: productId,
+        };
+      });
 
       await VariantOption.insertMany(newVariants);
     }
