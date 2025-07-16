@@ -78,11 +78,4 @@
 2025-07-12T06:47:33.000Z [info]: Retrieving Users List 
 2025-07-12T06:47:33.720Z [info]: Retrieving Users List 
 2025-07-12T06:47:36.611Z [info]: Retrieving Users List 
-2025-07-14T04:57:04.215Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
-2025-07-14T04:58:34.491Z [error]: Error retrieving orders Operation `users.find()` buffering timed out after 10000ms
-2025-07-14T04:58:44.539Z [error]: Error retrieving orders Operation `users.find()` buffering timed out after 10000ms
-2025-07-14T04:58:54.554Z [error]: Error retrieving orders Operation `users.find()` buffering timed out after 10000ms
-2025-07-14T04:59:50.021Z [error]: Error retrieving orders Operation `users.find()` buffering timed out after 10000ms
-2025-07-14T05:00:00.038Z [error]: Error retrieving orders Operation `users.find()` buffering timed out after 10000ms
-2025-07-15T05:08:28.535Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
-2025-07-15T05:09:21.320Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
+2025-07-15T08:27:01.190Z [info]: connect ETIMEDOUT 68.178.169.235:27017
