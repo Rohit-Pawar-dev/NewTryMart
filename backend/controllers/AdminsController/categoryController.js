@@ -59,6 +59,7 @@ exports.getAllCategories = async (req, res) => {
   }
 };
 
+
 // exports.getAllCategories = async (req, res) => {
 //   try {
 //     const { all, search = "", limit = 10, offset = 0 } = req.query;
