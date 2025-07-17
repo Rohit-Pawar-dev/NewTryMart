@@ -7,11 +7,7 @@
       <!-- Status Filter -->
       <div class="col-md-3">
         <label class="form-label">Filter by Status</label>
-        <select
-          class="form-select"
-          [(ngModel)]="status"
-          (change)="onStatusChange()"
-        >
+        <select class="form-select" [(ngModel)]="status" (change)="onStatusChange()">
           <option value="all">All</option>
           <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
         </select>
@@ -20,23 +16,13 @@
       <!-- Start Date -->
       <div class="col-md-3">
         <label class="form-label">Start Date</label>
-        <input
-          type="date"
-          class="form-control"
-          [value]="startDate"
-          (change)="onStartDateChange($event)"
-        />
+        <input type="date" class="form-control" [value]="startDate" (change)="onStartDateChange($event)" />
       </div>
 
       <!-- End Date -->
       <div class="col-md-3">
         <label class="form-label">End Date</label>
-        <input
-          type="date"
-          class="form-control"
-          [value]="endDate"
-          (change)="onEndDateChange($event)"
-        />
+        <input type="date" class="form-control" [value]="endDate" (change)="onEndDateChange($event)" />
       </div>
 
       <!-- Show Data Button -->
@@ -51,14 +37,10 @@
       <div class="col-md-6">
         <label class="form-label">Search by Customer Name or Mobile</label>
         <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Customer Name or Mobile"
-            [(ngModel)]="searchText"
-            (ngModelChange)="onSearchChange()"
-          />
+          <input type="text" class="form-control" placeholder="Customer Name or Mobile" [(ngModel)]="searchText"
+            (ngModelChange)="onSearchChange()" />
           <!-- <button class="btn btn-outline-primary" type="button" (click)="onSearchChange()">Search</button> -->
+
         </div>
       </div>
     </div>
@@ -70,55 +52,50 @@
   </div>
 
   <!-- Orders Table -->
-<!-- Orders Table -->
-<div class="table-responsive" *ngIf="!isLoading && orders.length > 0">
-  <table class="table align-middle table-bordered shadow-sm rounded">
-    <thead class="bg-light text-muted border-bottom">
-      <tr>
-        <th>SL</th>
-        <th>Order ID</th>
-        <th>Order Date</th>
-        <th>Customer Info</th>
-        <th>Store</th>
-        <th>Total Amount</th>
-        <th>Order Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let order of orders; let i = index" class="border-bottom bg-white fs-6">
-        <td>{{ (currentPage - 1) * limit + i + 1 }}</td>
-        <td><strong>{{ order._id || 'N/A' }}</strong></td>
-        <td>{{ order.createdAt | date: 'dd MMM yyyy, hh:mm a' }}</td>
-        <td>
-          <div class="fw-semibold">{{ order.customer_id?.name || 'Guest User' }}</div>
-          <div class="text-muted small">{{ order.customer_id?.mobile || 'N/A' }}</div>
-        </td>
-        <td>
-          <ng-container *ngIf="order.seller_id; else adminStore">
-            <div class="fw-semibold">{{ order.seller_id?.shop_name || 'N/A' }}</div>
-            <div class="text-muted small">{{ order.seller_id?.mobile || 'N/A' }}</div>
-          </ng-container>
-          <ng-template #adminStore>
-            <div class="fw-semibold">Admin</div>
-          </ng-template>
-        </td>
-        <td>
-          ₹{{ order.total_price | number: '1.2-2' }}
-          <div
-            class="small fw-semibold"
-            [ngClass]="{
+  <!-- Orders Table -->
+  <div class="table-responsive" *ngIf="!isLoading && orders.length > 0">
+    <table class="table align-middle table-bordered shadow-sm rounded">
+      <thead class="bg-light text-muted border-bottom">
+        <tr>
+          <th>SL</th>
+          <th>Order ID</th>
+          <th>Order Date</th>
+          <th>Customer Info</th>
+          <th>Store</th>
+          <th>Total Amount</th>
+          <th>Order Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders; let i = index" class="border-bottom bg-white fs-6">
+          <td>{{ (currentPage - 1) * limit + i + 1 }}</td>
+          <td><strong>{{ order.order_id || 'N/A' }}</strong></td>
+          <td>{{ order.createdAt | date: 'dd MMM yyyy, hh:mm a' }}</td>
+          <td>
+            <div class="fw-semibold">{{ order.customer_id?.name || 'Guest User' }}</div>
+            <div class="text-muted small">{{ order.customer_id?.mobile || 'N/A' }}</div>
+          </td>
+          <td>
+            <ng-container *ngIf="order.seller_id; else adminStore">
+              <div class="fw-semibold">{{ order.seller_id?.shop_name || 'N/A' }}</div>
+              <div class="text-muted small">{{ order.seller_id?.mobile || 'N/A' }}</div>
+            </ng-container>
+            <ng-template #adminStore>
+              <div class="fw-semibold">Admin</div>
+            </ng-template>
+          </td>
+          <td>
+            ₹{{ order.total_price | number: '1.2-2' }}
+            <div class="small fw-semibold" [ngClass]="{
               'text-danger': order.payment_status === 'Unpaid',
               'text-success': order.payment_status === 'Paid'
-            }"
-          >
-            {{ order.payment_status || 'N/A' }}
-          </div>
-        </td>
-        <td>
-          <span
-            class="badge rounded-pill px-3 py-1"
-            [ngClass]="{
+            }">
+              {{ order.payment_status || 'N/A' }}
+            </div>
+          </td>
+          <td>
+            <span class="badge rounded-pill px-3 py-1" [ngClass]="{
               'bg-info text-dark': order.status === 'Pending',
               'bg-success': order.status === 'Delivered',
               'bg-warning text-dark': order.status === 'Processing',
@@ -126,27 +103,25 @@
               'bg-dark text-white': order.status === 'Returned',
               'bg-secondary text-white': order.status === 'Shipped',
               'bg-light text-success': order.status === 'Confirmed'
-            }"
-          >
-            {{ order.status || 'N/A' }}
-          </span>
-        </td>
-        <td class="d-flex gap-2 mt-2 bg-white">
-          <a
-            [routerLink]="['/orders', order._id]"
-            class="btn btn-outline-primary btn-sm"
-            title="View"
-          >
-            <i class="far fa-eye fs-6"></i>
-          </a>
-          <button class="btn btn-outline-success btn-sm" title="Download">
-            <i class="cil-cloud-download"></i>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+            }">
+              {{ order.status || 'N/A' }}
+            </span>
+          </td>
+          <td class="d-flex gap-2 mt-2 bg-white">
+            <a [routerLink]="['/orders', order._id]" class="btn btn-outline-primary btn-sm" title="View">
+              <i class="far fa-eye fs-6"></i>
+            </a>
+            <!-- <button class="btn btn-outline-success btn-sm" title="Download">
+              <i class="cil-cloud-download"></i>
+            </button> -->
+            <button class="btn btn-outline-success btn-sm" title="View Invoice" [routerLink]="['/invoice', order._id]">
+              <i class="cil-cloud-download"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
 
 
@@ -161,11 +136,8 @@
       <li class="page-item" [class.disabled]="currentPage === 1">
         <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
       </li>
-      <li
-        class="page-item"
-        *ngFor="let page of [].constructor(totalPages); let idx = index"
-        [class.active]="currentPage === idx + 1"
-      >
+      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let idx = index"
+        [class.active]="currentPage === idx + 1">
         <button class="page-link" (click)="changePage(idx + 1)">{{ idx + 1 }}</button>
       </li>
       <li class="page-item" [class.disabled]="currentPage === totalPages">

@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import {
   SubCategoryService,
   SubCategory,
+
 } from '../../../services/sub-category.service';
-import { CategoryService, Category } from '../../../services/category.service';
+import { CategoryService } from '../../../services/category.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-// Import SweetAlert2
 import Swal from 'sweetalert2';
 
 @Component({
@@ -24,22 +24,28 @@ export class SubCategoryListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
+  // Pagination
+  page = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalRecords = 0;
+
   constructor(
     private subCategoryService: SubCategoryService,
     private categoryService: CategoryService,
     private router: Router
-  ) {}
+  ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadData();
   }
 
-  loadData() {
+  loadData(): void {
     this.isLoading = true;
     this.categoryService.getCategories().subscribe({
       next: (cats) => {
         this.categoriesMap = Object.fromEntries(
-          cats.map((c) => [c._id!, c.name])
+          cats.map((c) => [c._id ?? '', c.name])
         );
         this.loadSubCategories();
       },
@@ -50,11 +56,19 @@ export class SubCategoryListComponent implements OnInit {
   }
 
   loadSubCategories() {
+    this.isLoading = true;
     this.subCategoryService
-      .getSubCategories({ search: this.searchTerm })
+      .getSubCategories({
+        search: this.searchTerm,
+        page: this.page,
+        pageSize: this.pageSize,
+        all: true, // optional, based on your use case
+      })
       .subscribe({
-        next: (data) => {
-          this.subCategories = data;
+        next: (res) => {
+          this.subCategories = res.data;
+          this.totalRecords = res.total;
+          this.totalPages = Math.ceil(res.total / this.pageSize);
           this.isLoading = false;
         },
         error: (err) => {
@@ -64,11 +78,19 @@ export class SubCategoryListComponent implements OnInit {
       });
   }
 
-  onSearchChange() {
+  onSearchChange(): void {
+    this.page = 1;
     this.loadSubCategories();
   }
 
-  async deleteSubCategory(id: string) {
+  goToPage(p: number): void {
+    if (p >= 1 && p <= this.totalPages) {
+      this.page = p;
+      this.loadSubCategories();
+    }
+  }
+
+  async deleteSubCategory(id: string): Promise<void> {
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: 'You won’t be able to revert this!',
@@ -91,17 +113,13 @@ export class SubCategoryListComponent implements OnInit {
     }
   }
 
-  toggleStatus(subCategory: SubCategory) {
+  toggleStatus(subCategory: SubCategory): void {
     const newStatus = subCategory.status === 'active' ? 'inactive' : 'active';
     this.subCategoryService
-      .updateSubCategory(subCategory._id!, { status: newStatus })
+      .updateSubCategory(subCategory._id ?? '', { status: newStatus })
       .subscribe({
         next: () => {
-          Swal.fire(
-            'Updated!',
-            `Status changed to ${newStatus}.`,
-            'success'
-          );
+          Swal.fire('Updated!', `Status changed to ${newStatus}.`, 'success');
           this.loadSubCategories();
         },
         error: () => {
@@ -110,7 +128,10 @@ export class SubCategoryListComponent implements OnInit {
       });
   }
 
-  getCategoryName(cat: string | { _id: string; name: string }): string {
-    return typeof cat === 'object' && cat !== null ? cat.name : 'N/A';
+  getCategoryName(cat: string | { _id: string; name: string } | null | undefined): string {
+    if (typeof cat === 'object' && cat !== null) {
+      return cat.name;
+    }
+    return cat && this.categoriesMap[cat] ? this.categoriesMap[cat] : 'N/A';
   }
 }
