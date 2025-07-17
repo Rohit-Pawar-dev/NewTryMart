@@ -129,9 +129,15 @@ async function placeOrder(req, res) {
         couponAmount = couponItem.coupon_amount || 0;
         totalOrderPrice = Math.max(0, totalOrderPrice - couponAmount);
       }
+      // ✅ Generate next 6-digit order_id starting from 100001
+      const latestOrder = await Order.findOne().sort({ order_id: -1 }).select("order_id").lean();
+      const newIdNum = latestOrder?.order_id ? parseInt(latestOrder.order_id) + 1 : 100001;
+      const generatedOrderId = newIdNum;
+
 
       const order = new Order({
         customer_id: userId,
+        order_id: generatedOrderId,
         order_items: orderItemIds,
         shipping_address: shippingAddressId,
         total_price: totalOrderPrice,
@@ -363,9 +369,15 @@ async function placeOrderOnline(req, res) {
         couponAmount = couponItem.coupon_amount || 0;
         totalOrderPrice = Math.max(0, totalOrderPrice - couponAmount);
       }
+      // ✅ Generate next 6-digit order_id starting from 100001
+      const latestOrder = await Order.findOne().sort({ order_id: -1 }).select("order_id").lean();
+      const newIdNum = latestOrder?.order_id ? parseInt(latestOrder.order_id) + 1 : 100001;
+      const generatedOrderId = newIdNum;
+
 
       const order = new Order({
         customer_id: userId,
+        order_id: generatedOrderId,
         order_items: orderItemIds,
         shipping_address: shippingAddressId,
         total_price: totalOrderPrice,

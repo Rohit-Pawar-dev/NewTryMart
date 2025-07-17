@@ -83,6 +83,7 @@ export interface Transaction {
 // ✅ Order Interface
 export interface Order {
   _id?: string;
+  order_id?: number;
   customer_id?: {
     _id?: string;
     name: string;

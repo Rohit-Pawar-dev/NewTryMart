@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
 import { AuthGuard } from './guards/auth.guard';
 import { AttributeComponent } from './views/attribute/attribute.component';
+// import { InvoiceComponent } from './views/orders/invoice/invoice.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,11 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/orders/orders.module').then((m) => m.OrdersModule),
       },
+      // app-routing.module.ts
+      // { path: 'invoice/:id', component: InvoiceComponent },
+
+
+
       {
         path: 'users',
         loadChildren: () =>

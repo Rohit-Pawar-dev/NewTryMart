@@ -30,7 +30,7 @@ const orderSchema = new Schema(
       ref: "Address",
       required: true,
     },
-
+    order_id: { type: Number, required: true, unique: true },
     total_price: { type: Number, required: true },
 
     status: {
