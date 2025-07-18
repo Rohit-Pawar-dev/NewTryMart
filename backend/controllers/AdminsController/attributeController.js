@@ -26,14 +26,38 @@ exports.createAttribute = async (req, res) => {
     }
 };
 
-// Get All Attributes
+// Get All Attributes (with search + pagination)
 exports.getAllAttributes = async (req, res) => {
     try {
-        const attributes = await Attribute.find();
-        res.status(200).json({ data: attributes });
+        const searchText = req.query.search ?? "";
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const filter = {
+            $or: [
+                { name: { $regex: searchText, $options: "i" } },
+                { type: { $regex: searchText, $options: "i" } }, // assuming there's a `type` field
+            ],
+        };
+
+        const total = await Attribute.countDocuments(filter);
+        const attributes = await Attribute.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit);
+
+        res.json({
+            status: true,
+            message: "Attributes fetched successfully",
+            data: attributes,
+            total,
+            limit,
+            offset,
+            totalPages: Math.ceil(total / limit),
+        });
     } catch (error) {
         console.error("Error fetching attributes:", error);
-        res.status(500).json({ error: "Internal server error." });
+        res.status(500).json({ status: false, message: "Internal server error" });
     }
 };
 

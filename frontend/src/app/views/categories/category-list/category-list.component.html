@@ -29,7 +29,8 @@
         </thead>
         <tbody>
           <tr *ngFor="let category of categories; let i = index">
-            <td>{{ i + 1 }}</td>
+            <!-- Calculate serial number based on page & pageSize -->
+            <td>{{ (page - 1) * pageSize + i + 1 }}</td>
             <td>{{ category.name }}</td>
             <td>
               <span class="table-img">
@@ -92,6 +93,27 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Pagination controls -->
+      <nav *ngIf="totalPages > 1" aria-label="Category pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="page === 1">
+            <button class="page-link" (click)="goToPage(page - 1)">Previous</button>
+          </li>
+
+          <li
+            class="page-item"
+            *ngFor="let _ of [].constructor(totalPages); let i = index"
+            [class.active]="page === i + 1"
+          >
+            <button class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</button>
+          </li>
+
+          <li class="page-item" [class.disabled]="page === totalPages">
+            <button class="page-link" (click)="goToPage(page + 1)">Next</button>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>

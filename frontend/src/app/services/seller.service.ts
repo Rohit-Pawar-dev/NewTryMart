@@ -37,20 +37,20 @@ export interface Seller {
 export class SellerService {
   private apiUrl = `${environment.apiUrl}/sellers`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getSellers(
-    search: string = '',
-    page: number = 1,
-    pageSize: number = 10
-  ): Observable<any> {
+  getSellers(search: string = '', page: number = 1, pageSize: number = 10): Observable<any> {
     const params = new URLSearchParams();
+
+    const offset = (page - 1) * pageSize;
+
     if (search) params.append('search', search);
-    params.append('page', page.toString());
-    params.append('pageSize', pageSize.toString());
+    params.append('limit', pageSize.toString());
+    params.append('offset', offset.toString());
 
     return this.http.get<any>(`${this.apiUrl}?${params.toString()}`);
   }
+
 
   getSeller(id: string): Observable<Seller> {
     return this.http.get<Seller>(`${this.apiUrl}/${id}`);

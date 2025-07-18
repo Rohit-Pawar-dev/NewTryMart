@@ -17,7 +17,12 @@ export class SellerProductListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
-  constructor(private productService: ProductService, private router: Router) {}
+  // Pagination State
+  limit = 10;
+  offset = 0;
+  total = 0;
+
+  constructor(private productService: ProductService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -28,12 +33,17 @@ export class SellerProductListComponent implements OnInit {
 
     const queryParams = {
       search: this.searchTerm,
-      added_by: 'seller', // ✅ Fetch seller products only
+      added_by: 'seller',
+      limit: this.limit,
+      offset: this.offset,
     };
 
     this.productService.getAllProducts(queryParams).subscribe({
       next: (res) => {
         this.products = Array.isArray(res) ? res : res.data || [];
+        this.total = res.total || 0;
+        this.limit = res.limit || this.limit;
+        this.offset = res.offset || this.offset;
         this.isLoading = false;
       },
       error: (err) => {
@@ -45,6 +55,7 @@ export class SellerProductListComponent implements OnInit {
   }
 
   onSearchChange(): void {
+    this.offset = 0; // Reset to first page on search
     this.loadProducts();
   }
 
@@ -109,5 +120,36 @@ export class SellerProductListComponent implements OnInit {
           Swal.fire('Error', 'Failed to update product status', 'error');
         },
       });
+  }
+
+  // --- Pagination Logic ---
+  get currentPage(): number {
+    return Math.floor(this.offset / this.limit) + 1;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.total / this.limit);
+  }
+
+  nextPage(): void {
+    if (this.offset + this.limit < this.total) {
+      this.offset += this.limit;
+      this.loadProducts();
+    }
+  }
+
+  prevPage(): void {
+    if (this.offset >= this.limit) {
+      this.offset -= this.limit;
+      this.loadProducts();
+    }
+  }
+
+  goToPage(page: number): void {
+    const newOffset = (page - 1) * this.limit;
+    if (newOffset >= 0 && newOffset < this.total) {
+      this.offset = newOffset;
+      this.loadProducts();
+    }
   }
 }

@@ -31,7 +31,8 @@
         </thead>
         <tbody>
           <tr *ngFor="let seller of sellers; let i = index">
-            <td>{{ i + 1 }}</td>
+          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+
             <td>
               <div class="u-div d-flex align-items-center gap-3">
                 <div class="img-user">

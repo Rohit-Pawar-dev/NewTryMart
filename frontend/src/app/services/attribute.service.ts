@@ -24,9 +24,16 @@ export class AttributeService {
     }
 
     // Get all attributes
-    getAllAttributes(): Observable<{ data: Attribute[] }> {
-        return this.http.get<{ data: Attribute[] }>(`${this.baseUrl}/view`);
+    getAllAttributes(search: string = '', limit: number = 10, offset: number = 0): Observable<any> {
+        const params = {
+            search,
+            limit: limit.toString(),
+            offset: offset.toString(),
+        };
+
+        return this.http.get<any>(`${this.baseUrl}/view`, { params });
     }
+
 
     // Get attributes by type (color or size)
     getAttributesByType(type: 'color' | 'size'): Observable<{ data: Attribute[] }> {

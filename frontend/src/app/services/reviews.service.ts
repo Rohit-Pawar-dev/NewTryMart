@@ -22,16 +22,19 @@ export interface Review {
 export class ReviewsService {
   private apiUrl = `${environment.apiUrl}/review`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  // Fetch all reviews with optional query params (pagination or search)
   getReviews(
     params: { search?: string; limit?: number; offset?: number } = {}
-  ): Observable<Review[]> {
-    const query = new URLSearchParams({ ...params } as any).toString();
-    return this.http
-      .get<{ data: Review[] }>(`${this.apiUrl}?${query}`)
-      .pipe(map((response) => response.data));
+  ): Observable<{
+    data: Review[];
+    total: number;
+    limit: number;
+    offset: number;
+    totalPages: number;
+  }> {
+    const query = new URLSearchParams(params as any).toString();
+    return this.http.get<any>(`${this.apiUrl}?${query}`);
   }
 
   // Get a single review by ID

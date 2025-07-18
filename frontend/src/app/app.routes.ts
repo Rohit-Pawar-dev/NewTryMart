@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
 import { AuthGuard } from './guards/auth.guard';
 import { AttributeComponent } from './views/attribute/attribute.component';
-// import { InvoiceComponent } from './views/orders/invoice/invoice.component';
 
 export const routes: Routes = [
   {
@@ -10,10 +9,11 @@ export const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
+
   {
     path: '',
     component: DefaultLayoutComponent,
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     data: {
       title: 'Home',
     },
@@ -22,6 +22,7 @@ export const routes: Routes = [
         path: 'attributes',
         component: AttributeComponent,
       },
+
       {
         path: 'dashboard',
         loadChildren: () =>
@@ -78,6 +79,8 @@ export const routes: Routes = [
             (m) => m.ProductModule
           ),
       },
+
+
       {
         path: 'business-setup',
         canActivate: [AuthGuard], // <-- also protect standalone ones

@@ -16,6 +16,13 @@ export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
   searchTerm = '';
   isLoading = false;
+  public Math = Math;
+
+  // Pagination properties
+  page = 1;
+  pageSize = 10;
+  total = 0;
+  totalPages = 0;
 
   constructor(
     private categoryService: CategoryService,
@@ -28,11 +35,20 @@ export class CategoryListComponent implements OnInit {
 
   loadCategories() {
     this.isLoading = true;
+    const offset = (this.page - 1) * this.pageSize;
+
     this.categoryService
-      .getCategories({ search: this.searchTerm, all: true })
+      .getCategories({
+        search: this.searchTerm,
+        limit: this.pageSize,
+        offset: offset,
+        all: true
+      })
       .subscribe({
-        next: (data) => {
-          this.categories = data;
+        next: (res) => {
+          this.categories = res.data;
+          this.total = res.total;
+          this.totalPages = res.totalPages;
           this.isLoading = false;
         },
         error: (err) => {
@@ -44,7 +60,15 @@ export class CategoryListComponent implements OnInit {
   }
 
   onSearchChange() {
+    this.page = 1; // Reset to first page on search
     this.loadCategories();
+  }
+
+  goToPage(p: number) {
+    if (p >= 1 && p <= this.totalPages) {
+      this.page = p;
+      this.loadCategories();
+    }
   }
 
   deleteCategory(id: string) {
