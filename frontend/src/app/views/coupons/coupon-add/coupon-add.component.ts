@@ -24,7 +24,7 @@ export class CouponAddComponent {
     this.form = this.fb.group({
       couponTitle: ['', Validators.required],
       couponCode: ['', Validators.required],
-      discountType: ['percentage', Validators.required],
+      discountType: ['percent', Validators.required],
       discountAmount: [0, [Validators.required, Validators.min(0)]],
       minimumPurchase: [0, [Validators.required, Validators.min(0)]],
       startDate: ['', Validators.required],

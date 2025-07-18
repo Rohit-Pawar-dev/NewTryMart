@@ -8,7 +8,7 @@ export interface Coupon {
   _id?: string;
   couponTitle: string;
   couponCode: string;
-  discountType: 'flat' | 'percentage';
+  discountType: 'flat' | 'percent';
   discountAmount: number;
   minimumPurchase: number;
   startDate: string;
