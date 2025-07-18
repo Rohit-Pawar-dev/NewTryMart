@@ -8,7 +8,7 @@
         <div class="d-flex justify-content-between flex-wrap">
           <!-- Left Column -->
           <div class="mb-2">
-            <div><strong>Order ID:</strong> {{ o._id }}</div>
+            <div><strong>Order ID:</strong> {{ o.order_id }}</div>
             <div>
               <strong>Date:</strong>
               {{ o.createdAt | date : "dd MMM yyyy, hh:mm a" }}
@@ -24,12 +24,10 @@
             <div><strong>Payment Method:</strong> {{ o.payment_method }}</div>
             <div>
               <strong>Payment Status: </strong>
-              <span
-                [ngClass]="{
+              <span [ngClass]="{
                   'text-success fw-bold': o.payment_status === 'Paid',
                   'text-danger fw-bold': o.payment_status === 'Unpaid'
-                }"
-              >
+                }">
                 {{ o.payment_status }}
               </span>
             </div>
@@ -59,12 +57,7 @@
               <td>{{ i + 1 }}</td>
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  <img
-                    [src]="item.product_id?.thumbnail || item.thumbnail"
-                    alt="thumb"
-                    width="50"
-                    height="50"
-                  />
+                  <img [src]="item.product_id?.thumbnail || item.thumbnail" alt="thumb" width="50" height="50" />
                   <div>
                     <div class="fw-semibold">{{ item.name }}</div>
                     <div class="small text-success">
@@ -76,7 +69,9 @@
                   </div>
                 </div>
               </td>
-              <td><div class="small text-success">{{ item.tax || 0 }}₹</div></td>
+              <td>
+                <div class="small text-success">{{ item.tax || 0 }}₹</div>
+              </td>
               <td>{{ item.discount || 0 }}₹</td>
               <td>{{ item.total_price | number : "1.2-2" }}₹</td>
             </tr>
@@ -134,9 +129,7 @@
 
         <!-- Shipping -->
         <div class="mb-3">
-          <label class="form-label fw-semibold"
-            >Shipping Type (Order Wise)</label
-          >
+          <label class="form-label fw-semibold">Shipping Type (Order Wise)</label>
           <p class="text-muted small">Shipping Method (NORMAL SHIPPING)</p>
           <select class="form-select">
             <option>Choose Delivery Type</option>
@@ -148,16 +141,10 @@
       <div class="border rounded p-3 mt-3 bg-white shadow">
         <h6 class="fw-bold mb-3">Customer information</h6>
         <div class="d-flex align-items-center gap-2 mb-2">
-          <img
-            [src]="
+          <img [src]="
               order.customer_id?.profilePicture ||
               '/assets/img/default-user.png'
-            "
-            class="rounded-circle"
-            width="48"
-            height="48"
-            alt="profile"
-          />
+            " class="rounded-circle" width="48" height="48" alt="profile" />
           <div>
             <div class="fw-semibold text-capitalize">
               {{ order.customer_id?.name || "N/A" }}
@@ -172,13 +159,10 @@
       </div>
 
       <!-- Shipping Address -->
-      <div
-        class="border rounded p-3 mt-3 bg-white shadow mb-2"
-        *ngIf="
+      <div class="border rounded p-3 mt-3 bg-white shadow mb-2" *ngIf="
           order.shipping_address && isAddressObject(order.shipping_address);
           else noAddress
-        "
-      >
+        ">
         <h6 class="fw-bold mb-3">Shipping Address</h6>
 
         <div class="mb-1">
