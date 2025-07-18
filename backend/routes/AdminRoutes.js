@@ -1,36 +1,43 @@
 const express = require("express");
 const router = express.Router();
+
+// Controllers
 const adminController = require("../controllers/AdminsController/Auth/authController");
 const businessSetupController = require("../controllers/AdminsController/bussinessController");
-const getCustomMulter = require("../utils/customMulter"); // utility to configure multer
-const uploadAdminProfile = getCustomMulter("admin"); // uploads/admin
-const uploadLogo = getCustomMulter("logos");
+const wishlistController = require("../controllers/usersController/wishlistController");
+const attributeController = require("../controllers/AdminsController/attributeController");
 
+// Utilities
+const getCustomMulter = require("../utils/customMulter");
+const uploadAdminProfile = getCustomMulter("admin");     // For admin profile images
+const uploadLogo = getCustomMulter("logos");             // For business logos
 
+/** ------------------- Admin Routes ------------------- **/
 
-// admin create and login routes
 router.post("/admin", uploadAdminProfile.single("image"), adminController.createAdmin);
 router.post("/admin/login", adminController.loginAdmin);
 router.get("/admin/edit/:id", adminController.getAdmin);
-router.put(
-  "/admin/update/:id",
-  uploadAdminProfile.single("image"),
-  adminController.updateAdmin
-);
+router.put("/admin/update/:id", uploadAdminProfile.single("image"), adminController.updateAdmin);
 router.put("/admin/change-password/:id", adminController.changePassword);
 
-// bussiness setup routes
-router.get(
-  "/admin/setting/business-setup",
-  businessSetupController.getBusinessSetup
-);
-router.post(
-  "/admin/setting/business-setup",
-  businessSetupController.createBusinessSetup
-);
-router.put(
-  "/admin/setting/business-setup",
-  businessSetupController.updateBusinessSetup
-);
-router.post('/upload-logo', uploadLogo.single('logo'), businessSetupController.uploadLogo);
+/** --------------- Business Setup Routes --------------- **/
+
+router.get("/admin/setting/business-setup", businessSetupController.getBusinessSetup);
+router.post("/admin/setting/business-setup", businessSetupController.createBusinessSetup);
+router.put("/admin/setting/business-setup", businessSetupController.updateBusinessSetup);
+router.post("/upload-logo", uploadLogo.single("logo"), businessSetupController.uploadLogo);
+
+/** ------------------ Wishlist Routes ------------------- **/
+
+router.post("/wishlist/add", wishlistController.addToWishlist);
+router.get("/wishlist/view", wishlistController.getWishlist);
+router.delete("/wishlist/remove/:itemId", wishlistController.removeFromWishlist);
+
+/** ----------------- Attribute Routes ------------------- **/
+
+router.post("/attributes/add", attributeController.createAttribute);
+router.get("/attributes/view", attributeController.getAllAttributes);
+router.get("/attributes/view-by-type", attributeController.getAttributesByType); // ?type=color or ?type=size
+router.delete("/attributes/delete/:id", attributeController.deleteAttribute);
+
 module.exports = router;
