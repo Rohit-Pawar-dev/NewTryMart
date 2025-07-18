@@ -24,13 +24,14 @@ export class AdminProfileComponent implements OnInit {
   };
 
   selectedImage: File | null = null;
+  previewUrl: string | ArrayBuffer | null = null;
 
   passwordForm = {
     oldPassword: '',
     newPassword: '',
   };
 
-  constructor(private adminService: AdminProfileService) {}
+  constructor(private adminService: AdminProfileService) { }
 
   ngOnInit(): void {
     const storedProfile = localStorage.getItem('profile');
@@ -90,6 +91,16 @@ export class AdminProfileComponent implements OnInit {
 
   onFileChange(event: any) {
     this.selectedImage = event.target.files[0] || null;
+
+    if (this.selectedImage) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result;
+      };
+      reader.readAsDataURL(this.selectedImage);
+    } else {
+      this.previewUrl = null;
+    }
   }
 
   onProfileSubmit() {
