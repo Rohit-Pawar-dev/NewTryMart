@@ -25,13 +25,8 @@
 
         <div class="mb-3 col-md-4">
           <label class="form-label"><strong>Company Address:</strong></label>
-          <textarea
-            class="form-control"
-            name="companyAddress"
-            [(ngModel)]="business.companyAddress"
-            rows="2"
-            required
-          ></textarea>
+          <textarea class="form-control" name="companyAddress" [(ngModel)]="business.companyAddress" rows="2"
+            required></textarea>
         </div>
 
         <div class="mb-3 col-md-4">
@@ -46,45 +41,27 @@
 
         <div class="mb-3 col-md-4">
           <label class="form-label"><strong>Delivery Charges:</strong></label>
-          <input
-            type="number"
-            class="form-control"
-            name="deliveryCharges"
-            [(ngModel)]="business.deliveryCharges"
-          />
+          <input type="number" class="form-control" name="deliveryCharges" [(ngModel)]="business.deliveryCharges" />
         </div>
 
         <!-- Logo Upload -->
         <div class="mb-3 col-md-4">
-          <label class="form-label"><strong>Company Logo:</strong></label>
-          <input
-            type="file"
-            class="form-control"
-            id="logoInput"
-            (change)="onFileSelected($event)"
-            accept="image/*"
-          />
+          <label for="logoInput" class="form-label"><strong>Company Logo (PNG only):</strong></label>
+          <input type="file" class="form-control" id="logoInput" (change)="onFileSelected($event)" accept="image/png" />
+
           <div class="mt-2">
             <!-- Live preview if new file selected -->
-            <img
-              *ngIf="previewLogoUrl; else existingLogo"
-              [src]="previewLogoUrl"
-              alt="New Logo Preview"
-              width="100"
-              class="img-thumbnail"
-            />
+            <img *ngIf="previewLogoUrl; else existingLogo" [src]="previewLogoUrl" alt="New Logo Preview" width="100"
+              class="img-thumbnail" />
+
             <!-- Fallback to current logo -->
             <ng-template #existingLogo>
-              <img
-                *ngIf="business.websiteLogo"
-                [src]="getFullLogoUrl()"
-                alt="Current Logo"
-                width="100"
-                class="img-thumbnail"
-              />
+              <img *ngIf="business.websiteLogo" [src]="getFullLogoUrl()" alt="Current Logo" width="100"
+                class="img-thumbnail" />
             </ng-template>
           </div>
         </div>
+
       </div>
 
       <div class="d-flex gap-2 mt-3">

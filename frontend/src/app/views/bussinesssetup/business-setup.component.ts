@@ -64,6 +64,15 @@ export class BusinessSetupComponent implements OnInit {
   onFileSelected(event: any): void {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.type !== 'image/png') {
+        Swal.fire('Invalid File', 'Only PNG files are allowed for the logo.', 'error');
+        this.selectedLogoFile = null;
+        this.previewLogoUrl = null;
+        const input = document.getElementById('logoInput') as HTMLInputElement;
+        if (input) input.value = '';
+        return;
+      }
+
       this.selectedLogoFile = file;
 
       // Generate live preview
@@ -74,6 +83,7 @@ export class BusinessSetupComponent implements OnInit {
       reader.readAsDataURL(file);
     }
   }
+
 
   async onUpdate(): Promise<void> {
     this.success = null;
