@@ -8,7 +8,7 @@ export interface Coupon {
   _id?: string;
   couponTitle: string;
   couponCode: string;
-  discountType: 'flat' | 'percentage';
+  discountType: 'flat' | 'percent';
   discountAmount: number;
   minimumPurchase: number;
   startDate: string;
@@ -24,7 +24,7 @@ export interface Coupon {
 export class CouponService {
   private apiUrl = `${environment.apiUrl}/coupons`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getCoupons(params: { search?: string; limit?: number; offset?: number } = {}): Observable<Coupon[]> {
     const query = new URLSearchParams({ all: 'true', ...params } as any).toString();
