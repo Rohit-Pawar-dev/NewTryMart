@@ -28,11 +28,9 @@ export class CategoryService {
   //   );
   // }
 
-  getCategories(params: { search?: string; limit?: number; offset?: number; all?: boolean } = {}): Observable<Category[]> {
+  getCategories(params: { search?: string; limit?: number; offset?: number; all?: boolean } = {}): Observable<{ data: Category[], total: number, limit: number, offset: number, totalPages: number }> {
     const query = new URLSearchParams({ ...params, all: params.all ? 'true' : undefined } as any).toString();
-    return this.http.get<{ data: Category[] }>(`${this.apiUrl}?${query}`).pipe(
-      map(response => response.data)
-    );
+    return this.http.get<{ data: Category[], total: number, limit: number, offset: number, totalPages: number }>(`${this.apiUrl}?${query}`);
   }
 
 

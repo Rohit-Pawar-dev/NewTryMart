@@ -24,13 +24,11 @@ export interface Coupon {
 export class CouponService {
   private apiUrl = `${environment.apiUrl}/coupons`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getCoupons(params: { search?: string; limit?: number; offset?: number } = {}): Observable<Coupon[]> {
+  getCoupons(params: { search?: string; limit?: number; offset?: number } = {}): Observable<{ data: Coupon[], total: number, limit: number, offset: number }> {
     const query = new URLSearchParams({ all: 'true', ...params } as any).toString();
-    return this.http.get<{ data: Coupon[] }>(`${this.apiUrl}?${query}`).pipe(
-      map(response => response.data)
-    );
+    return this.http.get<{ data: Coupon[], total: number, limit: number, offset: number }>(`${this.apiUrl}?${query}`);
   }
 
   getCoupon(id: string): Observable<Coupon> {

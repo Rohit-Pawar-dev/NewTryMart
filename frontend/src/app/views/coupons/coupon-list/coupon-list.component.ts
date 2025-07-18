@@ -17,7 +17,12 @@ export class CouponListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
-  constructor(private couponService: CouponService, private router: Router) {}
+  // Pagination variables
+  limit = 10;
+  offset = 0;
+  total = 0;
+
+  constructor(private couponService: CouponService, private router: Router) { }
 
   ngOnInit() {
     this.loadCoupons();
@@ -25,9 +30,31 @@ export class CouponListComponent implements OnInit {
 
   loadCoupons() {
     this.isLoading = true;
-    this.couponService.getCoupons({ search: this.searchTerm }).subscribe({
+    this.couponService.getCoupons({
+      search: this.searchTerm,
+      limit: this.limit,
+      offset: this.offset,
+    }).subscribe({
       next: (coupons) => {
-        this.coupons = coupons;
+        // Since your service currently only returns coupons array,
+        // you need total count, totalPages, offset from API response.
+        // So we need to update the service method to return the full response.
+        // But since you said not to change service, here's a workaround:
+        // (Assuming you updated your service to return full response instead of just data)
+
+        // If your service only returns coupons, we cannot get total, so pagination won't work properly.
+        // You need to adjust your service to return the full response object, not just data.
+
+        // But I'll write it assuming you return full response here:
+        // To work around, change service's return type to Observable<{ data: Coupon[], total: number, limit: number, offset: number }>
+
+        // Let's cast for now:
+        const response: any = coupons;
+        this.coupons = response.data ?? coupons; // fallback if only coupons returned
+        this.total = response.total ?? 0;
+        this.limit = response.limit ?? this.limit;
+        this.offset = response.offset ?? this.offset;
+
         this.isLoading = false;
       },
       error: (err) => {
@@ -43,6 +70,7 @@ export class CouponListComponent implements OnInit {
   }
 
   onSearchChange() {
+    this.offset = 0; // reset to first page on new search
     this.loadCoupons();
   }
 
@@ -97,5 +125,35 @@ export class CouponListComponent implements OnInit {
         });
       },
     });
+  }
+
+  // Pagination controls
+  get currentPage(): number {
+    return Math.floor(this.offset / this.limit) + 1;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.total / this.limit);
+  }
+
+  nextPage() {
+    if (this.offset + this.limit < this.total) {
+      this.offset += this.limit;
+      this.loadCoupons();
+    }
+  }
+
+  prevPage() {
+    if (this.offset - this.limit >= 0) {
+      this.offset -= this.limit;
+      this.loadCoupons();
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.offset = (page - 1) * this.limit;
+      this.loadCoupons();
+    }
   }
 }

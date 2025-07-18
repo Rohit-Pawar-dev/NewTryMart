@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {
   SubCategoryService,
   SubCategory,
-
 } from '../../../services/sub-category.service';
 import { CategoryService } from '../../../services/category.service';
 import { Router } from '@angular/router';
@@ -24,7 +23,7 @@ export class SubCategoryListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
-  // Pagination
+  // Pagination properties
   page = 1;
   pageSize = 10;
   totalPages = 0;
@@ -43,9 +42,11 @@ export class SubCategoryListComponent implements OnInit {
   loadData(): void {
     this.isLoading = true;
     this.categoryService.getCategories().subscribe({
-      next: (cats) => {
+      next: (res) => {
+        // 'res' shape: { data: Category[], total: number, ... }
+        // Create a map of category id => name
         this.categoriesMap = Object.fromEntries(
-          cats.map((c) => [c._id ?? '', c.name])
+          res.data.map((c) => [c._id ?? '', c.name])
         );
         this.loadSubCategories();
       },
@@ -55,17 +56,18 @@ export class SubCategoryListComponent implements OnInit {
     });
   }
 
-  loadSubCategories() {
+  loadSubCategories(): void {
     this.isLoading = true;
     this.subCategoryService
       .getSubCategories({
         search: this.searchTerm,
         page: this.page,
         pageSize: this.pageSize,
-        all: true, // optional, based on your use case
+        all: true, // adjust if needed
       })
       .subscribe({
         next: (res) => {
+          // res shape: { data: SubCategory[], total: number, ... }
           this.subCategories = res.data;
           this.totalRecords = res.total;
           this.totalPages = Math.ceil(res.total / this.pageSize);
@@ -128,7 +130,9 @@ export class SubCategoryListComponent implements OnInit {
       });
   }
 
-  getCategoryName(cat: string | { _id: string; name: string } | null | undefined): string {
+  getCategoryName(
+    cat: string | { _id: string; name: string } | null | undefined
+  ): string {
     if (typeof cat === 'object' && cat !== null) {
       return cat.name;
     }

@@ -45,7 +45,7 @@ export class SubCategoryAddComponent implements OnInit {
 
   ngOnInit(): void {
     this.categoryService.getCategories().subscribe({
-      next: (data) => (this.categories = data),
+      next: (data) => (this.categories = data.data),
       error: (err) => console.error('Failed to load categories', err),
     });
   }

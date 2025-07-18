@@ -54,7 +54,7 @@ export class SubCategoryEditComponent implements OnInit {
       subCategory: this.subCategoryService.getSubCategory(this.id),
       categories: this.categoryService.getCategories({ all: true }),
     }).subscribe(({ subCategory, categories }) => {
-      this.categories = categories;
+      this.categories = categories.data;
 
       const categoryId =
         typeof subCategory.category_id === 'string'
