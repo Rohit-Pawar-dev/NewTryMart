@@ -1,5 +1,5 @@
 const BusinessSetup = require('../../models/BussinessSetup');
-
+const path = require('path');
 // GET /api/business-setup
 exports.getBusinessSetup = async (req, res) => {
   try {
@@ -78,4 +78,18 @@ exports.updateBusinessSetup = async (req, res) => {
       error: error.message
     });
   }
+};
+exports.uploadLogo = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  // Path is already correct since multer saved it in the right folder
+  const filePath = req.file.path.replace(/\\/g, '/'); // ensures cross-platform compatibility
+
+  res.status(201).json({
+    status: true,
+    message: 'Logo uploaded successfully',
+    path: filePath
+  });
 };

@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 export class AdminProfileService {
   private apiUrl = `${environment.apiUrl}/admin`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAdminById(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/edit/${id}`);
