@@ -14,6 +14,15 @@ export class AttributeComponent implements OnInit {
     attributes: Attribute[] = [];
     newAttribute: Attribute = { type: 'color', value: '' };
 
+    // Pagination
+    limit = 10;
+    currentPage = 1;
+    totalPages = 0;
+    totalItems = 0;
+
+    Math = Math;
+
+
     constructor(private attributeService: AttributeService) { }
 
     ngOnInit(): void {
@@ -21,9 +30,13 @@ export class AttributeComponent implements OnInit {
     }
 
     loadAttributes(): void {
-        this.attributeService.getAllAttributes().subscribe({
+        const offset = (this.currentPage - 1) * this.limit;
+
+        this.attributeService.getAllAttributes('', this.limit, offset).subscribe({
             next: (res) => {
                 this.attributes = res.data;
+                this.totalItems = res.total;
+                this.totalPages = res.totalPages;
             },
             error: () => {
                 Swal.fire('Error', 'Failed to load attributes.', 'error');
@@ -77,5 +90,12 @@ export class AttributeComponent implements OnInit {
                 });
             }
         });
+    }
+
+    changePage(page: number): void {
+        if (page >= 1 && page <= this.totalPages) {
+            this.currentPage = page;
+            this.loadAttributes();
+        }
     }
 }
