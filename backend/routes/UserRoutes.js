@@ -13,6 +13,7 @@ const NotificationController = require("../controllers/usersController/Notificat
 const {
   placeOrderOnline,
 } = require("../controllers/usersController/OrderController");
+const wishlistController = require("../controllers/usersController/wishlistController");
 
 // Routes
 
@@ -52,4 +53,14 @@ router.post("/update-profile", auth, userController.updateProfile);
 router.get("/profile", auth, userController.getProfile);
 
 router.post("/place-order-online", auth, placeOrderOnline);
+
+
+/** ------------------ Wishlist Routes ------------------- **/
+
+router.post("/wishlist/add", wishlistController.addToWishlist);
+router.get("/wishlist/view", wishlistController.getWishlist);
+router.delete("/wishlist/remove/:itemId", wishlistController.removeFromWishlist);
+
+
+
 module.exports = router;
