@@ -24,6 +24,8 @@ const OrderRoutes = require("./routes/OrderRoutes.js");
 const deliveryManRoutes = require("./routes/DeliverManRoutes.js");
 const adminRoutes = require("./routes/AdminRoutes.js");
 const paymentRoutes = require("./routes/paymentRoutes.js");
+const attributeRoutes = require("./routes/AttributeRoutes.js");
+const wishlistRoutes = require("./routes/WishlistRoutes.js");
 app.use(cors());
 // app.use(express.json());
 
@@ -42,6 +44,8 @@ app.use("/api/subcategories", subCategoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/review", reviewRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/attributes", attributeRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 // CART ROUTES
 app.use("/api", cartRoutes);

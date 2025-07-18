@@ -4,11 +4,7 @@ export const navItems: INavData[] = [
   {
     name: 'Dashboard',
     url: '/dashboard',
-    iconComponent: { name: 'cil-speedometer' },
-    badge: {
-      color: 'info',
-      text: '',
-    },
+    icon: 'fas fa-tachometer-alt'
   },
 
   {
@@ -18,17 +14,17 @@ export const navItems: INavData[] = [
   {
     name: 'Orders',
     url: '/orders',
-    iconComponent: { name: 'cil-tags' },
+    icon: 'fas fa-shopping-cart'
   },
 
   {
     title: true,
-    name: 'Transection Management',
+    name: 'Transaction Management',
   },
   {
     name: 'Transactions',
     url: '/transactions',
-    iconComponent: { name: 'cil-tags' },
+    icon: 'fas fa-credit-card'
   },
   {
     title: true,
@@ -37,23 +33,28 @@ export const navItems: INavData[] = [
   {
     name: 'Categories',
     url: '/categories',
-    iconComponent: { name: 'cil-tags' },
+    icon: 'fas fa-stream'
   },
   {
     name: 'SubCategories',
     url: '/sub-categories',
-    iconComponent: { name: 'cil-tags' },
+    icon: 'fas fa-sitemap'
+  },
+  {
+    name: 'Attributes',
+    url: '/attributes',
+    icon: 'fas fa-sliders-h'
   },
   {
     name: 'Products',
     url: '/products',
-    iconComponent: { name: 'cil-tags' },
+    icon: 'fas fa-box-open'
   },
 
-   {
+  {
     name: 'Seller Products',
     url: '/seller-products',
-    iconComponent: { name: 'cil-tags' },
+    icon: 'fas fa-store'
   },
   {
     title: true,
@@ -62,12 +63,12 @@ export const navItems: INavData[] = [
   {
     name: 'Banners',
     url: '/banners',
-    iconComponent: { name: 'cil-bell' },
+    icon: 'fas fa-image'
   },
   {
     name: 'Coupons',
     url: '/coupons',
-    iconComponent: { name: 'cil-bell' },
+    icon: 'fas fa-percentage'
   },
 
   {
@@ -77,18 +78,18 @@ export const navItems: INavData[] = [
   {
     name: 'Users',
     url: '/users',
-    iconComponent: { name: 'cil-user' },
+    icon: 'fas fa-users'
   },
   {
     name: 'Sellers',
     url: '/sellers',
-    iconComponent: { name: 'cil-user' },
+    icon: 'fas fa-user-tie'
   },
 
   {
     name: 'Review',
     url: '/reviews',
-    iconComponent: { name: 'cil-star' },
+    icon: 'fas fa-star'
   },
   {
     title: true,
@@ -97,12 +98,12 @@ export const navItems: INavData[] = [
   {
     name: 'Business Setup',
     url: '/business-setup',
-    iconComponent: { name: 'cil-star' },
+    icon: 'fas fa-briefcase'
   },
-{
+  {
     name: 'Static Pages',
     url: '/static-pages',
-    iconComponent: { name: 'cil-star' },
+    icon: 'fas fa-file-alt'
   },
   //  {
   //   title: true,

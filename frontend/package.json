@@ -38,12 +38,15 @@
     "@coreui/icons": "^3.0.1",
     "@coreui/icons-angular": "~5.4.5",
     "@coreui/utils": "^2.0.2",
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "chart.js": "^4.4.8",
+    "file-saver": "^2.0.5",
     "lodash-es": "^4.17.21",
     "ngx-scrollbar": "^13.0.3",
     "rxjs": "~7.8.2",
     "sweetalert2": "^11.22.0",
     "tslib": "^2.8.1",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
@@ -51,6 +54,7 @@
     "@angular/cli": "^19.2.3",
     "@angular/compiler-cli": "^19.2.2",
     "@angular/localize": "^19.2.2",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "^5.1.7",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.13.10",

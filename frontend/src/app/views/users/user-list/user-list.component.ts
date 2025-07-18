@@ -1,30 +1,27 @@
-// user-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { UserService, User } from '../../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
-
-// Import SweetAlert2
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
-  // styleUrls: ['./user-list.component.scss'],
   imports: [CommonModule, RouterModule, FormsModule],
 })
 export class UserListComponent implements OnInit {
-  users: any[] = [];
-  isLoading = true;
+  users: User[] = [];
+  isLoading = false;
 
   searchTerm = '';
   page = 1;
   pageSize = 10;
   totalPages = 0;
+  totalUsers = 0;
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -32,10 +29,12 @@ export class UserListComponent implements OnInit {
 
   loadUsers(): void {
     this.isLoading = true;
+
     this.userService.getUsers(this.searchTerm, this.page, this.pageSize).subscribe({
       next: (res) => {
-        this.users = res.data;
-        this.totalPages = res.totalPages;
+        this.users = res.data || [];
+        this.totalPages = res.totalPages || 1;
+        this.totalUsers = res.total || 0;
         this.isLoading = false;
       },
       error: (err) => {
@@ -71,7 +70,8 @@ export class UserListComponent implements OnInit {
       if (result.isConfirmed) {
         this.userService.deleteUser(userId).subscribe({
           next: () => {
-            this.users = this.users.filter(user => user._id !== userId);
+            // Reload user list instead of just filtering — ensures pagination stays consistent
+            this.loadUsers();
             Swal.fire('Deleted!', 'User has been deleted.', 'success');
           },
           error: (err) => {
@@ -85,9 +85,10 @@ export class UserListComponent implements OnInit {
 
   toggleStatus(user: User): void {
     const newStatus = user.status === 'active' ? 'inactive' : 'active';
+
     this.userService.updateUser(user._id!, { status: newStatus }).subscribe({
       next: () => {
-        user.status = newStatus; // Optional: avoid full reload
+        user.status = newStatus;
         Swal.fire('Updated!', `User status changed to ${newStatus}.`, 'success');
       },
       error: (err) => {

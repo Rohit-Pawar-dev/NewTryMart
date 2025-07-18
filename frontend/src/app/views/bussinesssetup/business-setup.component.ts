@@ -17,6 +17,9 @@ export class BusinessSetupComponent implements OnInit {
   success: string | null = null;
 
   originalData: any = {};
+  selectedLogoFile: File | null = null;
+  previewLogoUrl: string | null = null;
+
   business = {
     companyName: '',
     phone: '',
@@ -24,11 +27,13 @@ export class BusinessSetupComponent implements OnInit {
     companyAddress: '',
     country: '',
     timezone: '',
+    websiteLogo: '',
+    deliveryCharges: 0,
   };
 
   private apiUrl = `${environment.apiUrl}/admin/setting/business-setup`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.fetchBusinessSetup();
@@ -41,15 +46,10 @@ export class BusinessSetupComponent implements OnInit {
     this.http.get<any>(this.apiUrl).subscribe({
       next: (res) => {
         const data = res?.data;
-
         if (res?.status && data) {
           this.business = { ...data };
           this.originalData = { ...data };
-        } else {
-          // this.error = 'Invalid response structure.';
-          // Swal.fire('Error', this.error, 'error');
         }
-
         this.isLoading = false;
       },
       error: (err) => {
@@ -61,28 +61,81 @@ export class BusinessSetupComponent implements OnInit {
     });
   }
 
-  onUpdate(): void {
+  onFileSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type !== 'image/png') {
+        Swal.fire('Invalid File', 'Only PNG files are allowed for the logo.', 'error');
+        this.selectedLogoFile = null;
+        this.previewLogoUrl = null;
+        const input = document.getElementById('logoInput') as HTMLInputElement;
+        if (input) input.value = '';
+        return;
+      }
+
+      this.selectedLogoFile = file;
+
+      // Generate live preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.previewLogoUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+
+  async onUpdate(): Promise<void> {
     this.success = null;
     this.error = null;
     this.isLoading = true;
 
-    this.http.put<any>(this.apiUrl, this.business).subscribe({
-      next: () => {
-        this.originalData = { ...this.business };
-        this.isLoading = false;
-        Swal.fire('Success', 'Business setup updated successfully.', 'success');
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.error = err.error?.message || 'Failed to update business setup.';
-        Swal.fire('Error', this.error ?? 'An unknown error occurred.', 'error');
-      },
-    });
+    try {
+      // Upload logo if selected
+      if (this.selectedLogoFile) {
+        const formData = new FormData();
+        formData.append('logo', this.selectedLogoFile);
+
+        const uploadRes = await this.http
+          .post<any>(`${environment.apiUrl}/upload-logo`, formData)
+          .toPromise();
+
+        if (uploadRes?.path) {
+          this.business.websiteLogo = uploadRes.path;
+        }
+      }
+
+      // Update business setup
+      await this.http.put<any>(this.apiUrl, this.business).toPromise();
+
+      this.originalData = { ...this.business };
+      this.selectedLogoFile = null;
+      this.previewLogoUrl = null;
+      this.isLoading = false;
+
+      Swal.fire('Success', 'Business setup updated successfully.', 'success');
+    } catch (err: any) {
+      this.isLoading = false;
+      this.error = err.error?.message || 'Failed to update business setup.';
+      Swal.fire('Error', this.error ?? 'An unknown error occurred.', 'error');
+    }
   }
 
   onCancel(): void {
     this.business = { ...this.originalData };
+    this.selectedLogoFile = null;
+    this.previewLogoUrl = null;
     this.success = null;
     this.error = null;
+
+    // Clear file input visually
+    const input = document.getElementById('logoInput') as HTMLInputElement;
+    if (input) input.value = '';
+  }
+
+  getFullLogoUrl(): string {
+    if (!this.business.websiteLogo) return '';
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}/${this.business.websiteLogo}`;
   }
 }

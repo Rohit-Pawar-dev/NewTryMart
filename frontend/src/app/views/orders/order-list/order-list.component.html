@@ -1,81 +1,61 @@
 <div class="container mt-4">
-  <h2>Orders</h2>
+  <h4 class="fw-bold mb-4">🧾 All Orders</h4>
 
-  <!-- Filters Row -->
-  <div class="row g-3 align-items-end mb-4">
-    <!-- Search Input -->
-    <div class="col-md-3">
-      <label for="searchInput" class="form-label">Search</label>
-      <input
-        id="searchInput"
-        type="text"
-        class="form-control"
-        placeholder="Customer name or mobile"
-        [(ngModel)]="searchText"
-        (ngModelChange)="onSearchChange()"
-      />
+  <!-- Filter Panel -->
+  <div class="card shadow-sm p-4 mb-4">
+    <div class="row g-3 align-items-end">
+      <!-- Status Filter -->
+      <div class="col-md-3">
+        <label class="form-label">Filter by Status</label>
+        <select class="form-select" [(ngModel)]="status" (change)="onStatusChange()">
+          <option value="all">All</option>
+          <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+
+      <!-- Start Date -->
+      <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" [value]="startDate" (change)="onStartDateChange($event)" />
+      </div>
+
+      <!-- End Date -->
+      <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" [value]="endDate" (change)="onEndDateChange($event)" />
+      </div>
+
+      <!-- Show Data Button -->
+      <div class="col-md-3">
+        <label class="form-label d-block invisible">Show</label>
+        <button class="btn btn-primary w-100 sd-btn" (click)="fetchOrders()">Show Data</button>
+      </div>
     </div>
 
-    <!-- Status Filter Dropdown -->
-    <div class="col-md-3">
-      <label for="statusSelect" class="form-label">Status</label>
-      <select
-        id="statusSelect"
-        class="form-select"
-        [(ngModel)]="status"
-        (change)="onStatusChange()"
-      >
-        <option value="all">All Statuses</option>
-        <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
-      </select>
-    </div>
+    <!-- Search -->
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <label class="form-label">Search by Customer Name or Mobile</label>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Customer Name or Mobile" [(ngModel)]="searchText"
+            (ngModelChange)="onSearchChange()" />
+          <!-- <button class="btn btn-outline-primary" type="button" (click)="onSearchChange()">Search</button> -->
 
-    <!-- Start Date -->
-    <div class="col-md-3">
-      <label for="startDate" class="form-label">Start Date</label>
-      <input
-        id="startDate"
-        type="date"
-        class="form-control"
-        [value]="startDate"
-        (change)="onStartDateChange($event)"
-        max="{{ endDate || '' }}"
-      />
+        </div>
+      </div>
     </div>
-
-    <!-- End Date -->
-    <div class="col-md-3">
-      <label for="endDate" class="form-label">End Date</label>
-      <input
-        id="endDate"
-        type="date"
-        class="form-control"
-        [value]="endDate"
-        (change)="onEndDateChange($event)"
-        min="{{ startDate || '' }}"
-      />
-    </div>
-
-    <!-- Clear Dates Button -->
-    <!-- <div class="col-md-2 d-flex align-items-center">
-      <button
-        class="btn btn-outline-secondary w-100"
-        (click)="clearDates()"
-        type="button"
-        style="white-space: nowrap;"
-      >
-        Clear Dates
-      </button>
-    </div> -->
   </div>
 
   <!-- Loading Spinner -->
-  <div *ngIf="isLoading" class="text-center">Loading orders...</div>
+  <div *ngIf="isLoading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
 
   <!-- Orders Table -->
+  <!-- Orders Table -->
   <div class="table-responsive" *ngIf="!isLoading && orders.length > 0">
-    <table class="table table-bordered align-middle text-nowrap">
-      <thead class="table-light">
+    <table class="table align-middle table-bordered shadow-sm rounded">
+      <thead class="bg-light text-muted border-bottom">
         <tr>
           <th>SL</th>
           <th>Order ID</th>
@@ -88,13 +68,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let order of orders; let i = index">
+        <tr *ngFor="let order of orders; let i = index" class="border-bottom bg-white fs-6">
           <td>{{ (currentPage - 1) * limit + i + 1 }}</td>
-          <td><strong>{{ order._id || 'N/A' }}</strong></td>
+          <td><strong>{{ order.order_id || 'N/A' }}</strong></td>
           <td>{{ order.createdAt | date: 'dd MMM yyyy, hh:mm a' }}</td>
           <td>
-            <div class="fw-bold">{{ order.customer_id?.name || 'Guest User' }}</div>
-            <div>{{ order.customer_id?.mobile || 'N/A' }}</div>
+            <div class="fw-semibold">{{ order.customer_id?.name || 'Guest User' }}</div>
+            <div class="text-muted small">{{ order.customer_id?.mobile || 'N/A' }}</div>
           </td>
           <td>
             <ng-container *ngIf="order.seller_id; else adminStore">
@@ -107,74 +87,61 @@
           </td>
           <td>
             ₹{{ order.total_price | number: '1.2-2' }}
-            <div
-              class="small fw-semibold"
-              [ngClass]="{
-                'text-danger': order.payment_status === 'Unpaid',
-                'text-success': order.payment_status === 'Paid'
-              }"
-            >
+            <div class="small fw-semibold" [ngClass]="{
+              'text-danger': order.payment_status === 'Unpaid',
+              'text-success': order.payment_status === 'Paid'
+            }">
               {{ order.payment_status || 'N/A' }}
             </div>
           </td>
           <td>
-            <span
-              class="badge px-3 py-1"
-              [ngClass]="{
-                'bg-info text-dark': order.status === 'Pending',
-                'bg-success': order.status === 'Delivered',
-                'bg-warning text-dark': order.status === 'Processing',
-                'bg-danger': order.status === 'Cancelled',
-                'bg-dark text-white': order.status === 'Returned',
-                'bg-secondary text-white': order.status === 'Shipped',
-                'bg-light text-success': order.status === 'Confirmed'
-              }"
-            >
+            <span class="badge rounded-pill px-3 py-1" [ngClass]="{
+              'bg-info text-dark': order.status === 'Pending',
+              'bg-success': order.status === 'Delivered',
+              'bg-warning text-dark': order.status === 'Processing',
+              'bg-danger': order.status === 'Cancelled',
+              'bg-dark text-white': order.status === 'Returned',
+              'bg-secondary text-white': order.status === 'Shipped',
+              'bg-light text-success': order.status === 'Confirmed'
+            }">
               {{ order.status || 'N/A' }}
             </span>
           </td>
-          <td>
-            <a [routerLink]="['/orders', order._id]" class="btn btn-sm btn-primary">
-              View
+          <td class="d-flex gap-2 mt-2 bg-white">
+            <a [routerLink]="['/orders', order._id]" class="btn btn-outline-primary btn-sm" title="View">
+              <i class="far fa-eye fs-6"></i>
             </a>
+            <!-- <button class="btn btn-outline-success btn-sm" title="Download">
+              <i class="cil-cloud-download"></i>
+            </button> -->
+            <button class="btn btn-outline-success btn-sm" title="View Invoice" [routerLink]="['/invoice', order._id]">
+              <i class="cil-cloud-download"></i>
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
+
+
   <!-- No Orders Message -->
   <div *ngIf="!isLoading && orders.length === 0" class="text-center text-muted mt-3">
     No orders found.
   </div>
 
-  <!-- Pagination Controls -->
-  <nav *ngIf="totalPages > 1" class="mt-3">
-    <ul class="pagination justify-content-center">
+  <!-- Pagination -->
+  <nav *ngIf="totalPages > 1" class="mt-4">
+    <ul class="pagination justify-content-center .pagination-ul">
       <li class="page-item" [class.disabled]="currentPage === 1">
-        <button
-          class="page-link"
-          (click)="changePage(currentPage - 1)"
-          [disabled]="currentPage === 1"
-        >
-          Previous
-        </button>
+        <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
       </li>
-      <li
-        class="page-item"
-        *ngFor="let page of [].constructor(totalPages); let idx = index"
-        [class.active]="currentPage === idx + 1"
-      >
+      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let idx = index"
+        [class.active]="currentPage === idx + 1">
         <button class="page-link" (click)="changePage(idx + 1)">{{ idx + 1 }}</button>
       </li>
       <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <button
-          class="page-link"
-          (click)="changePage(currentPage + 1)"
-          [disabled]="currentPage === totalPages"
-        >
-          Next
-        </button>
+        <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
       </li>
     </ul>
   </nav>

@@ -18,6 +18,14 @@ const BusinessSetupSchema = new mongoose.Schema({
     trim: true,
     match: [/.+\@.+\..+/, 'Please enter a valid email address']
   },
+  websiteLogo: {
+    type: String, // Assuming it's a URL or image path
+    trim: true
+  },
+  deliveryCharges: {
+    type: Number,
+    default: 0
+  },
   companyAddress: {
     type: String,
     required: true,

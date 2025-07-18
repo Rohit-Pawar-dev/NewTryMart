@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   getOrders,
   getOrderById,
+  downloadInvoice
 } = require("../controllers/AdminsController/OrderController");
 const {
   placeOrder,
@@ -19,6 +20,9 @@ router.post("/place", placeOrder);
 // backend routes
 router.get("/", getOrders);
 router.get("/transactions", getTransactions);
+router.get('/:id/invoice', downloadInvoice);
 router.get("/:id", getOrderById);
+
+
 
 module.exports = router;

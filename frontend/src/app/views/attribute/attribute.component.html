@@ -1,0 +1,103 @@
+<!-- Add Attribute Form -->
+<div class="card my-4 shadow-sm">
+  <div class="card-header bg-primary text-white">
+    <h3 class="mb-0">Add Attribute</h3>
+  </div>
+
+  <div class="card-body">
+    <form (ngSubmit)="createAttribute()" #attrForm="ngForm" novalidate>
+      <div class="row g-3">
+        <!-- Attribute Type -->
+        <div class="col-md-6">
+          <label for="attrType" class="form-label fw-semibold">Attribute Type</label>
+          <select
+            id="attrType"
+            class="form-select"
+            required
+            name="type"
+            [(ngModel)]="newAttribute.type"
+            #typeModel="ngModel"
+            [class.is-invalid]="typeModel.invalid && typeModel.touched"
+          >
+            <option value="" disabled>Select an attribute</option>
+            <option value="color">Color</option>
+            <option value="size">Size</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="typeModel.invalid && typeModel.touched">
+            Attribute type is required.
+          </div>
+        </div>
+
+        <!-- Attribute Value -->
+        <div class="col-md-6">
+          <label for="attrValue" class="form-label fw-semibold">Value</label>
+          <input
+            type="text"
+            id="attrValue"
+            class="form-control"
+            required
+            name="value"
+            [(ngModel)]="newAttribute.value"
+            #valueModel="ngModel"
+            [class.is-invalid]="valueModel.invalid && valueModel.touched"
+            placeholder="e.g. Red or Large"
+          />
+          <div class="invalid-feedback" *ngIf="valueModel.invalid && valueModel.touched">
+            Value is required.
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 text-end">
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="attrForm.invalid"
+        >
+          Add Attribute
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Attributes List -->
+<div class="card shadow-sm mt-4">
+  <div class="card-header bg-secondary text-white">
+    <h3 class="mb-0">Attributes List</h3>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th scope="col">S.No</th>
+          <th scope="col">Type</th>
+          <th scope="col">Value</th>
+          <th scope="col">Status</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let attr of attributes; let i = index">
+          <th scope="row">{{ i + 1 }}</th>
+          <td class="text-capitalize">{{ attr.type }}</td>
+          <td>{{ attr.value }}</td>
+          <td>{{ attr.status }}</td>
+          <td>
+            <button
+              class="btn btn-outline-danger btn-sm"
+              (click)="deleteAttribute(attr._id!)"
+              title="Delete Attribute"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="attributes.length === 0">
+          <td colspan="5" class="text-center text-muted">No attributes found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

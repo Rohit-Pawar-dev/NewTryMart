@@ -1,41 +1,21 @@
+// dashboard.component.ts
 import { DOCUMENT, NgStyle } from '@angular/common';
 import {
-  Component,
-  DestroyRef,
-  OnInit,
-  Renderer2,
-  ViewChild,
-  ElementRef,
-  inject,
-  signal,
-  WritableSignal,
-  effect,
-  AfterViewInit,
-  ChangeDetectorRef,
+  Component, DestroyRef, OnInit, Renderer2, ViewChild, ElementRef,
+  inject, signal, WritableSignal, effect, AfterViewInit, ChangeDetectorRef,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { Input } from '@angular/core';
 
 import {
-  AvatarComponent,
-  ButtonDirective,
-  ButtonGroupComponent,
-  CardBodyComponent,
-  CardComponent,
-  CardFooterComponent,
-  CardHeaderComponent,
-  ColComponent,
-  FormCheckLabelDirective,
-  GutterDirective,
-  ProgressBarDirective,
-  ProgressComponent,
-  RowComponent,
-  TableDirective,
-  TextColorDirective,
+  AvatarComponent, ButtonDirective, ButtonGroupComponent, CardBodyComponent,
+  CardComponent, CardFooterComponent, CardHeaderComponent, ColComponent,
+  FormCheckLabelDirective, GutterDirective, ProgressBarDirective,
+  ProgressComponent, RowComponent, TableDirective, TextColorDirective,
 } from '@coreui/angular';
-
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -49,28 +29,12 @@ import { OrderListComponent } from '../orders/order-list/order-list.component';
   styleUrls: ['dashboard.component.scss'],
   standalone: true,
   imports: [
-    OrderListComponent,
-    WidgetsDropdownComponent,
-    TextColorDirective,
-    CardComponent,
-    CardBodyComponent,
-    RowComponent,
-    ColComponent,
-    ButtonDirective,
-    IconDirective,
-    ReactiveFormsModule,
-    ButtonGroupComponent,
-    FormCheckLabelDirective,
-    ChartjsComponent,
-    NgStyle,
-    CardFooterComponent,
-    GutterDirective,
-    ProgressBarDirective,
-    ProgressComponent,
-    WidgetsBrandComponent,
-    CardHeaderComponent,
-    TableDirective,
-    AvatarComponent,
+    OrderListComponent, WidgetsDropdownComponent, TextColorDirective,
+    CardComponent, CardBodyComponent, RowComponent, ColComponent,
+    ButtonDirective, IconDirective, ReactiveFormsModule, ButtonGroupComponent,
+    FormCheckLabelDirective, ChartjsComponent, NgStyle, CardFooterComponent,
+    GutterDirective, ProgressBarDirective, ProgressComponent,
+    WidgetsBrandComponent, CardHeaderComponent, TableDirective, AvatarComponent,
   ],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
@@ -86,31 +50,33 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   // Dashboard counts
-  userCount: number | null = null;
-  sellerCount: number | null = null;
-  allOrderCount: number | null = null;
-  allProductCount: number | null = null;
-  pendingOrderCount: number | null = null;
-  confirmedOrderCount: number | null = null;
-  packagingOrderCount: number | null = null;
-  shippedOrderCount: number | null = null;
-  deliveredOrderCount: number | null = null;
-  cancelledOrderCount: number | null = null;
-  returnOrderCount: number | null = null;
-  outOfDeliveryCount: number | null = null;
+  dashboardCounts = {
+    userCount: null,
+    sellerCount: null,
+    allOrderCount: null,
+    allProductCount: null,
+    pendingOrderCount: null,
+    confirmedOrderCount: null,
+    packagingOrderCount: null,
+    shippedOrderCount: null,
+    deliveredOrderCount: null,
+    cancelledOrderCount: null,
+    returnOrderCount: null,
+    outOfDeliveryCount: null,
+
+  };
+
+  selectedStatus: string = 'all';
+  trafficRadioGroup = new FormGroup({
+    trafficRadio: new FormControl('Month'),
+  });
 
   // Chart
   mainChart: IChartProps = { type: 'line' };
   mainChartRef: WritableSignal<any> = signal(undefined);
-
-  selectedStatus: string = 'all';
-
-  trafficRadioGroup = new FormGroup({
-    trafficRadio: new FormControl('Month'),
-  });
 
   private chartEffect = effect(() => {
     if (this.mainChartRef()) {
@@ -122,15 +88,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.initCharts();
     this.handleColorSchemeChange();
     this.fetchDashboardData();
-
     this.route.queryParamMap.subscribe((params) => {
       const statusParam = params.get('status');
-      this.selectedStatus = statusParam ? statusParam : 'all';
+      this.selectedStatus = statusParam ?? 'all';
     });
   }
 
   ngAfterViewInit(): void {
-    this.cdr.detectChanges(); // ensure ViewChild is available after init
+    this.cdr.detectChanges();
   }
 
   initCharts(): void {
@@ -138,9 +103,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   handleChartRef(chartRef: any): void {
-    if (chartRef) {
-      this.mainChartRef.set(chartRef);
-    }
+    if (chartRef) this.mainChartRef.set(chartRef);
   }
 
   setTrafficPeriod(value: string): void {
@@ -162,8 +125,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     if (this.mainChartRef()) {
       setTimeout(() => {
         const chart = this.mainChartRef();
-        const newScales = this.chartsData.getScales();
-        chart.options.scales = { ...chart.options.scales, ...newScales };
+        chart.options.scales = {
+          ...chart.options.scales,
+          ...this.chartsData.getScales(),
+        };
         chart.update();
       });
     }
@@ -171,69 +136,44 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   fetchDashboardData(): void {
     const url = `${environment.apiUrl}/dashboard`;
-
     this.http.get<any>(url).subscribe({
       next: (res) => {
         const data = res?.data ?? {};
         const orders = data.orders ?? {};
-
-        this.userCount = data.users?.total ?? 0;
-        this.sellerCount = data.sellers?.total ?? 0;
-        this.allOrderCount = orders.total ?? 0;
-        this.allProductCount = data.products?.total ?? 0;
-
-        this.pendingOrderCount = orders.pending ?? 0;
-        this.confirmedOrderCount = orders.confirmed ?? 0;
-        this.packagingOrderCount = orders.processing ?? 0;
-        this.shippedOrderCount = orders.shipped ?? 0;
-        this.deliveredOrderCount = orders.delivered ?? 0;
-        this.cancelledOrderCount = orders.cancelled ?? 0;
-        this.returnOrderCount = orders.returned ?? 0;
-        this.outOfDeliveryCount = orders.outForDelivery ?? 0;
+        this.dashboardCounts = {
+          userCount: data.users?.total ?? 0,
+          sellerCount: data.sellers?.total ?? 0,
+          allOrderCount: orders.total ?? 0,
+          allProductCount: data.products?.total ?? 0,
+          pendingOrderCount: orders.pending ?? 0,
+          confirmedOrderCount: orders.confirmed ?? 0,
+          packagingOrderCount: orders.processing ?? 0,
+          shippedOrderCount: orders.shipped ?? 0,
+          deliveredOrderCount: orders.delivered ?? 0,
+          cancelledOrderCount: orders.cancelled ?? 0,
+          returnOrderCount: orders.returned ?? 0,
+          outOfDeliveryCount: orders.outForDelivery ?? 0,
+        };
       },
       error: (err) => {
-        console.error('Failed to load dashboard data:', err);
-        this.resetCounts();
+        console.error('Dashboard data error:', err);
+        Object.keys(this.dashboardCounts).forEach(
+          (key) => (this.dashboardCounts[key as keyof typeof this.dashboardCounts] = null)
+        );
       },
     });
   }
 
-  resetCounts(): void {
-    this.userCount =
-      this.sellerCount =
-      this.allOrderCount =
-      this.allProductCount =
-      this.pendingOrderCount =
-      this.confirmedOrderCount =
-      this.packagingOrderCount =
-      this.shippedOrderCount =
-      this.deliveredOrderCount =
-      this.cancelledOrderCount =
-      this.returnOrderCount =
-      this.outOfDeliveryCount =
-        null;
-  }
-
-  /**
-   * Called when a status widget or dropdown emits a status selection.
-   */
   onStatusFilter(status: string): void {
     this.selectedStatus = status;
-
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { status: status === 'all' ? null : status },
       queryParamsHandling: 'merge',
     });
 
-    // Wait for navigation and DOM update
     setTimeout(() => {
-      if (this.orderListSection?.nativeElement) {
-        this.orderListSection.nativeElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }
+      this.orderListSection?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   }
 }

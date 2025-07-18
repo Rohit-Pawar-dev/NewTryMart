@@ -55,7 +55,7 @@
             <img
               [src]="previewImage"
               alt="Image Preview"
-              style="max-height: 150px; max-width: 100%"
+               style="height: 50px; width: 100px;"
             />
           </div>
           <div class="invalid-feedback d-block" *ngIf="form.get('image')?.invalid && form.get('image')?.touched">
@@ -78,7 +78,7 @@
             <video
               [src]="previewVideo"
               controls
-              style="max-height: 150px; max-width: 100%"
+               style="height: 50px; width: 100px;"
             ></video>
           </div>
           <div class="invalid-feedback d-block" *ngIf="form.get('video')?.invalid && form.get('video')?.touched">

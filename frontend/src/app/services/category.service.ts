@@ -19,7 +19,7 @@ export interface Category {
 export class CategoryService {
   private apiUrl = `${environment.apiUrl}/categories`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // getCategories(params: { search?: string; limit?: number; offset?: number } = {}): Observable<Category[]> {
   //   const query = new URLSearchParams({ all: 'true', ...params } as any).toString();

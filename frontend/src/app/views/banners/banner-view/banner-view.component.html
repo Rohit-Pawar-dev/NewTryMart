@@ -4,7 +4,44 @@
   </div>
 
   <div class="card-body">
-    <div class="row mb-3">
+    <div class="row">
+      <div class="col-md-6">
+        <!-- Image -->
+        <div class="row mb-3">
+          <label class="col-sm-3 col-form-label fw-semibold">Image:</label>
+          <div class="col-sm-9">
+            <ng-container *ngIf="banner.image; else showVideo">
+              <img [src]="banner.image" [alt]="banner.title" class="img-thumbnail" style="max-width: 300px" />
+            </ng-container>
+            <ng-template #showVideo>
+              <ng-container *ngIf="banner.video; else noMedia">
+                <video width="300" controls>
+                  <source [src]="banner.video" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </ng-container>
+              <ng-template #noMedia>
+                <p class="text-muted">No image or video available</p>
+              </ng-template>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Video: only for ads_video_banner -->
+        <ng-container *ngIf="banner.banner_type === 'ads_video_banner' && banner.video">
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label fw-semibold">Video Preview:</label>
+            <div class="col-sm-9">
+              <video width="300" controls>
+                <source [src]="banner.video" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="col-md-6">
+        <div class="row mb-3">
       <label class="col-sm-3 col-form-label fw-semibold">Title:</label>
       <div class="col-sm-9">{{ banner.title }}</div>
     </div>
@@ -14,37 +51,15 @@
       <div class="col-sm-9 text-capitalize">{{ bannerTypeDisplay }}</div>
     </div>
 
-    <div class="row mb-3">
-      <label class="col-sm-3 col-form-label fw-semibold">Content:</label>
-      <div class="col-sm-9">
-        <ng-container *ngIf="banner.image; else showVideo">
-          <img [src]="banner.image" [alt]="banner.title" class="img-thumbnail" style="max-width: 300px" />
-        </ng-container>
-        <ng-template #showVideo>
-          <ng-container *ngIf="banner.video; else noMedia">
-            <video width="300" controls>
-              <source [src]="banner.video" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </ng-container>
-          <ng-template #noMedia>
-            <p class="text-muted">No image or video available</p>
-          </ng-template>
-        </ng-template>
-      </div>
-    </div>
+
 
     <div class="row mb-3">
       <label class="col-sm-3 col-form-label fw-semibold">Status:</label>
       <div class="col-sm-9">
-        <span
-          class="badge"
-          [ngClass]="{
+        <span class="badge" [ngClass]="{
             'bg-success': banner.status === 'active',
             'bg-danger': banner.status === 'inactive'
-          }"
-          >{{ banner.status | titlecase }}</span
-        >
+          }">{{ banner.status | titlecase }}</span>
       </div>
     </div>
 
@@ -69,19 +84,22 @@
       </div>
     </ng-container>
 
-    <!-- Video: only for ads_video_banner -->
-    <ng-container *ngIf="banner.banner_type === 'ads_video_banner' && banner.video">
-      <div class="row mb-3">
-        <label class="col-sm-3 col-form-label fw-semibold">Video Preview:</label>
-        <div class="col-sm-9">
-          <video width="300" controls>
-            <source [src]="banner.video" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
+
+
+
       </div>
-    </ng-container>
+    </div>
+
+
+
+
+
+
+
+
   </div>
+
+
 
   <div class="card-footer text-end">
     <button class="btn btn-outline-primary" (click)="router.navigate(['/banners'])">Back to List</button>

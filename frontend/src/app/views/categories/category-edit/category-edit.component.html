@@ -1,54 +1,48 @@
-<div class="card">
-  <div class="card-header">
-    <h3>Edit Category</h3>
+<div class="card shadow rounded-4 border-0">
+  <div class="card-header d-flex align-items-center gap-2">
+    <i class="fas fa-edit fs-5"></i>
+    <h5 class="mb-0 fw-semibold">Edit Category</h5>
   </div>
-  <div class="card-body">
+
+  <div class="card-body bg-light">
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <div class="row">
+      <div class="row g-3">
         <!-- Name -->
-        <div class="mb-3 col-lg-6">
-          <label for="name" class="form-label">Name</label>
+        <div class="col-md-6">
+          <label for="name" class="form-label">Category Name</label>
           <input
             type="text"
             id="name"
             class="form-control"
             formControlName="name"
-            [class.is-invalid]="
-              form.get('name')?.invalid && form.get('name')?.touched
-            "
+            placeholder="Enter category name"
+            [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
           />
-          <div
-            class="invalid-feedback"
-            *ngIf="form.get('name')?.errors?.['required']"
-          >
+          <div class="invalid-feedback" *ngIf="form.get('name')?.errors?.['required']">
             Name is required.
           </div>
         </div>
 
         <!-- Status -->
-        <div class="mb-3 col-lg-6">
+        <div class="col-md-6">
           <label for="status" class="form-label">Status</label>
           <select
             id="status"
             class="form-select"
             formControlName="status"
-            [class.is-invalid]="
-              form.get('status')?.invalid && form.get('status')?.touched
-            "
+            [class.is-invalid]="form.get('status')?.invalid && form.get('status')?.touched"
           >
+            <option value="">Select status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <div
-            class="invalid-feedback"
-            *ngIf="form.get('status')?.errors?.['required']"
-          >
+          <div class="invalid-feedback" *ngIf="form.get('status')?.errors?.['required']">
             Status is required.
           </div>
         </div>
 
         <!-- Image Upload -->
-        <div class="mb-3 col-lg-6">
+        <div class="col-md-6">
           <label for="imageUpload" class="form-label">Upload Image</label>
           <input
             type="file"
@@ -58,26 +52,28 @@
             (change)="onImageSelected($event)"
             [disabled]="isUploading"
           />
+          <div class="text-danger mt-1" *ngIf="uploadError">{{ uploadError }}</div>
 
-          <div *ngIf="imagePreview" class="mt-2 previewImgDiv">
-            <img [src]="imagePreview" alt="Preview" style="max-height: 150px" />
-          </div>
-
-          <div class="invalid-feedback d-block" *ngIf="uploadError">
-            {{ uploadError }}
+          <div *ngIf="imagePreview" class="mt-2">
+            <img
+              [src]="imagePreview"
+              alt="Preview"
+              class="img-thumbnail shadow-sm"
+              style="max-height: 140px"
+            />
           </div>
         </div>
       </div>
 
       <!-- Submit Button -->
-
-      <div class="text-center mt-3">
+      <div class="text-center mt-4">
         <button
           type="submit"
-          class="btn btn-primary"
+          class="btn btn-primary px-4 py-2"
           [disabled]="isSubmitting || form.invalid"
         >
-          {{ isSubmitting ? "Saving..." : "Update Category" }}
+          <i class="fas fa-save me-2"></i>
+          {{ isSubmitting ? 'Saving...' : 'Update Category' }}
         </button>
       </div>
     </form>

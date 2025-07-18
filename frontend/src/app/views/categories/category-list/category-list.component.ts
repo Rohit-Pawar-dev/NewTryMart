@@ -20,7 +20,7 @@ export class CategoryListComponent implements OnInit {
   constructor(
     private categoryService: CategoryService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadCategories();
@@ -89,7 +89,7 @@ export class CategoryListComponent implements OnInit {
       .subscribe({
         next: () => {
           category.status = newStatus;
-            Swal.fire('Updated', `Status changed`, 'success');
+          Swal.fire('Updated', `Status changed`, 'success');
         },
         error: (err) => {
           console.error('Status Update Error:', err);

@@ -39,9 +39,9 @@
           </select>
         </div>
 
-        <!-- Sub Category -->
+        <!-- Subcategory -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Sub Category</label>
+          <label class="form-label">Subcategory</label>
           <select class="form-select" formControlName="sub_category_id">
             <option value="">-- Select Subcategory --</option>
             <option *ngFor="let sub of subcategories" [value]="sub._id">
@@ -51,28 +51,16 @@
         </div>
       </div>
 
+      <!-- Pricing & Inventory -->
       <div class="row">
-        <!-- Unit Price -->
         <div class="col-md-4 mb-3">
           <label class="form-label">Unit Price</label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="unit_price"
-          />
+          <input type="number" class="form-control" formControlName="unit_price" />
         </div>
-
-        <!-- Discount -->
         <div class="col-md-4 mb-3">
           <label class="form-label">Discount</label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="discount"
-          />
+          <input type="number" class="form-control" formControlName="discount" />
         </div>
-
-        <!-- Discount Type -->
         <div class="col-md-4 mb-3">
           <label class="form-label">Discount Type</label>
           <select class="form-select" formControlName="discount_type">
@@ -83,42 +71,22 @@
       </div>
 
       <div class="row">
-        <!-- Tax -->
         <div class="col-md-4 mb-3">
           <label class="form-label">Tax (%)</label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="tax"
-            min="0"
-          />
+          <input type="number" class="form-control" formControlName="tax" min="0" />
         </div>
-
-        <!-- Current Stock -->
         <div class="col-md-4 mb-3">
           <label class="form-label">Stock</label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="current_stock"
-            min="0"
-          />
+          <input type="number" class="form-control" formControlName="current_stock" min="0" />
         </div>
-
-        <!-- Minimum Quantity -->
         <div class="col-md-4 mb-3">
           <label class="form-label">Min Qty</label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="min_qty"
-            min="1"
-          />
+          <input type="number" class="form-control" formControlName="min_qty" min="1" />
         </div>
       </div>
 
+      <!-- Images Upload -->
       <div class="row mt-2">
-        <!-- Photos Upload -->
         <div class="col-md-6 mb-4">
           <label class="form-label">Images</label>
           <input
@@ -128,7 +96,6 @@
             accept="image/*"
             (change)="onMultiplePhotosSelected($event)"
           />
-
           <div class="mt-3 d-flex flex-wrap gap-3">
             <div
               *ngFor="let img of photoPreviews; let i = index"
@@ -153,18 +120,10 @@
           </div>
         </div>
 
-        <!-- Thumbnail -->
         <div class="col-md-6 mb-4">
           <label class="form-label">Thumbnail</label>
-          <input
-            type="file"
-            class="form-control"
-            (change)="onImageSelected($event)"
-          />
-          <div
-            *ngIf="imagePreview"
-            class="mt-2 position-relative d-inline-block"
-          >
+          <input type="file" class="form-control" (change)="onImageSelected($event)" />
+          <div *ngIf="imagePreview" class="mt-2 position-relative d-inline-block">
             <img
               [src]="imagePreview"
               alt="Thumbnail"
@@ -183,18 +142,117 @@
         </div>
       </div>
 
-      <!-- Submit -->
+      <!-- Variants Section -->
+      <div class="mb-4">
+        <label class="form-label">Variants (e.g., Size, Color)</label>
+        <div formArrayName="variants">
+          <div
+            *ngFor="let v of variants.controls; let i = index"
+            [formGroupName]="i"
+            class="border rounded p-3 mb-2"
+          >
+            <div class="row">
+              <div class="col-md-5 mb-2">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="name"
+                  placeholder="Variant Name (e.g. Size)"
+                />
+              </div>
+              <div class="col-md-5 mb-2">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="values"
+                  placeholder="Comma-separated values (e.g. S,M,L)"
+                />
+              </div>
+              <div class="col-md-2 text-end">
+                <button class="btn btn-danger" type="button" (click)="removeVariant(i)">
+                  ❌
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <button class="btn btn-sm btn-secondary" type="button" (click)="addVariant()">➕ Add Variant</button>
+          <button
+            class="btn btn-sm btn-outline-primary ms-2"
+            type="button"
+            (click)="generateVariantOptions()"
+          >
+            🔄 Generate Combinations
+          </button>
+        </div>
+      </div>
+
+      <!-- Variation Options Section -->
+      <div class="mb-4" formArrayName="variation_options">
+        <label class="form-label">Variation Combinations</label>
+        <div
+          *ngFor="let opt of variationOptions.controls; let i = index"
+          [formGroupName]="i"
+          class="border rounded p-3 mb-3"
+        >
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <input
+                [value]="formatVariantValues(opt.value.variant_values)"
+                class="form-control"
+                disabled
+              />
+            </div>
+            <div class="col-md-2 mb-2">
+              <input type="number" formControlName="price" class="form-control" placeholder="Price" />
+            </div>
+            <div class="col-md-2 mb-2">
+              <input type="number" formControlName="stock" class="form-control" placeholder="Stock" />
+            </div>
+            <div class="col-md-2 mb-2">
+              <input type="text" formControlName="sku" class="form-control" placeholder="SKU" />
+            </div>
+            <div class="col-md-2 mb-2">
+              <input
+                type="file"
+                class="form-control"
+                (change)="onVariantImagesSelected($event, i)"
+                multiple
+                accept="image/*"
+              />
+              <div class="mt-2 d-flex flex-wrap gap-2">
+                <div
+                  *ngFor="let img of opt.get('images')?.value; let idx = index"
+                  class="position-relative border rounded p-1"
+                  style="max-width: 90px"
+                >
+                  <img
+                    [src]="img"
+                    alt="Variant Image"
+                    class="img-fluid rounded"
+                    style="max-height: 80px; object-fit: cover"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                    (click)="removeVariantImage(i, idx)"
+                  >
+                    ❌
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit & Cancel -->
       <div class="text-end">
         <button type="submit" class="btn btn-primary">
-          {{ isSubmitting ? "Saving..." : "Save Changes" }}
+          {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
         </button>
-        <button
-          type="button"
-          class="btn btn-secondary ms-2"
-          (click)="onCancel()"
-        >
-          Cancel
-        </button>
+        <button type="button" class="btn btn-secondary ms-2" (click)="onCancel()">Cancel</button>
       </div>
     </form>
   </div>

@@ -25,20 +25,23 @@ export interface User {
 export class UserService {
   private apiUrl = `${environment.apiUrl}/users`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getUsers(
     search: string = '',
     page: number = 1,
     pageSize: number = 10
   ): Observable<any> {
+    const offset = (page - 1) * pageSize;
     const params = new URLSearchParams();
+
     if (search) params.append('search', search);
-    params.append('page', page.toString());
-    params.append('pageSize', pageSize.toString());
+    params.append('offset', offset.toString());
+    params.append('limit', pageSize.toString());
 
     return this.http.get<any>(`${this.apiUrl}/list?${params.toString()}`);
   }
+
 
   getUser(id: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/view/${id}`);

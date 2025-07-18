@@ -3,15 +3,18 @@ const router = express.Router();
 const adminController = require("../controllers/AdminsController/Auth/authController");
 const businessSetupController = require("../controllers/AdminsController/bussinessController");
 const getCustomMulter = require("../utils/customMulter"); // utility to configure multer
-const upload = getCustomMulter("admin"); // uploads/admin
+const uploadAdminProfile = getCustomMulter("admin"); // uploads/admin
+const uploadLogo = getCustomMulter("logos");
+
+
 
 // admin create and login routes
-router.post("/admin", upload.single("image"), adminController.createAdmin);
+router.post("/admin", uploadAdminProfile.single("image"), adminController.createAdmin);
 router.post("/admin/login", adminController.loginAdmin);
 router.get("/admin/edit/:id", adminController.getAdmin);
 router.put(
   "/admin/update/:id",
-  upload.single("image"),
+  uploadAdminProfile.single("image"),
   adminController.updateAdmin
 );
 router.put("/admin/change-password/:id", adminController.changePassword);
@@ -29,5 +32,5 @@ router.put(
   "/admin/setting/business-setup",
   businessSetupController.updateBusinessSetup
 );
-
+router.post('/upload-logo', uploadLogo.single('logo'), businessSetupController.uploadLogo);
 module.exports = router;

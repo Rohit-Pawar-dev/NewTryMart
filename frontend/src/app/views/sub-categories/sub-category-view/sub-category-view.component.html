@@ -1,27 +1,58 @@
-<div class="card" *ngIf="!isLoading && subCategory; else loadingOrError">
-  <div class="card-header">
-    <h3>Sub Category Details</h3>
+<div class="card shadow rounded-4 border-0" *ngIf="!isLoading && subCategory; else loadingOrError">
+  <div class="card-header d-flex align-items-center gap-2">
+    <i class="fas fa-list-alt fs-5"></i>
+    <h5 class="mb-0 fw-semibold">Sub Category Details</h5>
   </div>
-  <div class="card-body">
-    <p><strong>Name:</strong> {{ subCategory.name }}</p>
 
-    <p><strong>Category:</strong> {{ parentCategoryName || 'N/A' }}</p>
+  <div class="card-body bg-light">
+    <div class="row g-3">
+      <!-- Name -->
+      <div class="col-md-6">
+        <strong>Name:</strong>
+        <p class="mb-1">{{ subCategory.name }}</p>
+      </div>
 
+      <!-- Category -->
+      <div class="col-md-6">
+        <strong>Parent Category:</strong>
+        <p class="mb-1">{{ parentCategoryName || 'N/A' }}</p>
+      </div>
 
-    <p>
-      <strong>Image:</strong><br />
-      <img [src]="subCategory.image" alt="{{ subCategory.name }}" width="300" />
-    </p>
+      <!-- Status -->
+      <div class="col-md-6">
+        <strong>Status:</strong><br />
+        <span
+          class="badge px-3 py-2 rounded-pill"
+          [ngClass]="{
+            'bg-success': subCategory.status === 'active',
+            'bg-danger': subCategory.status === 'inactive'
+          }"
+        >
+          {{ subCategory.status | titlecase }}
+        </span>
+      </div>
 
-    <p><strong>Status:</strong> {{ subCategory.status }}</p>
+      <!-- Image -->
+      <div class="col-md-6">
+        <strong>Image:</strong><br />
+        <img
+          [src]="subCategory.image"
+          alt="{{ subCategory.name }}"
+          class="img-thumbnail mt-2 shadow-sm"
+          style="max-height: 150px"
+        />
+      </div>
+    </div>
   </div>
 </div>
 
 <ng-template #loadingOrError>
   <div class="text-center p-4" *ngIf="isLoading">
-    <p>Loading sub-category data...</p>
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Loading sub-category data...</p>
   </div>
-  <div class="alert alert-danger" *ngIf="error">
+
+  <div class="alert alert-danger mt-3" *ngIf="error">
     {{ error }}
   </div>
 </ng-template>

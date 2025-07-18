@@ -31,6 +31,7 @@ const productSchema = new Schema(
     sub_category_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubCategory",
+      required: false,
       default: null,
     },
     slug: { type: String, required: true, unique: true },

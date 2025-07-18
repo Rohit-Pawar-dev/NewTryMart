@@ -1,4 +1,3 @@
-// banner-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { BannerService, Banner } from '../../../services/banner.service';
 import { Router } from '@angular/router';
@@ -26,13 +25,10 @@ export class BannerListComponent implements OnInit {
     main_banner: 'Main Banner',
     popup_banner: 'Popup Banner',
     ads_img_banner: 'Advertisement Image',
-    ads_video_banner: 'Advertisement Video'
+    ads_video_banner: 'Advertisement Video',
   };
 
-
-
-
-  constructor(private bannerService: BannerService, private router: Router) {}
+  constructor(private bannerService: BannerService, private router: Router) { }
 
   ngOnInit() {
     this.loadBanners();
@@ -41,20 +37,22 @@ export class BannerListComponent implements OnInit {
   loadBanners() {
     this.isLoading = true;
     const offset = (this.currentPage - 1) * this.limit;
-    this.bannerService.getBanners({ search: this.searchTerm, limit: this.limit, offset }).subscribe({
-      next: (response: any) => {
-        this.banners = response.data || [];
-        this.total = response.total || 0;
-        this.totalPages = response.totalPages || Math.ceil(this.total / this.limit);
-        this.isLoading = false;
-        console.log(response);
-      },
-      error: (err) => {
-        console.error('Error loading banners:', err);
-        this.isLoading = false;
-        Swal.fire('Error', 'Failed to load banners', 'error');
-      }
-    });
+
+    this.bannerService
+      .getBanners({ search: this.searchTerm, limit: this.limit, offset })
+      .subscribe({
+        next: (response: any) => {
+          this.banners = response.data || [];
+          this.total = response.total || 0;
+          this.totalPages = response.totalPages || Math.ceil(this.total / this.limit);
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error loading banners:', err);
+          this.isLoading = false;
+          Swal.fire('Error', 'Failed to load banners', 'error');
+        },
+      });
   }
 
   onSearchChange() {
@@ -77,7 +75,7 @@ export class BannerListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'Yes, delete it!',
     }).then((result) => {
       if (result.isConfirmed) {
         this.bannerService.deleteBanner(id).subscribe({
@@ -87,7 +85,7 @@ export class BannerListComponent implements OnInit {
           },
           error: () => {
             Swal.fire('Error', 'Failed to delete banner', 'error');
-          }
+          },
         });
       }
     });
@@ -102,7 +100,7 @@ export class BannerListComponent implements OnInit {
       },
       error: () => {
         Swal.fire('Error', 'Failed to update status', 'error');
-      }
+      },
     });
   }
 }
