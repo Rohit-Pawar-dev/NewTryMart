@@ -1,15 +1,7 @@
 <!--sidebar-->
-<c-sidebar
-  #sidebar1="cSidebar"
-  class="d-print-none sidebar sidebar-fixed border-end"
-  colorScheme="dark"
-  id="sidebar1"
-  visible
-  style="background: linear-gradient(135deg, rgb(50, 50, 141), #2e6eaf);"
->
-  <c-sidebar-header
-    class="border-bottom"
-    style="
+<c-sidebar #sidebar1="cSidebar" class="d-print-none sidebar sidebar-fixed border-end" colorScheme="dark" id="sidebar1"
+  visible style="background: linear-gradient(135deg, rgb(50, 50, 141), #2e6eaf);">
+  <c-sidebar-header class="border-bottom" style="
       text-align: center;
       color: #fff;
       font-weight: 700;
@@ -19,15 +11,15 @@
       /* width: 100%; */
       text-align: center;
       font-size: 23px;
-    "
-  >
+    ">
     <c-sidebar-brand [routerLink]="['/dashboard']">
-      <img
-        src="assets/images/etrymartlogo.png"
-        alt="Logo"
-        class="sidebar-brand-full"
-        height="32"
-      />
+      <img 
+  [src]="logoUrl || 'assets/images/etrymartlogo.png'" 
+  alt="E-TryMart Logo" 
+  class="sidebar-brand-full" 
+  height="32"
+/>
+
       <!-- Optional narrow version for collapsed sidebar -->
       <!-- <img
     src="assets/signet.png"
@@ -57,12 +49,8 @@
 <!--main-->
 <div class="wrapper d-flex flex-column min-vh-100">
   <!--app-header-->
-  <app-default-header
-    [cShadowOnScroll]="'sm'"
-    class="mb-4 d-print-none header header-sticky p-0 shadow-sm"
-    position="sticky"
-    sidebarId="sidebar1"
-  />
+  <app-default-header [cShadowOnScroll]="'sm'" class="mb-4 d-print-none header header-sticky p-0 shadow-sm"
+    position="sticky" sidebarId="sidebar1" />
   <!--app-body-->
   <div class="body flex-grow-1">
     <c-container breakpoint="lg" class="h-auto px-4">
