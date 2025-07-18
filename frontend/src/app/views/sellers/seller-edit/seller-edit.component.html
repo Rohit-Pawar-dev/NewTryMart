@@ -29,7 +29,12 @@
         <!-- Mobile -->
         <div class="col-md-6">
           <label class="form-label">Mobile</label>
-          <input type="text" maxlength="10" class="form-control" formControlName="mobile" />
+          <input
+            type="text"
+            maxlength="10"
+            class="form-control"
+            formControlName="mobile"
+          />
         </div>
 
         <!-- Email -->
@@ -77,7 +82,11 @@
         <!-- GST -->
         <div class="col-md-4">
           <label class="form-label">GST Number</label>
-          <input type="text" class="form-control" formControlName="gst_number" />
+          <input
+            type="text"
+            class="form-control"
+            formControlName="gst_number"
+          />
         </div>
 
         <!-- Status -->
@@ -101,12 +110,13 @@
             (change)="onProfileSelected($event)"
           />
           <div *ngIf="profilePreview" class="mt-2">
-            <img
-              [src]="profilePreview"
-              alt="Profile Preview"
-              class="img-thumbnail shadow-sm"
-              style="max-height: 150px"
-            />
+            <span class="profile-img">
+              <img
+                [src]="profilePreview"
+                alt="Profile Preview"
+                class="img-thumbnail shadow-sm"
+              />
+            </span>
           </div>
         </div>
 
@@ -120,14 +130,23 @@
             (change)="onLogoSelected($event)"
           />
           <div *ngIf="imagePreview" class="mt-2">
+<span class="seller-logo">
+  <img
+              [src]="imagePreview"
+              alt="Logo Preview"
+              class="img-thumbnail shadow-sm"
+            />
+</span>
             <img
               [src]="imagePreview"
               alt="Logo Preview"
               class="img-thumbnail shadow-sm"
-              style="max-height: 150px"
+
             />
           </div>
-          <div class="text-danger mt-1" *ngIf="uploadError">{{ uploadError }}</div>
+          <div class="text-danger mt-1" *ngIf="uploadError">
+            {{ uploadError }}
+          </div>
         </div>
       </div>
 

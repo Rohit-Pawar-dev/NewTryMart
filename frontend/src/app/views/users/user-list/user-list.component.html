@@ -1,5 +1,5 @@
 <div class="card">
-  <div class="card-header ">
+  <div class="card-header">
     <h3>User Management</h3>
   </div>
   <div class="card-body">
@@ -9,10 +9,10 @@
           type="text"
           [(ngModel)]="searchTerm"
           (input)="onSearchChange()"
-          class="form-control w-25"
+          class="form-control w-25 border border-outline-primary mx-3 mt-2"
           placeholder="Search..."
         />
-        <button class="btn btn-primary" routerLink="/users/add">
+        <button class="btn btn-primary mx-3 mt-2" routerLink="/users/add">
           Add New User
         </button>
       </div>
@@ -29,14 +29,13 @@
         </thead>
         <tbody>
           <tr *ngFor="let user of users; let i = index">
-          <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+            <td>{{ (page - 1) * pageSize + i + 1 }}</td>
             <td>
               <div class="u-div d-flex align-items-center gap-3">
                 <div class="img-user">
                   <img
                     [src]="user.profilePicture"
                     class="img-thumbnail"
-                    style="width:50px; height:50px; border-radius:50%; border:none;"
                     alt="{{ user.name }}"
                   />
                 </div>
@@ -106,7 +105,9 @@
       <nav *ngIf="totalPages > 1">
         <ul class="pagination justify-content-center">
           <li class="page-item" [class.disabled]="page === 1">
-            <button class="page-link" (click)="goToPage(page - 1)">Previous</button>
+            <button class="page-link" (click)="goToPage(page - 1)">
+              Previous
+            </button>
           </li>
 
           <li
@@ -114,7 +115,9 @@
             *ngFor="let _ of [].constructor(totalPages); let i = index"
             [class.active]="page === i + 1"
           >
-            <button class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</button>
+            <button class="page-link" (click)="goToPage(i + 1)">
+              {{ i + 1 }}
+            </button>
           </li>
 
           <li class="page-item" [class.disabled]="page === totalPages">

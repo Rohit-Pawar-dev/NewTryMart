@@ -1,6 +1,8 @@
 <div class="card shadow-sm border-0 rounded-4">
   <!-- Header -->
-  <div class="card-header d-flex justify-content-between align-items-center rounded-top">
+  <div
+    class="card-header d-flex justify-content-between align-items-center rounded-top"
+  >
     <h5 class="mb-0"><i class="fas fa-box me-2"></i>Product Details</h5>
     <button class="btn btn-light btn-sm px-3 fw-semibold" (click)="goBack()">
       <i class="fas fa-arrow-left me-1"></i>Back
@@ -11,13 +13,16 @@
     <div class="card-body bg-light">
       <div class="row g-4">
         <!-- Thumbnail -->
-        <div class="col-lg-4 text-center d-flex align-items-center justify-content-center">
-          <img
-            [src]="p.thumbnail"
-            alt="Thumbnail"
-            class="img-thumbnail shadow-sm"
-            style="max-height: 200px; object-fit: contain;"
-          />
+        <div
+          class="col-lg-4 text-center d-flex align-items-center justify-content-center"
+        >
+          <div class="image-view">
+            <img
+              [src]="p.thumbnail"
+              alt="Thumbnail"
+              class="img-thumbnail shadow-sm"
+            />
+          </div>
         </div>
 
         <!-- Main Info -->
@@ -73,7 +78,7 @@
               <strong>Variants:</strong>
               <ul>
                 <li *ngFor="let variant of p.variants">
-                  {{ variant.name }}: {{ variant.values.join(', ') }}
+                  {{ variant.name }}: {{ variant.values.join(", ") }}
                 </li>
               </ul>
             </div>
@@ -88,14 +93,11 @@
           <div
             *ngFor="let img of p.images"
             class="border rounded p-2 bg-white shadow-sm"
-            style="width: 120px; height: 100px;"
+            style="width: 120px; height: 100px"
           >
-            <img
-              [src]="img"
-              alt="Gallery Image"
-              class="img-fluid h-100 w-100"
-              style="object-fit: cover;"
-            />
+            <div class="gallery">
+              <img [src]="img" alt="Gallery Image" class="img-fluid" />
+            </div>
           </div>
         </div>
       </div>
@@ -103,7 +105,10 @@
       <!-- Variation Options -->
       <div class="mt-5" *ngIf="p.variation_options?.length">
         <strong>Variation Options</strong>
-        <div *ngFor="let option of p.variation_options" class="border rounded p-3 mb-3 bg-white shadow-sm">
+        <div
+          *ngFor="let option of p.variation_options"
+          class="border rounded p-3 mb-3 bg-white shadow-sm"
+        >
           <div class="row align-items-center">
             <div class="col-md-4">
               <strong>Variant Values:</strong>
@@ -131,7 +136,13 @@
                   *ngFor="let img of option.images"
                   [src]="img"
                   alt="Variant Image"
-                  style="height: 70px; width: 70px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;"
+                  style="
+                    height: 80px;
+                    width: 80px;
+                    object-fit: contain;
+                    border-radius: 4px;
+                    border: 1px solid #ddd;
+                  "
                 />
               </div>
             </div>
