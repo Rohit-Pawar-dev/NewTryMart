@@ -4,7 +4,7 @@ const router = express.Router();
 // Controllers
 const adminController = require("../controllers/AdminsController/Auth/authController");
 const businessSetupController = require("../controllers/AdminsController/bussinessController");
-const wishlistController = require("../controllers/usersController/wishlistController");
+
 const attributeController = require("../controllers/AdminsController/attributeController");
 
 // Utilities
@@ -27,11 +27,6 @@ router.post("/admin/setting/business-setup", businessSetupController.createBusin
 router.put("/admin/setting/business-setup", businessSetupController.updateBusinessSetup);
 router.post("/upload-logo", uploadLogo.single("logo"), businessSetupController.uploadLogo);
 
-/** ------------------ Wishlist Routes ------------------- **/
-
-router.post("/wishlist/add", wishlistController.addToWishlist);
-router.get("/wishlist/view", wishlistController.getWishlist);
-router.delete("/wishlist/remove/:itemId", wishlistController.removeFromWishlist);
 
 /** ----------------- Attribute Routes ------------------- **/
 
