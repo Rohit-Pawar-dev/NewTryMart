@@ -5,9 +5,14 @@
   <div class="card-body">
     <div class="table-responsive table-bordered">
       <div class="mb-3 d-flex justify-content-between align-items-center">
-        <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
-          class="form-control w-25 border border-outline-primary" placeholder="Search by name" />
-        <button class="btn btn-primary" routerLink="/categories/add">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          class="form-control w-25 border border-outline-primary mx-3 mt-2"
+          placeholder="Search by name"
+        />
+        <button class="btn btn-primary mx-3 mt-2" routerLink="/categories/add">
           Add New Category
         </button>
       </div>
@@ -27,30 +32,56 @@
             <td>{{ i + 1 }}</td>
             <td>{{ category.name }}</td>
             <td>
-              <img [src]="category.image" width="100" class="img-thumbnail" style="height:50px; width:100px;" />
+              <span class="table-img">
+                <img [src]="category.image" class="img-thumbnail" />
+              </span>
             </td>
             <td>
-              <span class="badge" [ngClass]="{
+              <span
+                class="badge"
+                [ngClass]="{
                   'bg-success': category.status === 'active',
                   'bg-danger': category.status === 'inactive'
-                }">{{ category.status | titlecase }}</span>
+                }"
+                >{{ category.status | titlecase }}</span
+              >
             </td>
             <td>
               <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-outline-info" [routerLink]="['/categories/view', category._id]"
-                  data-bs-toggle="tooltip" data-bs-placement="top" title="View">
+                <button
+                  class="btn btn-sm btn-outline-info"
+                  [routerLink]="['/categories/view', category._id]"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="View"
+                >
                   <i class="far fa-eye fs-6"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-warning" [routerLink]="['/categories/edit', category._id]"
-                  data-bs-toggle="tooltip" data-bs-placement="top" title="Edit">
+                <button
+                  class="btn btn-sm btn-outline-warning"
+                  [routerLink]="['/categories/edit', category._id]"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Edit"
+                >
                   <i class="cil-pencil"></i>
                 </button>
-                 <button class="btn btn-sm btn-outline-secondary" (click)="toggleStatus(category)"
-                  data-bs-toggle="tooltip" data-bs-placement="top" title="Status">
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="toggleStatus(category)"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Status"
+                >
                   <i class="cil-sync"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteCategory(category._id!)"
-                  data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="deleteCategory(category._id!)"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Delete"
+                >
                   <i class="cil-trash"></i>
                 </button>
               </div>

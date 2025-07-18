@@ -6,28 +6,34 @@
   <div class="card-body">
     <div class="table-responsive table-bordered text-center">
       <div class="mb-3 d-flex justify-content-between align-items-center">
-        <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()" class="form-control w-25"
-          placeholder="Search by product name" />
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearchChange()"
+          class="form-control w-25 mt-2 mx-3"
+          placeholder="Search by product name"
+        />
 
         <div>
           <!-- Export Filtered Products -->
-          <button class="btn btn-outline-success me-2" (click)="exportProducts()">
+          <button class="btn btn-info mx-2 my-3" (click)="exportProducts()">
             Export
           </button>
 
           <!-- Export All Products -->
-          <button class="btn btn-outline-secondary me-2" (click)="exportAllProducts()">
+          <button
+            class="btn btn-secondary mx-2 my-2"
+            (click)="exportAllProducts()"
+          >
             Export All
           </button>
 
           <!-- Add Product -->
-          <button class="btn btn-primary" routerLink="/products/add">
+          <button class="btn btn-primary mx-2 mt-2" routerLink="/products/add">
             Add New Product
           </button>
         </div>
       </div>
-
-
 
       <table class="table table-striped table-hover">
         <thead>
@@ -45,31 +51,51 @@
             <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
 
             <td>
-              <img [src]="product.thumbnail" width="100" class="img-thumbnail" style="width:100px; height:50px" />
+              <span class="table-img">
+                <img [src]="product.thumbnail" class="img-thumbnail" />
+              </span>
             </td>
             <td>{{ product.name }}</td>
             <td>{{ product.unit_price }}</td>
             <td>
-              <span class="badge" [ngClass]="{
+              <span
+                class="badge"
+                [ngClass]="{
                   'bg-success': product.status === 1,
                   'bg-danger': product.status === 0
-                }">
+                }"
+              >
                 {{ product.status === 1 ? "Active" : "Inactive" }}
               </span>
             </td>
             <td>
               <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-outline-info" [routerLink]="['/products/view', product._id]" title="View">
+                <button
+                  class="btn btn-sm btn-outline-info"
+                  [routerLink]="['/products/view', product._id]"
+                  title="View"
+                >
                   <i class="far fa-eye fs-6"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-warning" [routerLink]="['/products/edit', product._id]"
-                  title="Edit">
+                <button
+                  class="btn btn-sm btn-outline-warning"
+                  [routerLink]="['/products/edit', product._id]"
+                  title="Edit"
+                >
                   <i class="cil-pencil"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-secondary" (click)="toggleStatus(product)" title="Toggle Status">
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="toggleStatus(product)"
+                  title="Toggle Status"
+                >
                   <i class="cil-sync"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product._id!)" title="Delete">
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="deleteProduct(product._id!)"
+                  title="Delete"
+                >
                   <i class="cil-trash"></i>
                 </button>
               </div>
@@ -85,11 +111,16 @@
       <nav *ngIf="totalPages > 1" class="mt-3">
         <ul class="pagination justify-content-center">
           <li class="page-item" [class.disabled]="currentPage === 1">
-            <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
+            <a class="page-link" (click)="goToPage(currentPage - 1)"
+              >Previous</a
+            >
           </li>
 
-          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
-            [class.active]="currentPage === i + 1">
+          <li
+            class="page-item"
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="currentPage === i + 1"
+          >
             <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
           </li>
 
@@ -98,7 +129,6 @@
           </li>
         </ul>
       </nav>
-
     </div>
   </div>
 </div>

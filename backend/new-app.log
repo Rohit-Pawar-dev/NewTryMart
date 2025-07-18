@@ -384,3 +384,7 @@
 2025-07-17T11:40:35.274Z [error]: Error retrieving orders Cannot access 'filter' before initialization
 2025-07-17T11:40:35.305Z [error]: Error retrieving orders Cannot access 'filter' before initialization
 2025-07-17T11:40:35.353Z [error]: Error retrieving orders Cannot access 'filter' before initialization
+2025-07-18T04:52:28.958Z [info]: Server selection timed out after 30000 ms
+2025-07-18T04:55:19.348Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
+2025-07-18T04:57:02.587Z [info]: connect ETIMEDOUT 68.178.169.235:27017
+2025-07-18T04:57:37.277Z [info]: connect ETIMEDOUT 68.178.169.235:27017

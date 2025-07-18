@@ -9,10 +9,13 @@
           type="text"
           [(ngModel)]="searchTerm"
           (input)="onSearchChange()"
-          class="form-control w-25"
+          class="form-control w-25 mx-3 mt-2"
           placeholder="Search by name"
         />
-        <button class="btn btn-primary" routerLink="/sub-categories/add">
+        <button
+          class="btn btn-primary mx-3 mt-2"
+          routerLink="/sub-categories/add"
+        >
           Add New SubCategory
         </button>
       </div>
@@ -35,12 +38,13 @@
             <td>{{ sub.name }}</td>
             <td>{{ getCategoryName(sub.category_id) }}</td>
             <td>
-              <img
-                [src]="sub.image"
-                class="img-thumbnail"
-                style="width: 100px; height: 50px;"
-                alt="SubCategory Image"
-              />
+              <span class="table-img">
+                <img
+                  [src]="sub.image"
+                  class="img-thumbnail"
+                  alt="SubCategory Image"
+                />
+              </span>
             </td>
             <td>
               <span
