@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReviewsService, Review } from '../../../services/reviews.service';
 import { RouterModule } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-review-list',
@@ -34,7 +35,6 @@ export class ReviewListComponent implements OnInit {
       .getReviews({ limit: this.limit, offset: this.offset })
       .subscribe({
         next: (response: any) => {
-          // If service returns full response with data, total, etc.
           this.reviews = response.data ?? response;
           this.total = response.total ?? 0;
           this.limit = response.limit ?? this.limit;
@@ -82,5 +82,30 @@ export class ReviewListComponent implements OnInit {
       this.offset = newOffset;
       this.fetchReviews();
     }
+  }
+
+  // New method: Delete review with confirmation dialog
+  deleteReview(id: string): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.reviewsService.deleteReview(id).subscribe({
+          next: () => {
+            Swal.fire('Deleted!', 'Review has been deleted.', 'success');
+            this.fetchReviews();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'Failed to delete review.', 'error');
+            console.error('Delete review error:', err);
+          },
+        });
+      }
+    });
   }
 }

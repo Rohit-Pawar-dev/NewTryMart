@@ -37,6 +37,12 @@
                 data-bs-placement="top" title="View">
                 <i class="fas fa-eye fs-6"></i>
               </a>
+
+              <button class="btn btn-sm btn-outline-danger ms-2" (click)="review._id && deleteReview(review._id)"
+                type="button">
+                <i class="fas fa-trash fs-6"></i>
+              </button>
+
             </td>
           </tr>
         </tbody>
