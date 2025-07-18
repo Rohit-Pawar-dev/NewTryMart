@@ -9,7 +9,9 @@
       <div class="row g-3">
         <!-- Attribute Type -->
         <div class="col-md-6">
-          <label for="attrType" class="form-label fw-semibold">Attribute Type</label>
+          <label for="attrType" class="form-label fw-semibold"
+            >Attribute Type</label
+          >
           <select
             id="attrType"
             class="form-select"
@@ -23,7 +25,10 @@
             <option value="color">Color</option>
             <option value="size">Size</option>
           </select>
-          <div class="invalid-feedback" *ngIf="typeModel.invalid && typeModel.touched">
+          <div
+            class="invalid-feedback"
+            *ngIf="typeModel.invalid && typeModel.touched"
+          >
             Attribute type is required.
           </div>
         </div>
@@ -42,7 +47,10 @@
             [class.is-invalid]="valueModel.invalid && valueModel.touched"
             placeholder="e.g. Red or Large"
           />
-          <div class="invalid-feedback" *ngIf="valueModel.invalid && valueModel.touched">
+          <div
+            class="invalid-feedback"
+            *ngIf="valueModel.invalid && valueModel.touched"
+          >
             Value is required.
           </div>
         </div>
@@ -67,7 +75,7 @@
     <h3 class="mb-0">Attributes List</h3>
   </div>
 
-  <div class="table-responsive">
+  <div class="table-responsive table-bordered text-center">
     <table class="table mb-0">
       <thead>
         <tr>
@@ -90,12 +98,14 @@
               (click)="deleteAttribute(attr._id!)"
               title="Delete Attribute"
             >
-              Delete
+              <i class="cil-trash"></i>
             </button>
           </td>
         </tr>
         <tr *ngIf="attributes.length === 0">
-          <td colspan="5" class="text-center text-muted">No attributes found.</td>
+          <td colspan="5" class="text-center text-muted">
+            No attributes found.
+          </td>
         </tr>
       </tbody>
     </table>

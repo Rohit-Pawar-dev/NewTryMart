@@ -10,23 +10,22 @@
           type="text"
           [(ngModel)]="searchTerm"
           (input)="onSearchChange()"
-          class="form-control w-25 mt-2 mx-3"
+          class="form-control w-25 mt-2 mx-3 border border-outline-primary"
           placeholder="Search by product name"
         />
-
         <div>
           <!-- Export Filtered Products -->
-          <button class="btn btn-info mx-2 my-3" (click)="exportProducts()">
+          <!-- <button class="btn btn-info mx-2 mt-2" (click)="exportProducts()">
             Export
-          </button>
+          </button> -->
 
           <!-- Export All Products -->
-          <button
-            class="btn btn-secondary mx-2 my-2"
+          <!-- <button
+            class="btn btn-secondary mx-2 mt-2"
             (click)="exportAllProducts()"
           >
             Export All
-          </button>
+          </button> -->
 
           <!-- Add Product -->
           <button class="btn btn-primary mx-2 mt-2" routerLink="/products/add">

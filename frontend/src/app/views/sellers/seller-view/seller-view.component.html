@@ -51,23 +51,21 @@
       <!-- Profile Image -->
       <div class="col-md-6 mb-3" *ngIf="seller.profile_image">
         <p><strong>Profile Image:</strong></p>
-        <img
-          [src]="seller.profile_image"
-          alt="Profile"
-          class="img-thumbnail"
-          style="max-height: 150px"
-        />
+        <span class="profile-img">
+          <img
+            [src]="seller.profile_image"
+            alt="Profile"
+            class="img-thumbnail"
+          />
+        </span>
       </div>
 
       <!-- Logo -->
       <div class="col-md-6 mb-3" *ngIf="seller.logo">
         <p><strong>Shop Logo:</strong></p>
-        <img
-          [src]="seller.logo"
-          alt="Logo"
-          class="img-thumbnail"
-          style="max-height: 150px"
-        />
+        <span class="seller-logo">
+          <img [src]="seller.logo" alt="Logo" class="img-thumbnail" />
+        </span>
       </div>
     </div>
   </div>
