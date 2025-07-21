@@ -57,8 +57,6 @@ const sellerSchema = new Schema(
       type: String,
       // required: [true, 'Business category is required']
     },
-
-    // 🧾 GST-related fields
     gst_number: {
       type: String,
       default: "",

@@ -1,0 +1,95 @@
+<div *ngIf="isLoading" class="text-center my-5">
+  <h5>Loading invoice...</h5>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger my-3">
+  {{ errorMessage }}
+</div>
+
+<div *ngIf="order && !isLoading" class="invoice-box p-4" id="invoice-content" style="max-width: 800px; margin: auto; border: 1px solid #eee; font-family: Arial, sans-serif; color: black;">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Invoice #{{ order.order_id }}</h2>
+    <button *ngIf="!autoDownload" (click)="exportToPDF()" class="btn btn-primary btn-sm">
+      <i class="cil-cloud-download"></i> Download PDF
+    </button>
+  </div>
+
+  <div class="mb-3" style="color: black;">
+    <strong>Status:</strong> {{ order.status }} &nbsp;|&nbsp;
+    <strong>Payment Method:</strong> {{ order.payment_method }} &nbsp;|&nbsp;
+    <strong>Payment Status:</strong> {{ order.payment_status }} &nbsp;|&nbsp;
+    <strong>Date:</strong> {{ order.createdAt | date: 'medium' }}
+  </div>
+
+  <hr />
+
+  <div class="row mb-4" style="color: black;">
+    <div class="col-md-6">
+      <h5>Customer Details</h5>
+      <p>
+        <strong>Name:</strong> {{ order.customer_id?.name }}<br />
+        <strong>Mobile:</strong> {{ order.customer_id?.mobile }}<br />
+        <strong>Email:</strong> {{ order.customer_id?.email || 'N/A' }}
+      </p>
+    </div>
+    <div class="col-md-6">
+      <h5>Shipping Address</h5>
+      <ng-container *ngIf="isAddress(order.shipping_address)">
+        <p>
+          <strong>Name:</strong> {{ order.shipping_address.name }}<br />
+          <strong>Mobile:</strong> {{ order.shipping_address.mobile }}<br />
+          <strong>Address:</strong><br />
+          {{ order.shipping_address.address }}, {{ order.shipping_address.locality ? (order.shipping_address.locality + ', ') : '' }}
+          {{ order.shipping_address.city }}, {{ order.shipping_address.state }} - {{ order.shipping_address.pincode }}<br />
+          <strong>Landmark:</strong> {{ order.shipping_address.landmark || 'N/A' }}<br />
+          <strong>Address Type:</strong> {{ order.shipping_address.address_type || 'N/A' }}
+        </p>
+      </ng-container>
+      <ng-container *ngIf="!isAddress(order.shipping_address)">
+        <p>{{ order.shipping_address }}</p>
+      </ng-container>
+    </div>
+  </div>
+
+  <hr />
+
+  <h5 style="color: black;">Order Items</h5>
+  <table class="table table-striped table-bordered align-middle" style="color: black;">
+    <thead class="table-light" style="color: black;">
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th>Thumbnail</th>
+        <th>Quantity</th>
+        <th>Unit Price (₹)</th>
+        <th>Discount</th>
+        <th>Total Price (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of order.order_items; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.name }}</td>
+        <td><img [src]="item.thumbnail" alt="{{ item.name }}" width="60" style="object-fit: cover;" /></td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.unit_price | number:'1.2-2' }}</td>
+        <td>
+          {{ item.discount_type === 'flat' ? ('₹' + item.discount) : (item.discount + '%') }}
+        </td>
+        <td>{{ (calculateFinalPrice(item) * item.quantity) | number:'1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <div class="d-flex justify-content-end flex-column" style="max-width: 300px; margin-left: auto; color: black;">
+    <p><strong>Subtotal:</strong> ₹{{ order.total_price | number:'1.2-2' }}</p>
+    <p><strong>Shipping Cost:</strong> ₹{{ order.shipping_cost | number:'1.2-2' }}</p>
+    <p><strong>Coupon Discount:</strong> -₹{{ order.coupon_amount | number:'1.2-2' }}</p>
+    <hr />
+    <h5><strong>Total Payable:</strong> ₹{{ ((order.total_price ?? 0) + (order.shipping_cost ?? 0) - (order.coupon_amount ?? 0)) | number:'1.2-2' }}</h5>
+  </div>
+
+</div>

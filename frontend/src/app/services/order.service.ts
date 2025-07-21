@@ -53,6 +53,7 @@ export interface OrderItem {
   thumbnail: string;
   tax: number;
   discount: number;
+   discount_type: 'flat' | 'percentage';
   order_id: string;
 }
 

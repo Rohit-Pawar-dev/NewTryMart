@@ -114,9 +114,17 @@
             <!-- <button class="btn btn-outline-success btn-sm" title="Download">
               <i class="cil-cloud-download"></i>
             </button> -->
-            <button class="btn btn-outline-success btn-sm" title="View Invoice" [routerLink]="['/invoice', order._id]">
-              <i class="cil-cloud-download"></i>
-            </button>
+           <!-- Cloud download button in OrderListComponent -->
+<button
+  class="btn btn-outline-success btn-sm"
+  title="Download Invoice"
+  [routerLink]="['/orders/invoice', order._id]"
+  [queryParams]="{ download: true }"
+>
+  <i class="cil-cloud-download"></i>
+</button>
+
+
           </td>
         </tr>
       </tbody>

@@ -44,6 +44,13 @@
           <input type="number" class="form-control" name="deliveryCharges" [(ngModel)]="business.deliveryCharges" />
         </div>
 
+        <div class="mb-3 col-md-4">
+          <label for="sellerCommision" class="form-label">
+            <strong>Seller Commission (%):</strong>
+          </label>
+          <input type="number" id="sellerCommision" name="sellerCommision" class="form-control"
+            [(ngModel)]="business.sellerCommision" min="0" />
+        </div>
         <!-- Logo Upload -->
         <div class="mb-3 col-md-4">
           <label for="logoInput" class="form-label"><strong>Company Logo (PNG only):</strong></label>

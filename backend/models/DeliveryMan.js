@@ -31,7 +31,7 @@ const deliveryManSchema = new mongoose.Schema(
       trim: true,
     },
     image: {
-      type: String, // URL or path to the photo
+      type: String, 
       trim: true,
     },
     licenseNumber: {
@@ -41,11 +41,11 @@ const deliveryManSchema = new mongoose.Schema(
       trim: true,
     },
     licensePhoto: {
-      type: String, // URL or path to license photo
+      type: String, 
       trim: true,
     },
     identityProofPhoto: {
-      type: String, // URL or path to identity proof photo
+      type: String,
       trim: true,
     },
     isAvailable: {

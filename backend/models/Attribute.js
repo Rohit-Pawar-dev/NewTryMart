@@ -5,7 +5,7 @@ const attributeSchema = new Schema({
     type: {
         type: String,
         required: true,
-        enum: ["size", "color"], // or any other valid attribute types
+        enum: ["size", "color"], 
     },
     value: {
         type: String,

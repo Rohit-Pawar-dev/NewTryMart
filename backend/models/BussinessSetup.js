@@ -19,8 +19,14 @@ const BusinessSetupSchema = new mongoose.Schema({
     match: [/.+\@.+\..+/, 'Please enter a valid email address']
   },
   websiteLogo: {
-    type: String, // Assuming it's a URL or image path
+    type: String, 
     trim: true
+  },
+  sellerCommision: {
+    type: Number,
+    trim: true,
+    default: 0,
+
   },
   deliveryCharges: {
     type: Number,
@@ -42,7 +48,7 @@ const BusinessSetupSchema = new mongoose.Schema({
     trim: true
   }
 }, {
-  timestamps: true // adds createdAt and updatedAt
+  timestamps: true 
 });
 
 module.exports = mongoose.model('BusinessSetup', BusinessSetupSchema);

@@ -13,7 +13,7 @@ const orderItemDetailSchema = new Schema(
       required: true,
     },
     product_detail: {
-      type: Schema.Types.Mixed, // Removed `ref` because we're storing snapshot
+      type: Schema.Types.Mixed,
       required: true,
     },
     name: { type: String, required: true },

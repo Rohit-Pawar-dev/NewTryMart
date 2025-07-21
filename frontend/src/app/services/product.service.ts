@@ -143,6 +143,7 @@ export class ProductService {
     return this.http.get<CategoryResponse>(this.categoriesUrl, { params });
   }
 
+  
   /**
    * Admin - Change product request status (0: pending, 1: approved, 2: denied)
    */
