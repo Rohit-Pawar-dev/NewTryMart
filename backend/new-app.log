@@ -73,3 +73,88 @@
 2025-07-22T06:43:47.276Z [info]: Retrieving Users List 
 2025-07-22T07:06:24.377Z [info]: Retrieving Sellers. Search: ""
 >>>>>>> ritika-admin
+2025-07-22T11:55:04.999Z [info]: Retrieving Users List 
+2025-07-22T11:55:23.107Z [info]: Retrieving Users List g
+2025-07-22T11:55:23.346Z [info]: Retrieving Users List gu
+2025-07-22T11:55:23.665Z [info]: Retrieving Users List gur
+2025-07-22T11:55:24.939Z [info]: Retrieving Users List gu
+2025-07-22T11:55:25.135Z [info]: Retrieving Users List g
+2025-07-22T11:55:25.316Z [info]: Retrieving Users List 
+2025-07-22T11:55:28.612Z [info]: Retrieving Users List 
+2025-07-22T12:00:27.218Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T12:00:44.100Z [info]: Retrieving Users List 
+2025-07-22T12:28:29.049Z [info]: Retrieving Users List 
+2025-07-22T12:29:50.868Z [info]: Retrieving Users List 
+2025-07-22T12:30:09.391Z [info]: Retrieving Users List 
+2025-07-22T12:30:33.889Z [info]: Retrieving Users List 
+2025-07-22T12:30:36.208Z [info]: Retrieving Users List 
+2025-07-22T12:32:36.049Z [info]: Retrieving Users List 
+2025-07-22T12:32:53.741Z [info]: Retrieving Users List 
+2025-07-22T12:35:35.270Z [info]: Create User
+2025-07-22T12:35:35.359Z [info]: Create User Error: MongoServerError: E11000 duplicate key error collection: e_trymart.users index: mobile_1 dup key: { mobile: "1234567890" }
+2025-07-22T12:35:54.389Z [info]: Create User
+2025-07-22T12:35:54.523Z [info]: Retrieving Users List 
+2025-07-22T12:36:56.884Z [info]: Create User
+2025-07-22T12:36:57.022Z [info]: Retrieving Users List 
+2025-07-22T12:38:18.771Z [info]: Retrieving Users List 
+2025-07-22T12:38:28.356Z [info]: Retrieving Users List 
+2025-07-22T12:38:36.702Z [info]: Retrieving Users List 
+2025-07-22T12:38:44.221Z [info]: Retrieving Users List 
+2025-07-22T12:38:46.669Z [info]: Retrieving Users List 
+2025-07-22T12:38:48.618Z [info]: Retrieving Users List 
+2025-07-22T12:43:28.977Z [info]: Retrieving Users List 
+2025-07-22T12:43:32.540Z [info]: Retrieving Users List 
+2025-07-22T12:43:50.847Z [info]: Retrieving Users List 
+2025-07-22T12:44:15.799Z [info]: Create User
+2025-07-22T12:44:15.922Z [info]: Retrieving Users List 
+2025-07-22T12:44:19.604Z [info]: Retrieving Users List 
+2025-07-22T12:44:31.378Z [info]: Retrieving Users List 
+2025-07-22T12:44:40.307Z [info]: Retrieving Users List 
+2025-07-22T12:44:43.616Z [info]: Retrieving Users List 
+2025-07-22T12:45:39.354Z [info]: Retrieving Users List 
+2025-07-22T12:45:50.290Z [info]: Retrieving Users List 
+2025-07-22T12:45:57.404Z [info]: Retrieving Users List 
+2025-07-22T12:46:14.196Z [info]: Retrieving Users List 
+2025-07-22T12:46:16.285Z [info]: Retrieving Users List 
+2025-07-22T12:46:51.478Z [info]: Retrieving Users List 
+2025-07-22T12:47:50.195Z [info]: Retrieving Users List 
+2025-07-22T12:48:42.723Z [info]: Retrieving Users List 
+2025-07-22T12:48:46.179Z [info]: Retrieving Users List 
+2025-07-22T12:48:54.750Z [info]: Retrieving Users List 
+2025-07-22T12:52:13.023Z [info]: Retrieving Users List 
+2025-07-22T12:57:45.295Z [info]: Retrieving Users List 
+2025-07-22T12:57:53.884Z [info]: Retrieving Users List 
+2025-07-22T12:57:56.211Z [info]: Retrieving Users List 
+2025-07-22T12:58:46.401Z [info]: Retrieving Users List 
+2025-07-22T12:58:48.881Z [info]: Retrieving Users List 
+2025-07-22T12:58:51.392Z [info]: Retrieving Users List 
+2025-07-22T12:58:53.311Z [info]: Retrieving Users List 
+2025-07-22T12:58:55.224Z [info]: Retrieving Users List 
+2025-07-22T12:58:57.600Z [info]: Retrieving Users List 
+2025-07-22T12:59:00.161Z [info]: Retrieving Users List 
+2025-07-22T12:59:16.815Z [info]: Create User
+2025-07-22T12:59:16.955Z [info]: Retrieving Users List 
+2025-07-22T12:59:18.719Z [info]: Retrieving Users List 
+2025-07-22T12:59:26.854Z [info]: Retrieving Users List 
+2025-07-22T12:59:42.263Z [info]: Retrieving Users List 
+2025-07-22T12:59:43.727Z [info]: Retrieving Users List 
+2025-07-22T13:00:01.977Z [info]: Retrieving Users List 
+2025-07-22T13:00:07.664Z [info]: Retrieving Users List 
+2025-07-22T13:00:09.157Z [info]: Retrieving Users List 
+2025-07-22T13:00:19.759Z [info]: Retrieving Users List 
+2025-07-22T13:00:28.937Z [info]: Retrieving Users List 
+2025-07-22T13:00:34.276Z [info]: Retrieving Users List 
+2025-07-22T13:00:35.664Z [info]: Retrieving Users List 
+2025-07-22T13:06:09.380Z [info]: Retrieving Users List 
+2025-07-22T13:06:52.879Z [info]: Retrieving Users List 
+2025-07-22T13:11:09.315Z [info]: Retrieving Users List 
+2025-07-22T13:11:10.833Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T13:11:12.251Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T13:31:38.559Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T13:31:46.230Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T13:32:04.760Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T13:32:24.304Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T13:44:22.614Z [info]: Retrieving Sellers. Search: ""
+2025-07-22T13:44:35.183Z [info]: Retrieving Users List 
+2025-07-22T13:44:47.123Z [info]: Retrieving Users List 
+2025-07-22T13:45:09.255Z [info]: Retrieving Sellers. Search: ""

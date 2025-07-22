@@ -2,6 +2,7 @@ const User = require("../../models/User");
 const nlogger = require("../../logger");
 const upload = require("../../utils/multer");
 const getCustomMulter = require("../../utils/customMulter");
+const path = require('path');
 
 require("dotenv").config();
 // Create User
@@ -133,9 +134,7 @@ exports.getProfile = async (req, res) => {
 };
 
 exports.updateProfile = (req, res) => {
-  const upload = getCustomMulter("user"); // ✅ easy: define folder here
-  // console.log("Update Profile Request:", req.body);
-
+  const upload = getCustomMulter("user");
   upload.single("profilePicture")(req, res, async function (err) {
     if (err) {
       return res.status(400).json({
@@ -216,3 +215,16 @@ exports.updateProfile = (req, res) => {
     }
   });
 };
+
+
+exports.uploadProfileImage = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  // Return relative path for frontend to use
+  const filePath = path.join('uploads', 'user', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
+};
+
+     

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserService, User } from '../../../services/user.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -15,30 +16,39 @@ export class UserViewComponent implements OnInit {
   userId: string | null = null;
   isLoading = true;
   error: string | null = null;
+  mediaUrl=  environment.mediaUrl;
 
   constructor(
     private route: ActivatedRoute,
     private userService: UserService
   ) {}
 
-  ngOnInit(): void {
-    this.userId = this.route.snapshot.paramMap.get('id');
-    if (this.userId) {
-      this.userService.getUser(this.userId).subscribe({
-        next: (userData) => {
-          this.user = userData;
-          console.log(this.user);
-
-          this.isLoading = false;
-        },
-        error: (err) => {
-          this.error = 'User not found or failed to fetch.';
-          this.isLoading = false;
-        },
-      });
-    } else {
-      this.error = 'Invalid user ID.';
-      this.isLoading = false;
-    }
+ ngOnInit(): void {
+  this.userId = this.route.snapshot.paramMap.get('id');
+  
+  if (!this.userId) {
+    this.error = 'Invalid user ID.';
+    this.isLoading = false;
+    return;
   }
+
+  this.userService.getUser(this.userId).subscribe({
+    next: (userData) => {
+      this.user = {
+        ...userData,
+        profilePicture: userData.profilePicture
+          ? this.mediaUrl + userData.profilePicture
+          : "./assets/user_default.png"
+      };
+
+      console.log(this.user);
+      this.isLoading = false;
+    },
+    error: (err) => {
+      this.error = 'User not found or failed to fetch.';
+      this.isLoading = false;
+    },
+  });
+}
+
 }

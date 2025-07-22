@@ -7,6 +7,7 @@ const {
   getUserOrders,
   getUserOrderById,
 } = require("../controllers/usersController/OrderController");
+
 const productController = require("../controllers/usersController/ProductController");
 const sellerController = require("../controllers/usersController/SellerController");
 const NotificationController = require("../controllers/usersController/NotificationController");
@@ -14,6 +15,9 @@ const {
   placeOrderOnline,
 } = require("../controllers/usersController/OrderController");
 const wishlistController = require("../controllers/usersController/wishlistController");
+const getCustomMulter = require('./../utils/customMulter');
+
+const uploadSubCategory = getCustomMulter('user');
 
 // Routes
 
@@ -49,7 +53,13 @@ router.post(
   upload.single("profile"),
   userController.uploadProfilePicture
 );
+
+router.post('/upload-profilePicture', uploadSubCategory.single('profilePicture'),userController.uploadProfileImage);
 router.post("/update-profile", auth, userController.updateProfile);
+
+
+router.post
+
 router.get("/profile", auth, userController.getProfile);
 
 router.post("/place-order-online", auth, placeOrderOnline);

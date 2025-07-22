@@ -29,8 +29,8 @@ export class UserEditComponent implements OnInit {
   imagePreview: string | null = null;
   selectedFile: File | null = null; // ✅ Store image locally before upload
   userId: string | null = null;
-
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+ mediaUrl= environment.mediaUrl;
+ private uploadUrl = `${environment.apiUrl}/users/upload-profilePicture`;
 
   constructor(
     private fb: FormBuilder,
@@ -55,7 +55,7 @@ export class UserEditComponent implements OnInit {
       this.userService.getUser(this.userId).subscribe({
         next: (user) => {
           this.userForm.patchValue(user);
-          this.imagePreview = user.profilePicture || null;
+          this.imagePreview =  this.mediaUrl+user.profilePicture || null;
         },
         error: (err) => {
           console.error('Error loading user:', err);
@@ -69,7 +69,7 @@ export class UserEditComponent implements OnInit {
     if (!file) return;
 
     this.selectedFile = file;
-    this.userForm.patchValue({ profilePicture: 'selected' }); // ✅ To satisfy validation
+    this.userForm.patchValue({ profilePicture: 'selected' }); 
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -102,12 +102,12 @@ export class UserEditComponent implements OnInit {
     if (this.selectedFile) {
       this.isUploading = true;
       const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      formData.append('type', 'profile');
+      formData.append('profilePicture', this.selectedFile);
+      // formData.append('type', 'profile');
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
-          const fileUrl = res.file.replace(/\\/g, '/');
+          const fileUrl = res.path.replace(/\\/g, '/');
           this.userForm.patchValue({ profilePicture: fileUrl });
           this.isUploading = false;
           finalizeUpdate(); // ✅ Continue after upload

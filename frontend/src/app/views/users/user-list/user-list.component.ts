@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ import Swal from 'sweetalert2';
 export class UserListComponent implements OnInit {
   users: User[] = [];
   isLoading = false;
+  mediaUrl = environment.mediaUrl;
 
   searchTerm = '';
   page = 1;
@@ -32,7 +34,13 @@ export class UserListComponent implements OnInit {
 
     this.userService.getUsers(this.searchTerm, this.page, this.pageSize).subscribe({
       next: (res) => {
-        this.users = res.data || [];
+      this.users = (res.data || []).map((user: any) => {
+  return {
+    ...user,
+    profilePicture: user.profilePicture ? this.mediaUrl + user.profilePicture : null
+  };
+});
+
         this.totalPages = res.totalPages || 1;
         this.totalUsers = res.total || 0;
         this.isLoading = false;

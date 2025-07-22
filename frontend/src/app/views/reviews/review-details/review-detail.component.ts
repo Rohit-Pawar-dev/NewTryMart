@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ReviewsService, Review } from '../../../services/reviews.service';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-review-detail',
   standalone: true,
@@ -13,12 +14,13 @@ export class ReviewDetailComponent implements OnInit {
   review: Review | null = null;
   isLoading = false;
   error: string | null = null;
+  mediaUrl = environment.mediaUrl;
 
   constructor(
     private route: ActivatedRoute,
     private reviewsService: ReviewsService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -29,7 +31,12 @@ export class ReviewDetailComponent implements OnInit {
     this.isLoading = true;
     this.reviewsService.getReview(id).subscribe({
       next: (review) => {
-        this.review = review;
+        this.review = {
+          ...review,
+          image: review.image
+            ? this.mediaUrl + review.image
+            : ""
+        };
         this.isLoading = false;
       },
       error: (err) => {

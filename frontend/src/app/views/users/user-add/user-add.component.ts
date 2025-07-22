@@ -28,7 +28,7 @@ export class UserAddComponent implements OnInit {
   isUploading = false;
   uploadError: string | null = null;
   imagePreview: string | null = null;
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  private uploadUrl = `${environment.apiUrl}/users/upload-profilePicture`;
 
   constructor(
     private fb: FormBuilder,
@@ -40,7 +40,7 @@ export class UserAddComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', Validators.required],
-      gender: ['', Validators.required], // <-- Added gender
+      gender: ['', Validators.required], 
       status: ['active', Validators.required],
       profilePicture: [''],
     });
@@ -87,14 +87,14 @@ export class UserAddComponent implements OnInit {
 
     if (this.selectedFile) {
       const formData = new FormData();
-      formData.append('type', 'profile');
-      formData.append('file', this.selectedFile);
+      // formData.append('type', 'profile');
+      formData.append('profilePicture', this.selectedFile);
 
       this.isUploading = true;
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
-          const normalizedUrl = res.file.replace(/\\/g, '/');
+          const normalizedUrl = res.path.replace(/\\/g, '/');
           this.userForm.patchValue({ profilePicture: normalizedUrl });
           this.isUploading = false;
           createUser(); // Create user after image upload
