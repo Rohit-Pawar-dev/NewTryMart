@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SubCategoryService, SubCategory } from '../../../../app/services/sub-category.service';
 import { CategoryService } from '../../../../app/services/category.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ export class SubCategoryViewComponent implements OnInit {
   parentCategoryName: string = '';
   isLoading: boolean = true;
   error: string | null = null;
+  mediaUrl = environment.mediaUrl;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,9 +30,10 @@ export class SubCategoryViewComponent implements OnInit {
 
   this.subCategoryService.getSubCategory(id).subscribe({
     next: (data) => {
-      this.subCategory = data;
-
-      // if category_id is populated object, use its name directly
+      this.subCategory = {
+    ...data,
+    image: data.image ? this.mediaUrl + data.image : '',
+  };
       if (typeof data.category_id === 'object' && data.category_id !== null) {
         this.parentCategoryName = data.category_id.name;
       }

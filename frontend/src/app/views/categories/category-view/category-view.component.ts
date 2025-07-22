@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CategoryService, Category } from '../../../../app/services/category.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -14,6 +15,7 @@ export class CategoryViewComponent implements OnInit {
   category: Category | null = null;
   isLoading: boolean = true;
   error: string | null = null;
+  mediaUrl = environment.mediaUrl;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,9 +25,14 @@ export class CategoryViewComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route.snapshot.params['id'];
 
-    this.categoryService.getCategory(id).subscribe({
+   this.categoryService.getCategory(id).subscribe({
       next: (data) => {
-        this.category = data;
+        if (data) {
+          this.category = {
+            ...data,
+            image: data.image ? this.mediaUrl + data.image : ""
+          };
+        }
         this.isLoading = false;
       },
       error: () => {
