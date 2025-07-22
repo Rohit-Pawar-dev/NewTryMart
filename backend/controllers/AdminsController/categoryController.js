@@ -95,14 +95,16 @@ exports.createCategory = async (req, res) => {
 //       },
 //       {
 //         $addFields: {
-//           sub_categories: {
-//             $filter: {
-//               input: "$sub_categories",
-//               as: "sub",
-//               cond: all === "true" ? {} : { $eq: ["$$sub.status", "active"] },
-//             },
-//           },
-//         },
+//           sub_categories: all === "true"
+//             ? "$sub_categories"
+//             : {
+//               $filter: {
+//                 input: "$sub_categories",
+//                 as: "sub",
+//                 cond: { $eq: ["$$sub.status", "active"] }
+//               }
+//             }
+//         }
 //       }
 //     );
 
