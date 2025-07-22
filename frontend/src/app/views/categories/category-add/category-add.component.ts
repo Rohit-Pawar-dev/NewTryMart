@@ -8,7 +8,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 
-
 @Component({
   standalone: true,
   selector: 'app-category-add',
@@ -21,9 +20,9 @@ export class CategoryAddComponent {
   isUploading = false;
   uploadError: string | null = null;
   imagePreview: string | null = null;
-  selectedFile: File | null = null; // ✅ store file temporarily
+  selectedFile: File | null = null;
 
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  private uploadUrl = `${environment.apiUrl}/categories/upload-image`;
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +32,7 @@ export class CategoryAddComponent {
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
-      image: ['', Validators.required],
+      image: ['', Validators.required], // will store image URL from server
       status: ['active', Validators.required],
     });
   }
@@ -43,7 +42,7 @@ export class CategoryAddComponent {
     if (!file) return;
 
     this.selectedFile = file;
-    this.form.patchValue({ image: 'selected' }); // satisfies form validation
+    this.form.patchValue({ image: 'uploading' }); // temporary to pass validation
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -58,42 +57,32 @@ export class CategoryAddComponent {
     this.isSubmitting = true;
     this.uploadError = null;
 
-    // const finalizeSubmit = () => {
-    //   this.categoryService.createCategory(this.form.value).subscribe({
-    //     next: () => this.router.navigate(['/categories']),
-    //     error: () => {
-    //       this.isSubmitting = false;
-    //     },
-    //   });
-    // };
-
-
     const finalizeSubmit = () => {
-  this.categoryService.createCategory(this.form.value).subscribe({
-    next: () => {
-      Swal.fire('Success', 'Category created successfully!', 'success');
-      this.router.navigate(['/categories']);
-    },
-    error: () => {
-      Swal.fire('Error', 'Failed to create category.', 'error');
-      this.isSubmitting = false;
-    },
-  });
-};
-
+      this.categoryService.createCategory(this.form.value).subscribe({
+        next: () => {
+          Swal.fire('Success', 'Category created successfully!', 'success');
+          this.router.navigate(['/categories']);
+        },
+        error: () => {
+          Swal.fire('Error', 'Failed to create category.', 'error');
+          this.isSubmitting = false;
+        },
+      });
+    };
 
     if (this.selectedFile) {
       this.isUploading = true;
       const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      formData.append('type', 'category');
+      formData.append('image', this.selectedFile);
+      // formData.append('type', 'category'); // optional if your backend expects it
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
-          const normalizedUrl = res.file.replace(/\\/g, '/');
+          // The backend should return { path: 'uploads/categories/image-name.jpg' }
+          const normalizedUrl = res.path.replace(/\\/g, '/');
           this.form.patchValue({ image: normalizedUrl });
           this.isUploading = false;
-          finalizeSubmit(); // ✅ only submit after image upload success
+          finalizeSubmit();
         },
         error: (err) => {
           console.error('Upload failed', err);
@@ -103,7 +92,8 @@ export class CategoryAddComponent {
         },
       });
     } else {
-      finalizeSubmit(); // ✅ no image uploaded, just submit
+      // No file selected, just submit (if allowed)
+      finalizeSubmit();
     }
   }
 }

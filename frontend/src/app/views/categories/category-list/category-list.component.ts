@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -17,6 +18,7 @@ export class CategoryListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
   public Math = Math;
+   mediaBaseUrl = environment.mediaUrl;
 
   // Pagination properties
   page = 1;
@@ -46,7 +48,10 @@ export class CategoryListComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-          this.categories = res.data;
+           this.categories = res.data.map((category) => ({
+            ...category,
+            image: this.mediaBaseUrl + category.image,
+          }));
           this.total = res.total;
           this.totalPages = res.totalPages;
           this.isLoading = false;
