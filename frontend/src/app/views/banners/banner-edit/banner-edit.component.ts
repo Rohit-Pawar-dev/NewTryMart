@@ -19,6 +19,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   isUploading = false;
   uploadError: string | null = null;
+  mediaUrl = environment.mediaUrl;
 
   selectedImageFile: File | null = null;
   selectedVideoFile: File | null = null;
@@ -30,7 +31,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
   bannerData: Banner | null = null;
 
   todayString = new Date().toISOString().split('T')[0];
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+   private uploadUrl = `${environment.apiUrl}/banners/upload`
 
   constructor(
     private fb: FormBuilder,
@@ -81,10 +82,10 @@ export class BannerEditComponent implements OnInit, OnDestroy {
 
         // Setup previews if existing
         if (banner.image) {
-          this.previewImage = banner.image;
+          this.previewImage = banner.image ? this.mediaUrl+ banner.image : null;
         }
         if (banner.video) {
-          this.previewVideo = banner.video;
+          this.previewVideo = banner.video ? this.mediaUrl +banner.video : null;
         }
 
         // Setup validators for current banner_type
@@ -209,10 +210,10 @@ export class BannerEditComponent implements OnInit, OnDestroy {
 
       this.isUploading = true;
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
           this.isUploading = false;
-          resolve(res.file.replace(/\\/g, '/'));
+          resolve(res.path.replace(/\\/g, '/'));
         },
         error: (err) => {
           reject(err);

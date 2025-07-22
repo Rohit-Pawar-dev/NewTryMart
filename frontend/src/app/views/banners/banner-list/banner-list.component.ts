@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-banner-list',
@@ -14,6 +15,7 @@ import Swal from 'sweetalert2';
 })
 export class BannerListComponent implements OnInit {
   banners: Banner[] = [];
+  mediaurl = environment.mediaUrl;
   searchTerm = '';
   isLoading = false;
   currentPage = 1;
@@ -42,7 +44,11 @@ export class BannerListComponent implements OnInit {
       .getBanners({ search: this.searchTerm, limit: this.limit, offset })
       .subscribe({
         next: (response: any) => {
-          this.banners = response.data || [];
+        this.banners = (response.data || []).map((banner: any) => ({
+          ...banner,
+          image: banner.image ? this.mediaurl + banner.image : null,
+          video: banner.video ? this.mediaurl + banner.video : null,
+        }));
           this.total = response.total || 0;
           this.totalPages = response.totalPages || Math.ceil(this.total / this.limit);
           this.isLoading = false;

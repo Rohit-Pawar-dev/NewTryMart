@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 export interface Banner {
   _id?: string;
   title: string;
-  image: string;
+  image: string | null;
   video?: string | null;
   status: 'active' | 'inactive';
   banner_type: 'main_banner' | 'popup_banner' | 'ads_img_banner' | 'ads_video_banner';
