@@ -7,6 +7,7 @@ import { CategoryService } from '../../../services/category.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 import { FormsModule } from '@angular/forms';
 
 import Swal from 'sweetalert2';
@@ -22,6 +23,7 @@ export class SubCategoryListComponent implements OnInit {
   categoriesMap: { [id: string]: string } = {};
   searchTerm = '';
   isLoading = false;
+   mediaBaseUrl = environment.mediaUrl; 
 
   // Pagination properties
   page = 1;
@@ -63,12 +65,15 @@ export class SubCategoryListComponent implements OnInit {
         search: this.searchTerm,
         page: this.page,
         pageSize: this.pageSize,
-        all: true, // adjust if needed
+        all: true, 
       })
       .subscribe({
         next: (res) => {
           // res shape: { data: SubCategory[], total: number, ... }
-          this.subCategories = res.data;
+           this.subCategories = res.data.map((subCat) => ({
+          ...subCat,
+          image: subCat.image ? this.mediaBaseUrl + subCat.image : '',
+        }));
           this.totalRecords = res.total;
           this.totalPages = Math.ceil(res.total / this.pageSize);
           this.isLoading = false;

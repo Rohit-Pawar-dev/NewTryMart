@@ -1,5 +1,6 @@
 // controllers/subCategoryController.js
 const SubCategory = require('../../models/SubCategory');
+const path = require('path');
 
 // Create SubCategory
 exports.createSubCategory = async (req, res) => {
@@ -77,4 +78,14 @@ exports.deleteSubCategory = async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+};
+
+exports.uploadSubCategoryImage = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  // Return relative path for frontend to use
+  const filePath = path.join('uploads', 'subcategories', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
 };

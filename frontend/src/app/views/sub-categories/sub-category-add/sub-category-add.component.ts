@@ -7,8 +7,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-
-// Import SweetAlert2
 import Swal from 'sweetalert2';
 
 @Component({
@@ -26,7 +24,7 @@ export class SubCategoryAddComponent implements OnInit {
   imagePreview: string | null = null;
   selectedFile: File | null = null;
 
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  private uploadUrl = `${environment.apiUrl}/subcategories/upload-image`;
 
   constructor(
     private fb: FormBuilder,
@@ -38,15 +36,20 @@ export class SubCategoryAddComponent implements OnInit {
     this.form = this.fb.group({
       name: ['', Validators.required],
       category_id: ['', Validators.required],
-      image: ['', Validators.required], // keep for validation
+      image: ['', Validators.required],
       status: ['active', Validators.required],
     });
   }
 
   ngOnInit(): void {
     this.categoryService.getCategories().subscribe({
-      next: (data) => (this.categories = data.data),
-      error: (err) => console.error('Failed to load categories', err),
+      next: (res) => {
+        this.categories = res.data || [];
+      },
+      error: (err) => {
+        console.error('Failed to load categories:', err);
+        Swal.fire('Error', 'Could not load categories', 'error');
+      },
     });
   }
 
@@ -55,7 +58,7 @@ export class SubCategoryAddComponent implements OnInit {
     if (!file) return;
 
     this.selectedFile = file;
-    this.form.patchValue({ image: 'selected' }); // pass validation
+    this.form.patchValue({ image: 'selected' }); // trick to pass validation
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -68,16 +71,15 @@ export class SubCategoryAddComponent implements OnInit {
     if (this.form.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
+    this.uploadError = null;
 
     const finalizeSubmit = () => {
       this.subCategoryService.createSubCategory(this.form.value).subscribe({
         next: () => {
-          // Show success alert
           Swal.fire('Success', 'Sub-category created successfully!', 'success');
           this.router.navigate(['/sub-categories']);
         },
         error: () => {
-          // Show error alert
           Swal.fire('Error', 'Failed to create sub-category.', 'error');
           this.isSubmitting = false;
         },
@@ -86,20 +88,21 @@ export class SubCategoryAddComponent implements OnInit {
 
     if (this.selectedFile) {
       this.isUploading = true;
+
       const formData = new FormData();
-      formData.append('file', this.selectedFile);
+      formData.append('image', this.selectedFile);
       formData.append('type', 'subcategory');
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
-          const normalizedUrl = res.file.replace(/\\/g, '/');
+          const normalizedUrl = res.path.replace(/\\/g, '/');
           this.form.patchValue({ image: normalizedUrl });
           this.isUploading = false;
           finalizeSubmit();
         },
         error: (err) => {
-          console.error('Upload failed', err);
-          this.uploadError = 'Image upload failed';
+          console.error('Image upload failed', err);
+          this.uploadError = 'Image upload failed. Please try again.';
           this.isUploading = false;
           this.isSubmitting = false;
         },

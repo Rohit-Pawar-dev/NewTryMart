@@ -24,7 +24,7 @@ export class CategoryEditComponent implements OnInit {
   uploadError: string | null = null;
   selectedFile: File | null = null;
 
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  private uploadUrl = `${environment.apiUrl}/categories/upload-image`;
 
   constructor(
     private fb: FormBuilder,
@@ -44,7 +44,7 @@ export class CategoryEditComponent implements OnInit {
     this.id = this.route.snapshot.params['id'];
     this.categoryService.getCategory(this.id).subscribe((category) => {
       this.form.patchValue(category);
-      this.imagePreview = category.image;
+      this.imagePreview = category.image ? environment.mediaUrl+category.image : null;
     });
   }
 
@@ -53,13 +53,14 @@ export class CategoryEditComponent implements OnInit {
     if (!file) return;
 
     this.selectedFile = file;
-    this.form.patchValue({ image: 'selected' }); // Satisfy validation
+    this.form.patchValue({ image: 'selected' });
 
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result as string;
     };
     reader.readAsDataURL(file);
+
   }
 
   submit(): void {
@@ -100,12 +101,12 @@ export class CategoryEditComponent implements OnInit {
         if (this.selectedFile) {
           this.isUploading = true;
           const formData = new FormData();
-          formData.append('file', this.selectedFile);
+          formData.append('image', this.selectedFile);
           formData.append('type', 'category');
 
-          this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+          this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
             next: (res) => {
-              const normalizedUrl = res.file.replace(/\\/g, '/');
+              const normalizedUrl = res.path.replace(/\\/g, '/');
               this.form.patchValue({ image: normalizedUrl });
               this.isUploading = false;
               finalizeSubmit();

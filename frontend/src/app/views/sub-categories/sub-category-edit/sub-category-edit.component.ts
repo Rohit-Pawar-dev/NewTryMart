@@ -29,7 +29,7 @@ export class SubCategoryEditComponent implements OnInit {
   uploadError: string | null = null;
   selectedFile: File | null = null;
 
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  private uploadUrl = `${environment.apiUrl}/subcategories/upload-image`;
 
   constructor(
     private fb: FormBuilder,
@@ -67,7 +67,7 @@ export class SubCategoryEditComponent implements OnInit {
         image: subCategory.image || 'existing', // keep it non-empty
       });
 
-      this.imagePreview = subCategory.image;
+      this.imagePreview = subCategory.image ? environment.mediaUrl + subCategory.image : null;
     });
   }
 
@@ -106,12 +106,12 @@ export class SubCategoryEditComponent implements OnInit {
     if (this.selectedFile) {
       this.isUploading = true;
       const formData = new FormData();
-      formData.append('file', this.selectedFile);
+      formData.append('image', this.selectedFile);
       formData.append('type', 'subcategory');
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
-          const normalizedUrl = res.file.replace(/\\/g, '/');
+          const normalizedUrl = res.path.replace(/\\/g, '/');
           this.form.patchValue({ image: normalizedUrl });
           this.isUploading = false;
           finalizeSubmit();

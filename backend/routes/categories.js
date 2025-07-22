@@ -5,6 +5,7 @@ const getCustomMulter = require('./../utils/customMulter');
 
 const uploadCategory = getCustomMulter('categories');
 
+
 // Create
 router.post("/", categoryController.createCategory);
 
