@@ -27,7 +27,7 @@ export class BannerAddComponent implements OnDestroy {
   previewVideo: string | null = null;
 
   todayString = new Date().toISOString().split('T')[0];
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  private uploadUrl = `${environment.apiUrl}/banners/upload`; // Updated URL
 
   constructor(
     private fb: FormBuilder,
@@ -66,33 +66,27 @@ export class BannerAddComponent implements OnDestroy {
     end?.clearValidators();
     popup?.clearValidators();
 
-    // Ads Video: Image + Video + Dates
     if (type === 'ads_video_banner') {
       image?.setValidators([Validators.required]);
       video?.setValidators([Validators.required]);
       start?.setValidators([Validators.required]);
       end?.setValidators([Validators.required]);
-    }
-
-    // Popup: Image + Dates + Pop-up Time
-    else if (type === 'popup_banner') {
+    } else if (type === 'popup_banner') {
       image?.setValidators([Validators.required]);
       start?.setValidators([Validators.required]);
       end?.setValidators([Validators.required]);
       popup?.setValidators([Validators.required]);
-    }
-
-    // Image banner: Image + Dates
-    else if (type === 'ads_img_banner') {
+    } else if (type === 'ads_img_banner') {
       image?.setValidators([Validators.required]);
       start?.setValidators([Validators.required]);
       end?.setValidators([Validators.required]);
-    }
-
-    // Main banner: Image only
-    else if (type === 'main_banner') {
+    } else if (type === 'main_banner') {
       image?.setValidators([Validators.required]);
-      this.form.patchValue({ start_date: null, end_date: null, pop_up_time: null });
+      this.form.patchValue({
+        start_date: null,
+        end_date: null,
+        pop_up_time: null,
+      });
     }
 
     image?.updateValueAndValidity();
@@ -109,11 +103,11 @@ export class BannerAddComponent implements OnDestroy {
     if (type === 'image') {
       this.selectedImageFile = file;
       this.previewImage = URL.createObjectURL(file);
-      this.form.patchValue({ image: 'selected' });
+      this.form.patchValue({ image: 'selected' }); // flag for validation
     } else {
       this.selectedVideoFile = file;
       this.previewVideo = URL.createObjectURL(file);
-      this.form.patchValue({ video: 'selected' });
+      this.form.patchValue({ video: 'selected' }); // flag for validation
     }
   }
 
@@ -166,17 +160,17 @@ export class BannerAddComponent implements OnDestroy {
   private uploadFile(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
-      formData.append('type', 'banner');
-      formData.append('file', file);
+      formData.append('file', file); // backend expects 'file'
 
       this.isUploading = true;
 
-      this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
+      this.http.post<{ path: string }>(this.uploadUrl, formData).subscribe({
         next: (res) => {
           this.isUploading = false;
-          resolve(res.file.replace(/\\/g, '/'));
+          resolve(res.path.replace(/\\/g, '/'));
         },
         error: (err) => {
+          this.isUploading = false;
           reject(err);
         },
       });
@@ -186,7 +180,6 @@ export class BannerAddComponent implements OnDestroy {
   private finalizeSubmit(): void {
     const payload = { ...this.form.value };
 
-    // Cleanup unnecessary fields
     if (payload.banner_type === 'main_banner') {
       payload.start_date = null;
       payload.end_date = null;
@@ -210,7 +203,6 @@ export class BannerAddComponent implements OnDestroy {
       error: (err) => {
         console.error('Create failed', err);
         this.isSubmitting = false;
-        // Swal.fire('Error', 'Failed to create banner. Please try again.', 'error');
         Swal.fire({
           title: 'Error',
           text: err.error?.error || 'Failed to create banner. Please try again.',

@@ -1,4 +1,5 @@
 const Banner = require("../../models/Banner");
+const path = require('path');
 
 // Create
 exports.createBanner = async (req, res) => {
@@ -143,3 +144,13 @@ exports.deleteBanner = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+exports.uploadBannerMedia = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const filePath = path.join('uploads', 'banners', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
+};
+
