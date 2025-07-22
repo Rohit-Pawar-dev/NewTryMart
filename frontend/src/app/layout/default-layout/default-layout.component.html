@@ -1,6 +1,6 @@
 <!--sidebar-->
 <c-sidebar #sidebar1="cSidebar" class="d-print-none sidebar sidebar-fixed border-end" colorScheme="dark" id="sidebar1"
-  visible style="background: linear-gradient(135deg, rgb(50, 50, 141), #2e6eaf);">
+  visible style="  background:#377AA1;">
   <c-sidebar-header class="border-bottom" style="
       text-align: center;
       color: #fff;
@@ -13,12 +13,8 @@
       font-size: 23px;
     ">
     <c-sidebar-brand [routerLink]="['/dashboard']">
-      <img 
-  [src]="logoUrl || 'assets/images/etrymartlogo.png'" 
-  alt="E-TryMart Logo" 
-  class="sidebar-brand-full" 
-  height="32"
-/>
+      <img [src]="logoUrl || 'assets/images/etrymartlogo.png'" alt="E-TryMart Logo" class="sidebar-brand-full"
+        height="32" />
 
       <!-- Optional narrow version for collapsed sidebar -->
       <!-- <img
