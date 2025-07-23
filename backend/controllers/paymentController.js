@@ -20,7 +20,7 @@ const createRazorpayOrder = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    console.log("Creating Razorpay order for user:", userId);
+    // console.log("Creating Razorpay order for user:", userId);
 
     const cartItems = await Cart.find({
       customer_id: userId,
