@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  FormArray,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -82,6 +77,8 @@ export class ProductAddComponent implements OnInit {
   ngOnInit(): void {
     this.loadCategories();
     this.loadVariantAttributes();
+    document.addEventListener('click', this.handleClickOutside.bind(this));
+    document.removeEventListener('click', this.handleClickOutside.bind(this));
   }
 
   loadCategories(): void {
@@ -100,6 +97,14 @@ export class ProductAddComponent implements OnInit {
     const selected = this.categories.find((cat) => cat._id === catId);
     this.subcategories = selected?.sub_categories || [];
     this.form.patchValue({ sub_category_id: '' });
+  }
+
+  handleClickOutside(event: Event): void {
+    const target = event.target as HTMLElement;
+    const clickedInside = target.closest('.position-relative');
+    if (!clickedInside) {
+      this.openDropdown = null;
+    }
   }
 
   loadVariantAttributes(): void {
@@ -140,7 +145,36 @@ export class ProductAddComponent implements OnInit {
         this.selectedVariants[type].push(value);
       }
     } else {
-      this.selectedVariants[type] = this.selectedVariants[type].filter(v => v !== value);
+      this.selectedVariants[type] = this.selectedVariants[type].filter(
+        (v) => v !== value
+      );
+    }
+
+    this.buildVariantsFromSelectedAttributes();
+  }
+
+  openDropdown: string | null = null;
+
+  toggleDropdown(type: string): void {
+    this.openDropdown = this.openDropdown === type ? null : type;
+  }
+
+  onCheckboxChange(event: Event, type: string, value: string): void {
+    const input = event.target as HTMLInputElement;
+    const checked = input.checked;
+
+    if (!this.selectedVariants[type]) {
+      this.selectedVariants[type] = [];
+    }
+
+    if (checked) {
+      if (!this.selectedVariants[type].includes(value)) {
+        this.selectedVariants[type].push(value);
+      }
+    } else {
+      this.selectedVariants[type] = this.selectedVariants[type].filter(
+        (v) => v !== value
+      );
     }
 
     this.buildVariantsFromSelectedAttributes();
@@ -295,7 +329,9 @@ export class ProductAddComponent implements OnInit {
     formData.append('type', 'product');
     formData.append('file', file);
 
-    const res = await firstValueFrom(this.http.post<{ file: string }>(this.uploadUrl, formData));
+    const res = await firstValueFrom(
+      this.http.post<{ file: string }>(this.uploadUrl, formData)
+    );
     if (!res || !res.file) {
       throw new Error('Upload failed: No file returned');
     }
@@ -310,7 +346,9 @@ export class ProductAddComponent implements OnInit {
     }
 
     if (!this.form.get('slug')?.value) {
-      this.form.patchValue({ slug: this.generateSlug(this.form.get('name')?.value || '') });
+      this.form.patchValue({
+        slug: this.generateSlug(this.form.get('name')?.value || ''),
+      });
     }
 
     this.form.patchValue({ is_variant: this.isVariant });
@@ -323,13 +361,17 @@ export class ProductAddComponent implements OnInit {
       }));
 
     // Update both form control and FormArray for backend to receive properly
-    this.form.setControl('variants', this.fb.array(
-      selected.map(attr => this.fb.group({
-        name: [attr.name],
-        values: [attr.values],
-      }))
-    ));
-
+    this.form.setControl(
+      'variants',
+      this.fb.array(
+        selected.map((attr) =>
+          this.fb.group({
+            name: [attr.name],
+            values: [attr.values],
+          })
+        )
+      )
+    );
 
     Swal.fire({
       title: 'Confirm Product Creation',
@@ -353,7 +395,9 @@ export class ProductAddComponent implements OnInit {
         }
 
         if (this.multiplePhotoFiles.length > 0) {
-          const photoUrls = await Promise.all(this.multiplePhotoFiles.map((file) => this.uploadFile(file)));
+          const photoUrls = await Promise.all(
+            this.multiplePhotoFiles.map((file) => this.uploadFile(file))
+          );
           this.form.patchValue({ images: photoUrls });
         } else {
           this.form.patchValue({ images: [] });
@@ -362,10 +406,18 @@ export class ProductAddComponent implements OnInit {
         for (let i = 0; i < this.variationOptions.length; i++) {
           const files = this.variantImageFiles[i] || [];
           if (files.length > 0) {
-            const urls = await Promise.all(files.map((file) => this.uploadFile(file)));
+            const urls = await Promise.all(
+              files.map((file) => this.uploadFile(file))
+            );
             const variantGroup = this.variationOptions.at(i);
-            const existingImages: string[] = variantGroup.get('images')?.value || [];
-            variantGroup.patchValue({ images: [...existingImages.filter(img => !img.startsWith('data:')), ...urls] });
+            const existingImages: string[] =
+              variantGroup.get('images')?.value || [];
+            variantGroup.patchValue({
+              images: [
+                ...existingImages.filter((img) => !img.startsWith('data:')),
+                ...urls,
+              ],
+            });
           }
         }
 
@@ -376,8 +428,11 @@ export class ProductAddComponent implements OnInit {
 
         this.productService.createProduct(formValue).subscribe({
           next: () => {
-            Swal.fire('Product Created', 'The product has been successfully created.', 'success')
-              .then(() => this.router.navigate(['/products']));
+            Swal.fire(
+              'Product Created',
+              'The product has been successfully created.',
+              'success'
+            ).then(() => this.router.navigate(['/products']));
           },
           error: (err) => {
             console.error('Product creation error:', err);
@@ -391,5 +446,10 @@ export class ProductAddComponent implements OnInit {
         Swal.fire('Upload Failed', 'Failed to upload images.', 'error');
       }
     });
+  }
+
+  removeVariant(index: number): void {
+    this.variationOptions.removeAt(index);
+    delete this.variantImageFiles[index];
   }
 }
