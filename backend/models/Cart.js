@@ -95,6 +95,7 @@ const cartSchema = new Schema(
     timestamps: true,
   }
 );
-cartSchema.index({ customer_id: 1, product_id: 1 }, { unique: true });
+cartSchema.index({ customer_id: 1, product_id: 1, variant_id: 1 }, { unique: true });
+
 
 module.exports = mongoose.model("Cart", cartSchema);

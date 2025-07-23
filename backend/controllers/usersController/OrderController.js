@@ -4,6 +4,8 @@ const VariantOption = require("../../models/VariantOption");
 const Cart = require("../../models/Cart");
 const Transaction = require("../../models/Transaction");
 const WalletTransaction = require('../../models/WalletTransaction');
+const User = require('../../models/User'); 
+
 /**
  * Get all orders for the authenticated user
  */
@@ -607,7 +609,6 @@ async function placeOrderFromWallet(req, res) {
       description: 'Order Payment from Wallet'
     }).save();
 
-    // 🛒 Clear cart
     await Cart.deleteMany({ customer_id: userId, save_for_later: false });
 
     return res.status(201).json({

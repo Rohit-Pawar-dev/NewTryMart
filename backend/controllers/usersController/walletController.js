@@ -85,16 +85,45 @@ exports.getWalletBalance = async (req, res) => {
 };
 
 // Get wallet transactions
+// exports.getWalletTransactions = async (req, res) => {
+//     try {
+//         const { userId } = req.params;
+
+//         const transactions = await WalletTransaction.find({ user: userId })
+//             .sort({ createdAt: -1 });
+
+//         res.json({ transactions });
+//     } catch (error) {
+//         console.error("Get transactions error:", error);
+//         res.status(500).json({ message: "Internal server error" });
+//     }
+// };
+
 exports.getWalletTransactions = async (req, res) => {
-    try {
-        const { userId } = req.params;
+  try {
+    const { userId } = req.params;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
 
-        const transactions = await WalletTransaction.find({ user: userId })
-            .sort({ createdAt: -1 });
+    const filter = { user: userId };
 
-        res.json({ transactions });
-    } catch (error) {
-        console.error("Get transactions error:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+    const total = await WalletTransaction.countDocuments(filter);
+    const transactions = await WalletTransaction.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
+
+    res.json({
+      status: true,
+      message: "Transactions fetched successfully",
+      transactions,
+      total,
+      limit,
+      offset,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    console.error("Get transactions error:", error);
+    res.status(500).json({ status: false, message: "Internal server error" });
+  }
 };
