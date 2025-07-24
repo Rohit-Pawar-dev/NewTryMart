@@ -23,56 +23,11 @@
 2025-07-18T07:24:03.261Z [info]: Retrieving Sellers. Search: ""
 2025-07-18T07:25:04.208Z [info]: Retrieving Sellers. Search: ""
 2025-07-18T07:25:18.143Z [info]: Retrieving Sellers. Search: ""
-<<<<<<< HEAD
-2025-07-21T05:18:55.509Z [info]: Retrieving Users List 
-2025-07-21T05:18:59.795Z [info]: Retrieving Users List 
-2025-07-21T05:19:03.408Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T05:19:05.538Z [info]: Retrieving Users List 
-2025-07-21T05:19:07.771Z [info]: Retrieving Users List 
-2025-07-21T05:19:14.285Z [info]: Retrieving Users List 
-2025-07-21T05:19:15.901Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T05:19:18.917Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T05:19:45.384Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T10:13:54.465Z [info]: Retrieving Users List 
-2025-07-21T10:14:40.155Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T10:14:44.080Z [info]: Retrieving Users List 
-2025-07-21T10:14:48.250Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T10:15:11.849Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T10:45:56.211Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T12:42:44.041Z [info]: Retrieving Sellers. Search: ""
-2025-07-21T12:46:08.794Z [error]: Error retrieving orders getaddrinfo ENOTFOUND alphawizzserver.com
-2025-07-21T12:46:10.075Z [error]: Error retrieving orders getaddrinfo ENOTFOUND alphawizzserver.com
-2025-07-21T13:54:06.798Z [info]: Retrieving Users List 
-2025-07-21T13:54:15.062Z [info]: Retrieving Sellers. Search: ""
-2025-07-22T05:55:43.537Z [info]: Retrieving Users List 
-2025-07-22T05:56:26.086Z [info]: Create User
-2025-07-22T05:56:26.244Z [info]: Retrieving Users List 
-2025-07-22T06:14:17.296Z [info]: Retrieving Users List 
-2025-07-22T06:15:26.365Z [info]: Retrieving Users List 
-2025-07-22T06:17:38.412Z [info]: Retrieving Users List 
-2025-07-22T06:17:48.325Z [info]: Retrieving Users List 
-2025-07-22T06:24:34.825Z [info]: Retrieving Users List 
-2025-07-22T06:24:46.648Z [info]: Create User
-2025-07-22T06:24:46.840Z [info]: Retrieving Users List 
-2025-07-22T06:24:51.431Z [info]: Retrieving Users List 
-2025-07-22T06:24:54.104Z [info]: Retrieving Users List 
-2025-07-22T06:25:53.999Z [info]: Retrieving Users List 
-2025-07-22T06:32:33.546Z [info]: Retrieving Users List 
-2025-07-22T06:38:35.067Z [info]: Retrieving Users List 
-2025-07-22T06:38:53.526Z [info]: Retrieving Users List 
-2025-07-22T06:45:03.017Z [info]: Retrieving Users List 
-2025-07-22T06:58:47.923Z [info]: Retrieving Users List 
-2025-07-22T06:58:51.066Z [info]: Retrieving Users List 
-2025-07-22T06:59:02.993Z [info]: Retrieving Users List 
-2025-07-22T06:59:05.994Z [info]: Retrieving Users List 
-2025-07-22T06:59:07.836Z [info]: Retrieving Users List 
-=======
 2025-07-21T06:52:26.701Z [info]: Retrieving Users List 
 2025-07-21T06:55:55.827Z [info]: Retrieving Sellers. Search: ""
 2025-07-22T06:43:29.722Z [info]: Retrieving Sellers. Search: ""
 2025-07-22T06:43:47.276Z [info]: Retrieving Users List 
 2025-07-22T07:06:24.377Z [info]: Retrieving Sellers. Search: ""
->>>>>>> ritika-admin
 2025-07-22T11:55:04.999Z [info]: Retrieving Users List 
 2025-07-22T11:55:23.107Z [info]: Retrieving Users List g
 2025-07-22T11:55:23.346Z [info]: Retrieving Users List gu
@@ -167,6 +122,7 @@
 2025-07-23T10:24:39.269Z [info]: Retrieving Users List 
 2025-07-23T10:29:50.734Z [info]: Retrieving Users List 
 2025-07-23T10:35:07.762Z [info]: Retrieving Users List 
+<<<<<<< HEAD
 2025-07-24T06:40:54.039Z [error]: Error retrieving orders getaddrinfo ENOTFOUND alphawizzserver.com
 2025-07-24T06:41:35.811Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
 2025-07-24T06:43:34.519Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
@@ -175,3 +131,36 @@
 2025-07-24T08:10:54.294Z [info]: Retrieving Sellers. Search: ""
 2025-07-24T08:35:24.172Z [info]: Retrieving Sellers. Search: ""
 2025-07-24T09:15:46.629Z [info]: Retrieving Sellers. Search: ""
+=======
+2025-07-24T07:10:09.801Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:34:06.340Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:34:11.302Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:44:38.074Z [info]: Create Seller
+2025-07-24T07:44:38.214Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:44:40.742Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:47:23.270Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:47:26.692Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:47:59.859Z [info]: Create Seller
+2025-07-24T07:47:59.980Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:53:50.744Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:57:26.155Z [info]: Create Seller
+2025-07-24T07:57:26.271Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:57:28.111Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:57:41.934Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T07:58:16.712Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:00:54.212Z [info]: Create Seller
+2025-07-24T08:00:54.352Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:00:56.296Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:04:48.144Z [info]: Retrieving Users List 
+2025-07-24T08:04:48.804Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:10:11.471Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:10:13.514Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:10:48.350Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:11:03.429Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:11:37.780Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:11:39.647Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:11:44.080Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:11:57.785Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:20:54.794Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:20:56.603Z [info]: Retrieving Sellers. Search: ""
+>>>>>>> 42790892ed44a39aaea55650bba3907877064e1b

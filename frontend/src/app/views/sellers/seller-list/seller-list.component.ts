@@ -4,6 +4,7 @@ import { SellerService, Seller } from '../../../services/seller.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../environments/environment';
 
 import Swal from 'sweetalert2';
 
@@ -16,13 +17,13 @@ import Swal from 'sweetalert2';
 export class SellerListComponent implements OnInit {
   sellers: any[] = [];
   isLoading = true;
-
   searchTerm = '';
   page = 1;
   pageSize = 10;
   totalPages = 0;
+  mediaUrl = environment.mediaUrl;
 
-  constructor(private sellerService: SellerService) {}
+  constructor(private sellerService: SellerService) { }
 
   ngOnInit(): void {
     this.loadSellers();
@@ -32,7 +33,11 @@ export class SellerListComponent implements OnInit {
     this.isLoading = true;
     this.sellerService.getSellers(this.searchTerm, this.page, this.pageSize).subscribe({
       next: (res) => {
-        this.sellers = res.data;
+        this.sellers = res.data.map((seller: any) => ({
+          ...seller,
+          logo: seller.logo ? this.mediaUrl + seller.logo : '',
+          profile_image: seller.profile_image ? this.mediaUrl + seller.profile_image : '',
+        }));
         this.totalPages = res.totalPages;
         this.isLoading = false;
       },

@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../utils/multer");
+const getCustomMulter = require('../utils/customMulter');
+const uploadProfile = getCustomMulter('sellers/profile');
+const uploadLogo = getCustomMulter('sellers/logo');
 const sellerController = require("../controllers/AdminsController/sellerController");
 const {
   registerSeller,
@@ -17,8 +20,13 @@ router.get("/", sellerController.getAllSellers);
 router.get("/:id", sellerController.getSellerById);
 router.put("/:id", sellerController.updateSeller);
 router.delete("/:id", sellerController.deleteSeller);
-router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
+// router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
 
+// Upload profile image
+router.post('/upload/profile', uploadProfile.single('profile_image'), sellerController.uploadSellerProfileImage);
+
+// Upload logo
+router.post('/upload/logo', uploadLogo.single('logo'), sellerController.uploadSellerLogo);
 // AUTH Routes
 
 // Single file upload with field name 'logo'
