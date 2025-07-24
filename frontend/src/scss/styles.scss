@@ -305,3 +305,22 @@ width:100%;
 height:100%;
 object-fit: cover;
 }
+
+
+//image close-button
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  color: red;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.close-button:hover {
+  background:black;
+  color:white;
+}

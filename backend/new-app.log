@@ -122,6 +122,16 @@
 2025-07-23T10:24:39.269Z [info]: Retrieving Users List 
 2025-07-23T10:29:50.734Z [info]: Retrieving Users List 
 2025-07-23T10:35:07.762Z [info]: Retrieving Users List 
+<<<<<<< HEAD
+2025-07-24T06:40:54.039Z [error]: Error retrieving orders getaddrinfo ENOTFOUND alphawizzserver.com
+2025-07-24T06:41:35.811Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
+2025-07-24T06:43:34.519Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
+2025-07-24T08:04:40.540Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:04:47.529Z [info]: Retrieving Users List 
+2025-07-24T08:10:54.294Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T08:35:24.172Z [info]: Retrieving Sellers. Search: ""
+2025-07-24T09:15:46.629Z [info]: Retrieving Sellers. Search: ""
+=======
 2025-07-24T07:10:09.801Z [info]: Retrieving Sellers. Search: ""
 2025-07-24T07:34:06.340Z [info]: Retrieving Sellers. Search: ""
 2025-07-24T07:34:11.302Z [info]: Retrieving Sellers. Search: ""
@@ -153,3 +163,4 @@
 2025-07-24T08:11:57.785Z [info]: Retrieving Sellers. Search: ""
 2025-07-24T08:20:54.794Z [info]: Retrieving Sellers. Search: ""
 2025-07-24T08:20:56.603Z [info]: Retrieving Sellers. Search: ""
+>>>>>>> 42790892ed44a39aaea55650bba3907877064e1b
