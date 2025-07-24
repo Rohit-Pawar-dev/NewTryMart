@@ -35,6 +35,8 @@ export class SellerAddComponent implements OnInit {
 private profileUploadUrl = `${environment.apiUrl}/sellers/upload/profile`;
 private logoUploadUrl = `${environment.apiUrl}/sellers/upload/logo`;
 
+private bussinessCategoriesUrl = `${environment.apiUrl}/business-categories`
+bussinessCategories: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -67,10 +69,29 @@ private logoUploadUrl = `${environment.apiUrl}/sellers/upload/logo`;
       logo: [''],
       profile_image: [''],
       status: ['active', Validators.required],
+      business_category: ['', Validators.required],
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+
+     this.loadBusinessCategories();
+  }
+
+
+
+
+loadBusinessCategories(): void {
+  this.http.get<{ data: any[] }>(`${this.bussinessCategoriesUrl}?status=active`).subscribe({
+    next: (res) => {
+      this.bussinessCategories = res.data; // ✅ Extract from `res.data`
+    },
+    error: (err) => {
+      console.error('Failed to load business categories', err);
+    },
+  });
+}
+
 
 // Handle Logo Selection (only preview)
 onLogoSelected(event: Event): void {

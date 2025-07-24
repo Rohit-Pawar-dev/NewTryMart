@@ -9,14 +9,10 @@
         <!-- Name -->
         <div class="col-md-6 mb-3">
           <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-          <input
-            id="name"
-            type="text"
-            class="form-control"
-            formControlName="name"
-            [ngClass]="{ 'is-invalid': sellerForm.get('name')?.invalid && sellerForm.get('name')?.touched }"
-          />
-          <div class="invalid-feedback" *ngIf="sellerForm.get('name')?.touched && sellerForm.get('name')?.hasError('required')">
+          <input id="name" type="text" class="form-control" formControlName="name"
+            [ngClass]="{ 'is-invalid': sellerForm.get('name')?.invalid && sellerForm.get('name')?.touched }" />
+          <div class="invalid-feedback"
+            *ngIf="sellerForm.get('name')?.touched && sellerForm.get('name')?.hasError('required')">
             Name is required.
           </div>
           <div class="invalid-feedback" *ngIf="sellerForm.get('name')?.hasError('minlength')">
@@ -37,17 +33,14 @@
         <!-- Mobile -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Mobile <span class="text-danger">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="mobile"
-            maxlength="10"
-            [ngClass]="{ 'is-invalid': sellerForm.get('mobile')?.invalid && sellerForm.get('mobile')?.touched }"
-          />
-          <div class="invalid-feedback" *ngIf="sellerForm.get('mobile')?.touched && sellerForm.get('mobile')?.hasError('required')">
+          <input type="text" class="form-control" formControlName="mobile" maxlength="10"
+            [ngClass]="{ 'is-invalid': sellerForm.get('mobile')?.invalid && sellerForm.get('mobile')?.touched }" />
+          <div class="invalid-feedback"
+            *ngIf="sellerForm.get('mobile')?.touched && sellerForm.get('mobile')?.hasError('required')">
             Mobile is required.
           </div>
-          <div class="invalid-feedback" *ngIf="sellerForm.get('mobile')?.hasError('minlength') || sellerForm.get('mobile')?.hasError('maxlength')">
+          <div class="invalid-feedback"
+            *ngIf="sellerForm.get('mobile')?.hasError('minlength') || sellerForm.get('mobile')?.hasError('maxlength')">
             Mobile must be 10 digits.
           </div>
         </div>
@@ -61,13 +54,10 @@
         <!-- Shop Name -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Shop Name <span class="text-danger">*</span></label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="shop_name"
-            [ngClass]="{ 'is-invalid': sellerForm.get('shop_name')?.invalid && sellerForm.get('shop_name')?.touched }"
-          />
-          <div class="invalid-feedback" *ngIf="sellerForm.get('shop_name')?.touched && sellerForm.get('shop_name')?.hasError('required')">
+          <input type="text" class="form-control" formControlName="shop_name"
+            [ngClass]="{ 'is-invalid': sellerForm.get('shop_name')?.invalid && sellerForm.get('shop_name')?.touched }" />
+          <div class="invalid-feedback"
+            *ngIf="sellerForm.get('shop_name')?.touched && sellerForm.get('shop_name')?.hasError('required')">
             Shop name is required.
           </div>
         </div>
@@ -103,23 +93,26 @@
         </div>
 
         <!-- Business Category -->
-        <!-- <div class="col-md-8 mb-3">
-          <label class="form-label">Business Category</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="business_category"
-          />
-        </div> -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Business Category <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="business_category"
+            [ngClass]="{ 'is-invalid': sellerForm.get('business_category')?.invalid && sellerForm.get('business_category')?.touched }">
+            <option value="" disabled selected>Select Category</option>
+            <option *ngFor="let category of bussinessCategories" [value]="category.name ">
+              {{ category.name }}
+            </option>
+          </select>
+          <div class="invalid-feedback"
+            *ngIf="sellerForm.get('business_category')?.touched && sellerForm.get('business_category')?.hasError('required')">
+            Business category is required.
+          </div>
+        </div>
+
 
         <!-- GST Number -->
         <div class="col-md-6 mb-3">
           <label class="form-label">GST Number</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="gst_number"
-          />
+          <input type="text" class="form-control" formControlName="gst_number" />
         </div>
 
         <!-- GST Registration Type -->
@@ -146,22 +139,13 @@
         <!-- Profile Image -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Profile Image <span class="text-danger">*</span></label>
-          <input
-            type="file"
-            class="form-control"
-            accept="image/*"
-            (change)="onProfileSelected($event)"
-            [ngClass]="{ 'is-invalid': sellerForm.get('profile_image')?.invalid && sellerForm.get('profile_image')?.touched && !selectedProfileFile }"
-          />
+          <input type="file" class="form-control" accept="image/*" (change)="onProfileSelected($event)"
+            [ngClass]="{ 'is-invalid': sellerForm.get('profile_image')?.invalid && sellerForm.get('profile_image')?.touched && !selectedProfileFile }" />
           <div *ngIf="profilePreview" class="mt-2">
-            <img
-              [src]="profilePreview"
-              alt="Profile Preview"
-              class="img-thumbnail"
-              style="max-height: 150px"
-            />
+            <img [src]="profilePreview" alt="Profile Preview" class="img-thumbnail" style="max-height: 150px" />
           </div>
-          <div class="invalid-feedback d-block" *ngIf="sellerForm.get('profile_image')?.invalid && sellerForm.get('profile_image')?.touched && !selectedProfileFile">
+          <div class="invalid-feedback d-block"
+            *ngIf="sellerForm.get('profile_image')?.invalid && sellerForm.get('profile_image')?.touched && !selectedProfileFile">
             Profile image is required.
           </div>
         </div>
@@ -169,25 +153,16 @@
         <!-- Logo -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Shop Logo <span class="text-danger">*</span></label>
-          <input
-            type="file"
-            class="form-control"
-            accept="image/*"
-            (change)="onLogoSelected($event)"
-            [ngClass]="{ 'is-invalid': sellerForm.get('logo')?.invalid && sellerForm.get('logo')?.touched && !selectedLogoFile }"
-          />
+          <input type="file" class="form-control" accept="image/*" (change)="onLogoSelected($event)"
+            [ngClass]="{ 'is-invalid': sellerForm.get('logo')?.invalid && sellerForm.get('logo')?.touched && !selectedLogoFile }" />
           <div *ngIf="imagePreview" class="mt-2">
-            <img
-              [src]="imagePreview"
-              alt="Logo Preview"
-              class="img-thumbnail"
-              style="max-height: 150px"
-            />
+            <img [src]="imagePreview" alt="Logo Preview" class="img-thumbnail" style="max-height: 150px" />
           </div>
           <div class="invalid-feedback d-block" *ngIf="uploadError">
             {{ uploadError }}
           </div>
-          <div class="invalid-feedback d-block" *ngIf="sellerForm.get('logo')?.invalid && sellerForm.get('logo')?.touched && !selectedLogoFile">
+          <div class="invalid-feedback d-block"
+            *ngIf="sellerForm.get('logo')?.invalid && sellerForm.get('logo')?.touched && !selectedLogoFile">
             Logo is required.
           </div>
         </div>
@@ -196,11 +171,7 @@
 
       <!-- Submit Button -->
       <div class="text-center">
-        <button
-          class="btn btn-primary"
-          type="submit"
-          [disabled]="isSubmitting || sellerForm.invalid"
-        >
+        <button class="btn btn-primary" type="submit" [disabled]="isSubmitting || sellerForm.invalid">
           {{ isSubmitting ? "Submitting..." : "Create Seller" }}
         </button>
       </div>

@@ -91,7 +91,17 @@
           <th scope="row">{{ (currentPage - 1) * limit + i + 1 }}</th>
           <td class="text-capitalize">{{ attr.type }}</td>
           <td>{{ attr.value }}</td>
-          <td>{{ attr.status || 'active' }}</td>
+              <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': attr.status === 'active' || !attr.status,
+                'bg-danger': attr.status === 'inactive'
+              }"
+            >
+              {{ (attr.status || 'active') | titlecase }}
+            </span>
+          </td>
           <td>
             <button
               class="btn btn-outline-danger btn-sm"
