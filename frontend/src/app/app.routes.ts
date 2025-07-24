@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
 import { AuthGuard } from './guards/auth.guard';
 import { AttributeComponent } from './views/attribute/attribute.component';
+import { BusinessCategoriesComponent } from './views/bussinessCategories/bussiness-Categories.component';
 
 export const routes: Routes = [
   {
@@ -13,7 +14,7 @@ export const routes: Routes = [
   {
     path: '',
     component: DefaultLayoutComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     data: {
       title: 'Home',
     },
@@ -21,6 +22,10 @@ export const routes: Routes = [
       {
         path: 'attributes',
         component: AttributeComponent,
+      },
+      {
+        path: 'bussiness-categories',
+        component: BusinessCategoriesComponent,
       },
 
       {

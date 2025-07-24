@@ -80,16 +80,27 @@ export const navItems: INavData[] = [
     url: '/users',
     icon: 'fas fa-users'
   },
-  {
-    name: 'Sellers',
-    url: '/sellers',
-    icon: 'fas fa-user-tie'
-  },
+
 
   {
     name: 'Review',
     url: '/reviews',
     icon: 'fas fa-star'
+  },
+   {
+    title: true,
+    name: 'Seller management',
+  },
+    {
+    name: 'Sellers',
+    url: '/sellers',
+    icon: 'fas fa-user-tie'
+  },
+  {
+    name: 'Bussiness Categories',
+    url: '/bussiness-categories',
+    icon: 'fas fa-stream'
+
   },
   {
     title: true,

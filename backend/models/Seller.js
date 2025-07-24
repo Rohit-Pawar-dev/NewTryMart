@@ -26,7 +26,6 @@ const sellerSchema = new Schema(
     },
     otp: {
       type: String,
-      // required: true,
       default: "0000",
     },
     shop_name: {
@@ -55,7 +54,6 @@ const sellerSchema = new Schema(
     },
     business_category: {
       type: String,
-      // required: [true, 'Business category is required']
     },
     gst_number: {
       type: String,

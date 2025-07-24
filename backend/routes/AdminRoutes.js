@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const businessCategoryController = require('../controllers/AdminsController/bussinessCategoriesController');
 // Controllers
 const adminController = require("../controllers/AdminsController/Auth/authController");
 const businessSetupController = require("../controllers/AdminsController/bussinessController");
@@ -34,5 +34,13 @@ router.post("/attributes/add", attributeController.createAttribute);
 router.get("/attributes/view", attributeController.getAllAttributes);
 router.get("/attributes/view-by-type", attributeController.getAttributesByType); // ?type=color or ?type=size
 router.delete("/attributes/delete/:id", attributeController.deleteAttribute);
+
+
+
+router.get('/business-categories', businessCategoryController.getAllCategories);
+router.post('/business-categories', businessCategoryController.createCategory);
+router.put('/business-categories/:id', businessCategoryController.updateCategory);
+router.delete('/business-categories/:id', businessCategoryController.deleteCategory);
+
 
 module.exports = router;

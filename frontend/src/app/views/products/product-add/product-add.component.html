@@ -137,10 +137,10 @@
               />
               <button
                 type="button"
-                class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle"
+                class="close-button"
                 (click)="removePhoto(i)"
               >
-                ❌
+                     <i class="fas fa-times"></i> 
               </button>
             </div>
           </div>
@@ -164,10 +164,10 @@
             />
             <button
               type="button"
-              class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle"
+              class="close-button"
               (click)="removeThumbnail()"
             >
-              ❌
+                   <i class="fas fa-times"></i> 
             </button>
           </div>
         </div>
@@ -209,7 +209,7 @@
                 class="dropdown-menu show w-100 mt-1"
                 *ngIf="openDropdown === type"
                 style="
-                  max-height: 200px;
+                  max-height: 120px;
                   overflow-y: auto;
                   border: 1px solid #ddd;
                   padding: 10px;
@@ -257,7 +257,7 @@
               />
             </div>
 
-            <div class="col-md-2 mb-2">
+            <div class="col-md-4 mb-2">
               <label>Price</label>
               <input
                 type="number"
@@ -267,7 +267,7 @@
               />
             </div>
 
-            <div class="col-md-2 mb-2">
+            <div class="col-md-4 mb-2">
               <label>Stock</label>
               <input
                 type="number"
@@ -277,7 +277,7 @@
               />
             </div>
 
-            <div class="col-md-4 mb-2">
+                        <div class="col-md-12 mb-2">
               <label>Upload Images</label>
               <input
                 type="file"
@@ -286,28 +286,32 @@
                 multiple
                 accept="image/*"
               />
-              <div class="mt-2 d-flex flex-wrap gap-2">
+              <div class="row">
+              <div class=" col-12 mt-2 w-100"> 
+                <div class="d-flex flex-wrap gap-2 justify-content-start">
                 <div
                   *ngFor="
                     let img of option.get('images')?.value;
                     let idx = index
                   "
                   class="position-relative border rounded p-1"
-                  style="max-width: 90px"
+                  style="width: 100px"
                 >
                   <img
                     [src]="img"
                     class="img-fluid rounded"
-                    style="max-height: 80px; object-fit: cover"
+                    style="max-height: 80px; object-fit: cover;width: 100%"
                   />
                   <button
                     type="button"
-                    class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle"
+                    class="close-button"
                     (click)="removeVariantImage(i, idx)"
                   >
-                    ❌
+                   <i class="fas fa-times"></i> 
                   </button>
                 </div>
+                </div>
+              </div>
               </div>
             </div>
 

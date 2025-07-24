@@ -110,11 +110,11 @@
               />
               <button
                 type="button"
-                class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle"
+                class="close-button"
                 (click)="removePhoto(i)"
                 title="Remove image"
               >
-                ❌
+                     <i class="fas fa-times"></i> 
               </button>
             </div>
           </div>
@@ -132,11 +132,11 @@
             />
             <button
               type="button"
-              class="btn btn-sm btn-danger position-absolute top-0 end-0 translate-middle"
+              class="close-button"
               (click)="removeThumbnail()"
               title="Remove thumbnail"
             >
-              ❌
+                   <i class="fas fa-times"></i> 
             </button>
           </div>
         </div>
@@ -169,8 +169,8 @@
                 />
               </div>
               <div class="col-md-2 text-end">
-                <button class="btn btn-danger" type="button" (click)="removeVariant(i)">
-                  ❌
+                <button class="close-button" type="button" (click)="removeVariant(i)">
+                       <i class="fas fa-times"></i> 
                 </button>
               </div>
             </div>
@@ -235,10 +235,10 @@
                   />
                   <button
                     type="button"
-                    class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                    class="close-button"
                     (click)="removeVariantImage(i, idx)"
                   >
-                    ❌
+                         <i class="fas fa-times"></i> 
                   </button>
                 </div>
               </div>
