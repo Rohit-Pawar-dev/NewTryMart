@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-list',
@@ -18,6 +19,7 @@ export class ProductListComponent implements OnInit {
   products: Product[] = [];
   searchTerm = '';
   isLoading = false;
+  mediaUrl = environment.mediaUrl;
 
   // Pagination
   currentPage = 1;
@@ -40,20 +42,47 @@ export class ProductListComponent implements OnInit {
       search: this.searchTerm,
       added_by: 'admin',
     };
+this.productService.getAllProducts(queryParams).subscribe({
+  next: (res) => {
+    const prependBase = (path: string) =>
+      path && !/^https?:\/\//i.test(path) ? this.mediaUrl+path : path;
 
-    this.productService.getAllProducts(queryParams).subscribe({
-      next: (res) => {
-        this.products = res.data || [];
-        this.totalItems = res.total || 0;
-        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error loading products:', err);
-        this.isLoading = false;
-        Swal.fire('Error', 'Failed to load products', 'error');
-      },
+    this.products = (res.data || []).map((product: any) => {
+      return {
+        ...product,
+        thumbnail: prependBase(product.thumbnail),
+        images: (product.images || []).map(prependBase),
+        category_id: product.category_id
+          ? {
+              ...product.category_id,
+              image: prependBase(product.category_id.image),
+            }
+          : null,
+        sub_category_id: product.sub_category_id
+          ? {
+              ...product.sub_category_id,
+              image: prependBase(product.sub_category_id.image),
+            }
+          : null,
+        variation_options: (product.variation_options || []).map((opt: any) => ({
+          ...opt,
+          images: (opt.images || []).map(prependBase),
+        })),
+      };
     });
+
+    this.totalItems = res.total || 0;
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+    this.isLoading = false;
+  },
+  error: (err) => {
+    console.error('Error loading products:', err);
+    this.isLoading = false;
+    Swal.fire('Error', 'Failed to load products', 'error');
+  },
+});
+
+
   }
 
   onSearchChange(): void {

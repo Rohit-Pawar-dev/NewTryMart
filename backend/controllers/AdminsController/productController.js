@@ -2,6 +2,7 @@ const Product = require("../../models/Product");
 const VariantOption = require("../../models/VariantOption");
 const Review = require("../../models/Review");
 const mongoose = require('mongoose');
+const path = require('path');
 
 // Create Product
 // Helper to generate a SKU code
@@ -137,83 +138,6 @@ exports.createProduct = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
-// exports.createProduct = async (req, res) => {
-//   try {
-//     const data = req.body;
-
-//     // Auto-fill seller/admin flags
-//     if (data.added_by === "admin") {
-//       data.seller_id = null;
-//       data.status = 1;
-//       data.request_status = 1;
-//     } else if (data.added_by === "seller") {
-//       data.status = 0;
-//       data.request_status = 0;
-//     }
-
-//     // Ensure name is present
-//     if (!data.name) {
-//       return res
-//         .status(400)
-//         .json({ error: "Product name is required to generate SKU." });
-//     }
-
-//     // Generate and attach unique product-level SKU
-//     let sku = generateSkuCode(data.name);
-//     while (await Product.findOne({ sku_code: sku })) {
-//       sku = generateSkuCode(data.name);
-//     }
-//     data.sku_code = sku;
-
-//     // Save product first
-//     const product = await Product.create(data);
-
-//     // If variants exist, handle variant options
-//     let variationOptions = [];
-
-//     if (data.variation_options?.length > 0) {
-//       // Use provided variation options
-//       variationOptions = data.variation_options.map((option) => ({
-//         product_id: product._id,
-//         variant_values: option.variant_values,
-//         price: option.price,
-//         stock: option.stock || 0,
-//         images: option.images || [],
-//         sku:
-//           option.sku ||
-//           generateSkuCode(
-//             data.name + "-" + Object.values(option.variant_values).join("-")
-//           ),
-//       }));
-//     } else if (data.variants?.length > 0) {
-//       // Auto-generate variation combinations
-//       const combinations = generateVariantCombinations(data.variants);
-//       variationOptions = combinations.map((variant_values) => ({
-//         product_id: product._id,
-//         variant_values,
-//         price: data.unit_price,
-//         stock: 10,
-//         images: [],
-//         sku: generateSkuCode(
-//           data.name + "-" + Object.values(variant_values).join("-")
-//         ),
-//       }));
-//     }
-
-//     if (variationOptions.length > 0) {
-//       await VariantOption.insertMany(variationOptions);
-//     }
-
-//     res.status(201).json({
-//       message: "Product created successfully",
-//       product,
-//       variant_count: variationOptions.length,
-//     });
-//   } catch (err) {
-//     res.status(400).json({ error: err.message });
-//   }
-// };
 
 
 // Admin - Get All Products
@@ -517,4 +441,33 @@ exports.status_update = async (req, res) => {
       error: err.message,
     });
   }
+};
+
+
+
+exports.uploadThumbnail = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const filePath = path.join('uploads', 'products', 'thumbnails', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
+};
+
+exports.uploadProductImage = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const filePath = path.join('uploads', 'products', 'images', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
+};
+
+exports.uploadVariantImage = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const filePath = path.join('uploads', 'products', 'variants', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
 };
