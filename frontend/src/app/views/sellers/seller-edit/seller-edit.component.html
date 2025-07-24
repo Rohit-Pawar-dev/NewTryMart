@@ -102,6 +102,19 @@
           </div>
         </div>
 
+      <!-- Business Category -->
+<div class="col-md-6">
+  <label class="form-label">Business Category</label>
+  <select class="form-select" formControlName="business_category">
+    <option disabled value="">Select category</option>
+    <option *ngFor="let category of bussinessCategories" [value]="category.name">
+      {{ category.name }}
+    </option>
+  </select>
+</div>
+
+
+
         <!-- Shop Logo -->
         <div class="col-md-6">
           <label class="form-label">Shop Logo</label>

@@ -31,10 +31,15 @@ export class SellerEditComponent implements OnInit {
   selectedProfileFile: File | null = null;
 
   sellerId: string | null = null;
-  mediaUrl= environment.mediaUrl;
+  mediaUrl = environment.mediaUrl;
 
   private logoUploadUrl = `${environment.apiUrl}/sellers/upload/logo`;
   private profileUploadUrl = `${environment.apiUrl}/sellers/upload/profile`;
+  private bussinessCategoriesUrl = `${environment.apiUrl}/business-categories`
+  bussinessCategories: any[] = [];
+
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -54,7 +59,7 @@ export class SellerEditComponent implements OnInit {
       state: [''],
       city: [''],
       pincode: [''],
-      // business_category: ['', Validators.required],
+      business_category: ['', Validators.required],
       gst_number: [''],
       // gst_registration_type: ['Unregistered'],
       gst_verified: [false],
@@ -65,6 +70,8 @@ export class SellerEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.loadBusinessCategories();
     this.sellerId = this.route.snapshot.paramMap.get('id');
     if (this.sellerId) {
       this.sellerService.getSeller(this.sellerId).subscribe({
@@ -73,8 +80,8 @@ export class SellerEditComponent implements OnInit {
           this.sellerForm.patchValue(seller);
 
           // Set previews for existing images (with media URL prefix if needed)
-          if (seller.logo) this.imagePreview = this.mediaUrl+seller.logo;
-          if (seller.profile_image) this.profilePreview = this.mediaUrl+seller.profile_image;
+          if (seller.logo) this.imagePreview = this.mediaUrl + seller.logo;
+          if (seller.profile_image) this.profilePreview = this.mediaUrl + seller.profile_image;
         },
         error: (err) => console.error('Error loading seller:', err),
       });
@@ -111,6 +118,16 @@ export class SellerEditComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  loadBusinessCategories(): void {
+  this.http.get<{ data: any[] }>(`${this.bussinessCategoriesUrl}?status=active`).subscribe({
+    next: (res) => {
+      this.bussinessCategories = res.data; 
+    },
+    error: (err) => {
+      console.error('Failed to load business categories', err);
+    },
+  });
+}
   // On submit, first upload selected images (if any), then submit the seller update
   async onSubmit(): Promise<void> {
     if (this.sellerForm.invalid || !this.sellerId || this.isSubmitting) return;
