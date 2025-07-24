@@ -7,8 +7,8 @@
       <div class="row">
 
         <!-- Name -->
-        <div class="col-md-6 mb-3">
-          <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+        <div class="col-md-4 mb-3">
+          <label for="name" class="form-label">Seller Name <span class="text-danger">*</span></label>
           <input id="name" type="text" class="form-control" formControlName="name"
             [ngClass]="{ 'is-invalid': sellerForm.get('name')?.invalid && sellerForm.get('name')?.touched }" />
           <div class="invalid-feedback"
@@ -20,39 +20,8 @@
           </div>
         </div>
 
-        <!-- Gender -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Gender</label>
-          <select class="form-select" formControlName="gender">
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        <!-- Mobile -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Mobile <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" formControlName="mobile" maxlength="10"
-            [ngClass]="{ 'is-invalid': sellerForm.get('mobile')?.invalid && sellerForm.get('mobile')?.touched }" />
-          <div class="invalid-feedback"
-            *ngIf="sellerForm.get('mobile')?.touched && sellerForm.get('mobile')?.hasError('required')">
-            Mobile is required.
-          </div>
-          <div class="invalid-feedback"
-            *ngIf="sellerForm.get('mobile')?.hasError('minlength') || sellerForm.get('mobile')?.hasError('maxlength')">
-            Mobile must be 10 digits.
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control" formControlName="email" />
-        </div>
-
-        <!-- Shop Name -->
-        <div class="col-md-6 mb-3">
+                <!-- Shop Name -->
+        <div class="col-md-4 mb-3">
           <label class="form-label">Shop Name <span class="text-danger">*</span></label>
           <input type="text" class="form-control" formControlName="shop_name"
             [ngClass]="{ 'is-invalid': sellerForm.get('shop_name')?.invalid && sellerForm.get('shop_name')?.touched }" />
@@ -62,38 +31,8 @@
           </div>
         </div>
 
-        <!-- Address -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Address</label>
-          <input type="text" class="form-control" formControlName="address" />
-        </div>
-
-        <!-- Country -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Country</label>
-          <input type="text" class="form-control" formControlName="country" />
-        </div>
-
-        <!-- State -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">State</label>
-          <input type="text" class="form-control" formControlName="state" />
-        </div>
-
-        <!-- City -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">City</label>
-          <input type="text" class="form-control" formControlName="city" />
-        </div>
-
-        <!-- Pincode -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Pincode</label>
-          <input type="text" class="form-control" formControlName="pincode" />
-        </div>
-
-        <!-- Business Category -->
-        <div class="col-md-6 mb-3">
+                <!-- Business Category -->
+        <div class="col-md-4 mb-3">
           <label class="form-label">Business Category <span class="text-danger">*</span></label>
           <select class="form-select" formControlName="business_category"
             [ngClass]="{ 'is-invalid': sellerForm.get('business_category')?.invalid && sellerForm.get('business_category')?.touched }">
@@ -108,12 +47,84 @@
           </div>
         </div>
 
+        <!-- Gender -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Gender</label>
+          <select class="form-select" formControlName="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
 
-        <!-- GST Number -->
-        <div class="col-md-6 mb-3">
+        <!-- Mobile -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Mobile <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="mobile" maxlength="10"
+            [ngClass]="{ 'is-invalid': sellerForm.get('mobile')?.invalid && sellerForm.get('mobile')?.touched }" />
+          <div class="invalid-feedback"
+            *ngIf="sellerForm.get('mobile')?.touched && sellerForm.get('mobile')?.hasError('required')">
+            Mobile is required.
+          </div>
+          <div class="invalid-feedback"
+            *ngIf="sellerForm.get('mobile')?.hasError('minlength') || sellerForm.get('mobile')?.hasError('maxlength')">
+            Mobile must be 10 digits.
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" formControlName="email" />
+        </div>
+
+                <!-- GST Number -->
+        <div class="col-md-4 mb-3">
           <label class="form-label">GST Number</label>
           <input type="text" class="form-control" formControlName="gst_number" />
         </div>
+
+                <!-- Country -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-control" formControlName="country" />
+        </div>
+
+        <!-- State -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">State</label>
+          <input type="text" class="form-control" formControlName="state" />
+        </div>
+
+        <!-- City -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">City</label>
+          <input type="text" class="form-control" formControlName="city" />
+        </div>
+
+        <!-- Pincode -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Pincode</label>
+          <input type="text" class="form-control" formControlName="pincode" />
+        </div>
+
+                        <!-- Status -->
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Status <span class="text-danger">*</span></label>
+          <select class="form-select" formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+
+        <!-- Address -->
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Address</label>
+          <textarea type="text" class="form-control" formControlName="address"></textarea>
+        </div>
+
+
 
         <!-- GST Registration Type -->
         <!-- <div class="col-md-6 mb-3">
@@ -126,18 +137,8 @@
           </select>
         </div> -->
 
-        <!-- Status -->
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Status <span class="text-danger">*</span></label>
-          <select class="form-select" formControlName="status">
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="blocked">Blocked</option>
-          </select>
-        </div>
-
         <!-- Profile Image -->
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
           <label class="form-label">Profile Image <span class="text-danger">*</span></label>
           <input type="file" class="form-control" accept="image/*" (change)="onProfileSelected($event)"
             [ngClass]="{ 'is-invalid': sellerForm.get('profile_image')?.invalid && sellerForm.get('profile_image')?.touched && !selectedProfileFile }" />
@@ -151,7 +152,7 @@
         </div>
 
         <!-- Logo -->
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
           <label class="form-label">Shop Logo <span class="text-danger">*</span></label>
           <input type="file" class="form-control" accept="image/*" (change)="onLogoSelected($event)"
             [ngClass]="{ 'is-invalid': sellerForm.get('logo')?.invalid && sellerForm.get('logo')?.touched && !selectedLogoFile }" />
@@ -166,6 +167,9 @@
             Logo is required.
           </div>
         </div>
+
+        
+
 
       </div>
 
