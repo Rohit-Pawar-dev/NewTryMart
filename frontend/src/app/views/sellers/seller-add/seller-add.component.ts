@@ -32,7 +32,9 @@ export class SellerAddComponent implements OnInit {
   selectedLogoFile: File | null = null;
   selectedProfileFile: File | null = null;
 
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+private profileUploadUrl = `${environment.apiUrl}/sellers/upload/profile`;
+private logoUploadUrl = `${environment.apiUrl}/sellers/upload/logo`;
+
 
   constructor(
     private fb: FormBuilder,
@@ -62,103 +64,102 @@ export class SellerAddComponent implements OnInit {
       gst_number: [''],
       // gst_registration_type: ['Unregistered'],
       gst_verified: [false],
-      logo: ['', Validators.required],
-      profile_image: ['', Validators.required],
+      logo: [''],
+      profile_image: [''],
       status: ['active', Validators.required],
     });
   }
 
   ngOnInit(): void {}
 
-  // Handle Logo Upload
-  onLogoSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+// Handle Logo Selection (only preview)
+onLogoSelected(event: Event): void {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
 
-    this.selectedLogoFile = file;
-    this.uploadError = null;
-    this.isUploading = true;
+  this.selectedLogoFile = file;
+  this.uploadError = null;
 
-    const formData = new FormData();
-    formData.append('type', 'seller-logo');
-    formData.append('file', file);
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.imagePreview = reader.result as string;
+  };
+  reader.readAsDataURL(file);
+}
 
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const url = res.file.replace(/\\/g, '/');
-        this.sellerForm.patchValue({ logo: url });
-        this.imagePreview = url;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Logo upload failed', err);
-        this.uploadError = 'Logo upload failed';
-        this.isUploading = false;
-      },
-    });
-  }
+// Handle Profile Image Selection (only preview)
+onProfileSelected(event: Event): void {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
 
-  // Handle Profile Image Upload
-  onProfileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+  this.selectedProfileFile = file;
+  this.uploadError = null;
 
-    this.selectedProfileFile = file;
-    this.uploadError = null;
-    this.isUploading = true;
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.profilePreview = reader.result as string;
+  };
+  reader.readAsDataURL(file);
+}
 
-    const formData = new FormData();
-    formData.append('type', 'seller-profile');
-    formData.append('file', file);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.profilePreview = reader.result as string;
-    };
-    reader.readAsDataURL(file);
+ async onSubmit(): Promise<void> {
+  if (this.sellerForm.invalid || this.isSubmitting) return;
 
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const url = res.file.replace(/\\/g, '/');
-        this.sellerForm.patchValue({ profile_image: url });
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Profile image upload failed', err);
-        this.uploadError = 'Profile image upload failed';
-        this.isUploading = false;
-      },
-    });
-  }
+  const confirm = await Swal.fire({
+    title: 'Submit Seller?',
+    text: 'Are you sure you want to create this seller?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, create',
+    cancelButtonText: 'Cancel',
+  });
 
-  // Submit Seller Form
-  onSubmit(): void {
-    if (this.sellerForm.invalid || this.isSubmitting) return;
+  if (!confirm.isConfirmed) return;
 
-    Swal.fire({
-      title: 'Submit Seller?',
-      text: 'Are you sure you want to create this seller?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, create',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.isSubmitting = true;
-        const newSeller = this.sellerForm.value;
+  this.isSubmitting = true;
 
-        this.sellerService.createSeller(newSeller).subscribe({
-          next: () => {
-            Swal.fire('Created!', 'Seller has been created.', 'success');
-            this.router.navigate(['/sellers']);
-          },
-          error: (err) => {
-            console.error('Error creating seller:', err);
-            Swal.fire('Error', 'Failed to create seller.', 'error');
-            this.isSubmitting = false;
-          },
-        });
+  try {
+    // Upload logo if file is selected
+    if (this.selectedLogoFile) {
+      const logoForm = new FormData();
+      logoForm.append('logo', this.selectedLogoFile);
+      const logoRes = await this.http.post<{ path: string }>(this.logoUploadUrl, logoForm).toPromise();
+      if (logoRes?.path) {
+        this.sellerForm.patchValue({ logo: logoRes.path.replace(/\\/g, '/') });
       }
+    }
+
+    // Upload profile image if file is selected
+    if (this.selectedProfileFile) {
+      const profileForm = new FormData();
+      profileForm.append('profile_image', this.selectedProfileFile);
+      const profileRes = await this.http.post<{ path: string }>(this.profileUploadUrl, profileForm).toPromise();
+      if (profileRes?.path) {
+        this.sellerForm.patchValue({ profile_image: profileRes.path.replace(/\\/g, '/') });
+      }
+    }
+
+    // Submit seller data
+    const newSeller = this.sellerForm.value;
+
+    this.sellerService.createSeller(newSeller).subscribe({
+      next: () => {
+        Swal.fire('Created!', 'Seller has been created.', 'success');
+        this.router.navigate(['/sellers']);
+      },
+      error: (err) => {
+        console.error('Error creating seller:', err);
+        Swal.fire('Error', 'Failed to create seller.', 'error');
+        this.isSubmitting = false;
+      },
     });
+
+  } catch (error) {
+    console.error('Image upload failed:', error);
+    Swal.fire('Error', 'Image upload failed', 'error');
+    this.isSubmitting = false;
   }
+}
+
 }

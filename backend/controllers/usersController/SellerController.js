@@ -20,12 +20,12 @@ exports.getAllSellers = async (req, res) => {
       .sort({ created_at: -1 });
 
     // Append full logo URL
-    sellers = sellers.map((seller) => {
-      return {
-        ...seller._doc,
-        logo: seller.logo ? `${MEDIA_URL}${seller.logo}` : null,
-      };
-    });
+    // sellers = sellers.map((seller) => {
+    //   return {
+    //     ...seller._doc,
+    //     logo: seller.logo ? `${MEDIA_URL}${seller.logo}` : null,
+    //   };
+    // });
 
     res.json({
       status: true,

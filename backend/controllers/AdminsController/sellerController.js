@@ -1,5 +1,6 @@
 const Seller = require("../../models/Seller");
 const nlogger = require("../../logger");
+const path = require('path');
 
 // Create Seller
 exports.createSeller = async (req, res) => {
@@ -97,17 +98,36 @@ exports.deleteSeller = async (req, res) => {
 };
 
 // Upload Logo
-exports.uploadLogo = async (req, res) => {
-  try {
-    const sellerId = req.body.sellerId;
-    const filePath = req.file.path;
+// exports.uploadLogo = async (req, res) => {
+//   try {
+//     const sellerId = req.body.sellerId;
+//     const filePath = req.file.path;
 
-    await Seller.findByIdAndUpdate(sellerId, {
-      logo: filePath,
-    });
+//     await Seller.findByIdAndUpdate(sellerId, {
+//       logo: filePath,
+//     });
 
-    res.status(200).json({ message: "Logo uploaded successfully", filePath });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+//     res.status(200).json({ message: "Logo uploaded successfully", filePath });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+exports.uploadSellerProfileImage = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
   }
+
+  const filePath = path.join('uploads', 'sellers', 'profile', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
+};
+
+// Upload logo
+exports.uploadSellerLogo = (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const filePath = path.join('uploads', 'sellers', 'logo', req.file.filename).replace(/\\/g, '/');
+  res.status(201).json({ path: filePath });
 };

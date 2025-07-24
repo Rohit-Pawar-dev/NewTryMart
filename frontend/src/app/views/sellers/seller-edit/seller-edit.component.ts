@@ -23,13 +23,18 @@ export class SellerEditComponent implements OnInit {
   isSubmitting = false;
   isUploading = false;
   uploadError: string | null = null;
+
   imagePreview: string | null = null;
   profilePreview: string | null = null;
+
   selectedLogoFile: File | null = null;
   selectedProfileFile: File | null = null;
-  sellerId: string | null = null;
 
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  sellerId: string | null = null;
+  mediaUrl= environment.mediaUrl;
+
+  private logoUploadUrl = `${environment.apiUrl}/sellers/upload/logo`;
+  private profileUploadUrl = `${environment.apiUrl}/sellers/upload/profile`;
 
   constructor(
     private fb: FormBuilder,
@@ -64,94 +69,104 @@ export class SellerEditComponent implements OnInit {
     if (this.sellerId) {
       this.sellerService.getSeller(this.sellerId).subscribe({
         next: (seller: Seller) => {
+          // Patch form values with fetched seller data
           this.sellerForm.patchValue(seller);
-          if (seller.logo) this.imagePreview = seller.logo;
-          if (seller.profile_image) this.profilePreview = seller.profile_image;
+
+          // Set previews for existing images (with media URL prefix if needed)
+          if (seller.logo) this.imagePreview = this.mediaUrl+seller.logo;
+          if (seller.profile_image) this.profilePreview = this.mediaUrl+seller.profile_image;
         },
         error: (err) => console.error('Error loading seller:', err),
       });
     }
   }
 
+  // On selecting logo, only show preview (do NOT upload)
   onLogoSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+
     this.selectedLogoFile = file;
+    this.uploadError = null;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', 'seller');
-
-    this.isUploading = true;
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.sellerForm.patchValue({ logo: normalizedUrl });
-        this.imagePreview = normalizedUrl;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Logo upload failed', err);
-        this.uploadError = 'Logo upload failed';
-        this.isUploading = false;
-      },
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
+  // On selecting profile image, only show preview (do NOT upload)
   onProfileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+
     this.selectedProfileFile = file;
+    this.uploadError = null;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', 'seller-profile');
-
-    this.isUploading = true;
-    this.http.post<{ file: string }>(this.uploadUrl, formData).subscribe({
-      next: (res) => {
-        const normalizedUrl = res.file.replace(/\\/g, '/');
-        this.sellerForm.patchValue({ profile_image: normalizedUrl });
-        this.profilePreview = normalizedUrl;
-        this.isUploading = false;
-      },
-      error: (err) => {
-        console.error('Profile image upload failed', err);
-        this.uploadError = 'Profile image upload failed';
-        this.isUploading = false;
-      },
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.profilePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
-  onSubmit(): void {
-    if (this.sellerForm.invalid || !this.sellerId) return;
+  // On submit, first upload selected images (if any), then submit the seller update
+  async onSubmit(): Promise<void> {
+    if (this.sellerForm.invalid || !this.sellerId || this.isSubmitting) return;
 
-    Swal.fire({
+    const confirm = await Swal.fire({
       title: 'Update Seller?',
       text: 'Are you sure you want to update this seller?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, update',
       cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.isSubmitting = true;
-        const updatedSeller = this.sellerForm.value;
-
-        this.sellerService
-          .updateSeller(this.sellerId!, updatedSeller)
-          .subscribe({
-            next: () => {
-              Swal.fire('Updated!', 'Seller has been updated.', 'success');
-              this.router.navigate(['/sellers']);
-            },
-            error: (err) => {
-              console.error('Error updating seller:', err);
-              Swal.fire('Error', 'Failed to update seller.', 'error');
-              this.isSubmitting = false;
-            },
-          });
-      }
     });
+
+    if (!confirm.isConfirmed) return;
+
+    this.isSubmitting = true;
+
+    try {
+      // Upload logo if selected
+      if (this.selectedLogoFile) {
+        const logoForm = new FormData();
+        logoForm.append('logo', this.selectedLogoFile);
+        const logoRes = await this.http.post<{ path: string }>(this.logoUploadUrl, logoForm).toPromise();
+        if (logoRes?.path) {
+          this.sellerForm.patchValue({ logo: logoRes.path.replace(/\\/g, '/') });
+        }
+      }
+
+      // Upload profile image if selected
+      if (this.selectedProfileFile) {
+        const profileForm = new FormData();
+        profileForm.append('profile_image', this.selectedProfileFile);
+        const profileRes = await this.http.post<{ path: string }>(this.profileUploadUrl, profileForm).toPromise();
+        if (profileRes?.path) {
+          this.sellerForm.patchValue({ profile_image: profileRes.path.replace(/\\/g, '/') });
+        }
+      }
+
+      // Submit the updated seller
+      const updatedSeller = this.sellerForm.value;
+
+      this.sellerService.updateSeller(this.sellerId, updatedSeller).subscribe({
+        next: () => {
+          Swal.fire('Updated!', 'Seller has been updated.', 'success');
+          this.router.navigate(['/sellers']);
+        },
+        error: (err) => {
+          console.error('Error updating seller:', err);
+          Swal.fire('Error', 'Failed to update seller.', 'error');
+          this.isSubmitting = false;
+        },
+      });
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      Swal.fire('Error', 'Image upload failed', 'error');
+      this.isSubmitting = false;
+    }
   }
 }

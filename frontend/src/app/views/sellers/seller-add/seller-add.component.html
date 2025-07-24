@@ -5,15 +5,23 @@
   <div class="card-body">
     <form [formGroup]="sellerForm" (ngSubmit)="onSubmit()">
       <div class="row">
+
         <!-- Name -->
         <div class="col-md-6 mb-3">
-          <label for="name" class="form-label">Name</label>
+          <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
           <input
             id="name"
             type="text"
             class="form-control"
             formControlName="name"
+            [ngClass]="{ 'is-invalid': sellerForm.get('name')?.invalid && sellerForm.get('name')?.touched }"
           />
+          <div class="invalid-feedback" *ngIf="sellerForm.get('name')?.touched && sellerForm.get('name')?.hasError('required')">
+            Name is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="sellerForm.get('name')?.hasError('minlength')">
+            Name must be at least 3 characters.
+          </div>
         </div>
 
         <!-- Gender -->
@@ -28,13 +36,20 @@
 
         <!-- Mobile -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Mobile</label>
+          <label class="form-label">Mobile <span class="text-danger">*</span></label>
           <input
             type="text"
             class="form-control"
             formControlName="mobile"
             maxlength="10"
+            [ngClass]="{ 'is-invalid': sellerForm.get('mobile')?.invalid && sellerForm.get('mobile')?.touched }"
           />
+          <div class="invalid-feedback" *ngIf="sellerForm.get('mobile')?.touched && sellerForm.get('mobile')?.hasError('required')">
+            Mobile is required.
+          </div>
+          <div class="invalid-feedback" *ngIf="sellerForm.get('mobile')?.hasError('minlength') || sellerForm.get('mobile')?.hasError('maxlength')">
+            Mobile must be 10 digits.
+          </div>
         </div>
 
         <!-- Email -->
@@ -45,8 +60,16 @@
 
         <!-- Shop Name -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Shop Name</label>
-          <input type="text" class="form-control" formControlName="shop_name" />
+          <label class="form-label">Shop Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="shop_name"
+            [ngClass]="{ 'is-invalid': sellerForm.get('shop_name')?.invalid && sellerForm.get('shop_name')?.touched }"
+          />
+          <div class="invalid-feedback" *ngIf="sellerForm.get('shop_name')?.touched && sellerForm.get('shop_name')?.hasError('required')">
+            Shop name is required.
+          </div>
         </div>
 
         <!-- Address -->
@@ -112,7 +135,7 @@
 
         <!-- Status -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Status</label>
+          <label class="form-label">Status <span class="text-danger">*</span></label>
           <select class="form-select" formControlName="status">
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -122,12 +145,13 @@
 
         <!-- Profile Image -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Profile Image</label>
+          <label class="form-label">Profile Image <span class="text-danger">*</span></label>
           <input
             type="file"
             class="form-control"
             accept="image/*"
             (change)="onProfileSelected($event)"
+            [ngClass]="{ 'is-invalid': sellerForm.get('profile_image')?.invalid && sellerForm.get('profile_image')?.touched && !selectedProfileFile }"
           />
           <div *ngIf="profilePreview" class="mt-2">
             <img
@@ -137,16 +161,20 @@
               style="max-height: 150px"
             />
           </div>
+          <div class="invalid-feedback d-block" *ngIf="sellerForm.get('profile_image')?.invalid && sellerForm.get('profile_image')?.touched && !selectedProfileFile">
+            Profile image is required.
+          </div>
         </div>
 
         <!-- Logo -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Shop Logo</label>
+          <label class="form-label">Shop Logo <span class="text-danger">*</span></label>
           <input
             type="file"
             class="form-control"
             accept="image/*"
             (change)="onLogoSelected($event)"
+            [ngClass]="{ 'is-invalid': sellerForm.get('logo')?.invalid && sellerForm.get('logo')?.touched && !selectedLogoFile }"
           />
           <div *ngIf="imagePreview" class="mt-2">
             <img
@@ -159,7 +187,11 @@
           <div class="invalid-feedback d-block" *ngIf="uploadError">
             {{ uploadError }}
           </div>
+          <div class="invalid-feedback d-block" *ngIf="sellerForm.get('logo')?.invalid && sellerForm.get('logo')?.touched && !selectedLogoFile">
+            Logo is required.
+          </div>
         </div>
+
       </div>
 
       <!-- Submit Button -->
