@@ -359,8 +359,6 @@ export class ProductAddComponent implements OnInit {
         name: key.charAt(0).toUpperCase() + key.slice(1),
         values,
       }));
-
-    // Update both form control and FormArray for backend to receive properly
     this.form.setControl(
       'variants',
       this.fb.array(
@@ -372,7 +370,6 @@ export class ProductAddComponent implements OnInit {
         )
       )
     );
-
     Swal.fire({
       title: 'Confirm Product Creation',
       text: 'Are you sure you want to create this product?',
@@ -420,12 +417,10 @@ export class ProductAddComponent implements OnInit {
             });
           }
         }
-
         const formValue = { ...this.form.value };
         if (formValue.sub_category_id === '') {
           formValue.sub_category_id = null;
         }
-
         this.productService.createProduct(formValue).subscribe({
           next: () => {
             Swal.fire(
@@ -447,7 +442,6 @@ export class ProductAddComponent implements OnInit {
       }
     });
   }
-
   removeVariant(index: number): void {
     this.variationOptions.removeAt(index);
     delete this.variantImageFiles[index];

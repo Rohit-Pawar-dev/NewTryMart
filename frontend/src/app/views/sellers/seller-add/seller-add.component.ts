@@ -84,7 +84,7 @@ bussinessCategories: any[] = [];
 loadBusinessCategories(): void {
   this.http.get<{ data: any[] }>(`${this.bussinessCategoriesUrl}?status=active`).subscribe({
     next: (res) => {
-      this.bussinessCategories = res.data; // ✅ Extract from `res.data`
+      this.bussinessCategories = res.data; 
     },
     error: (err) => {
       console.error('Failed to load business categories', err);
