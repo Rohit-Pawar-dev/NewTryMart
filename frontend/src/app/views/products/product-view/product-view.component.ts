@@ -91,6 +91,7 @@ getProductDetails(id: string): void {
       if (subCat && typeof subCat === 'object' && subCat.image) {
         if (!this.isAbsoluteUrl(subCat.image)) {
           subCat.image = this.mediaUrl + subCat.image;
+        
         }
       }
 
