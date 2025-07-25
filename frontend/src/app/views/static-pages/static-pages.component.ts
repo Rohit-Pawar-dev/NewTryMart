@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 })
 export class StaticPagesComponent {
   public Editor = ClassicEditor;
-  selectedTab = 0; // Initially show the first page tab
+  selectedTab = 0; 
 
   public pages: any[] = [];
   public loading = false;

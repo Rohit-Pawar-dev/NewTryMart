@@ -46,68 +46,62 @@ export class ProductViewComponent implements OnInit {
   //     },
   //   });
   // }
-private isAbsoluteUrl(url: string): boolean {
-  return /^https?:\/\//i.test(url);
-}
+  private isAbsoluteUrl(url: string): boolean {
+    return /^https?:\/\//i.test(url);
+  }
 
 
-getProductDetails(id: string): void {
-  this.productService.getProductById(id).subscribe({
-    next: (res) => {
+  getProductDetails(id: string): void {
+    this.productService.getProductById(id).subscribe({
+      next: (res) => {
 
-      // Add full URL to thumbnail
-      if (res.thumbnail && !this.isAbsoluteUrl(res.thumbnail)) {
-        res.thumbnail = this.mediaUrl + res.thumbnail;
-      }
+        // Add full URL to thumbnail
+        if (res.thumbnail && !this.isAbsoluteUrl(res.thumbnail)) {
+          res.thumbnail = this.mediaUrl + res.thumbnail;
+        }
 
-      // Add full URL to product images
-      if (res.images && Array.isArray(res.images)) {
-        res.images = res.images.map(img =>
-          this.isAbsoluteUrl(img) ? img : this.mediaUrl + img
-        );
-      }
-
-      // Add full URL to variation option images
-      if (res.variation_options) {
-        res.variation_options = res.variation_options.map(option => ({
-          ...option,
-          images: option.images.map(img =>
+        // Add full URL to product images
+        if (res.images && Array.isArray(res.images)) {
+          res.images = res.images.map(img =>
             this.isAbsoluteUrl(img) ? img : this.mediaUrl + img
-          )
-        }));
-      }
-
-      // Optionally update category image if it's an object
-      const cat = res.category_id as any;
-      if (cat && typeof cat === 'object') {
-        if (cat.image && !this.isAbsoluteUrl(cat.image)) {
-          cat.image = this.mediaUrl + cat.image;
+          );
         }
-        this.categoryName = cat.name || 'N/A';
-      }
 
-      // Optionally update sub-category image if it's an object
-      const subCat = res.sub_category_id as any;
-      if (subCat && typeof subCat === 'object' && subCat.image) {
-        if (!this.isAbsoluteUrl(subCat.image)) {
-          subCat.image = this.mediaUrl + subCat.image;
-<<<<<<< HEAD
-          this.subcategoryName = subCat.name || "N/A";
-=======
-        
->>>>>>> 13cac87fe72d937439dcf713aa3ac4fc6427e9f2
+        // Add full URL to variation option images
+        if (res.variation_options) {
+          res.variation_options = res.variation_options.map(option => ({
+            ...option,
+            images: option.images.map(img =>
+              this.isAbsoluteUrl(img) ? img : this.mediaUrl + img
+            )
+          }));
         }
-      }
 
-      this.product = res;
-    },
-    error: (err) => {
-      console.error('Failed to load product:', err);
-    },
-  });
-}
+        // Optionally update category image if it's an object
+        const cat = res.category_id as any;
+        if (cat && typeof cat === 'object') {
+          if (cat.image && !this.isAbsoluteUrl(cat.image)) {
+            cat.image = this.mediaUrl + cat.image;
+          }
+          this.categoryName = cat.name || 'N/A';
+        }
 
+        // Optionally update sub-category image if it's an object
+        const subCat = res.sub_category_id as any;
+        if (subCat && typeof subCat === 'object' && subCat.image) {
+          if (!this.isAbsoluteUrl(subCat.image)) {
+            subCat.image = this.mediaUrl + subCat.image;
+            this.subcategoryName = subCat.name;
+          }
+        }
 
+        this.product = res;
+      },
+      error: (err) => {
+        console.error('Failed to load product:', err);
+      },
+    });
+  }
   goBack(): void {
     this.router.navigate(['/products']);
   }
