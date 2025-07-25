@@ -14,6 +14,7 @@ export class ProductViewComponent implements OnInit {
   objectKeys = Object.keys;
   product: Product | null = null;
   categoryName: string = 'N/A';
+  subcategoryName: string = 'N/A';
   mediaUrl = environment.mediaUrl;
 
   constructor(
