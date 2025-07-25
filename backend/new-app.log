@@ -27,3 +27,5 @@
 2025-07-25T04:58:23.433Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
 2025-07-25T04:59:24.659Z [info]: getaddrinfo ENOTFOUND alphawizzserver.com
 2025-07-25T09:15:32.567Z [error]: Error retrieving orders getaddrinfo ENOTFOUND alphawizzserver.com
+2025-07-25T11:41:06.551Z [info]: Retrieving Users List 
+2025-07-25T11:41:11.672Z [info]: Retrieving Users List 
