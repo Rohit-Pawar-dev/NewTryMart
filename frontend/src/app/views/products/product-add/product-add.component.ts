@@ -324,20 +324,46 @@ export class ProductAddComponent implements OnInit {
       .replace(/[^a-z0-9\-]/g, '');
   }
 
-  async uploadFile(file: File): Promise<string> {
+  // async uploadFile(file: File): Promise<string> {
+  //   const formData = new FormData();
+  //   formData.append('type', 'product');
+  //   formData.append('file', file);
+
+  //   const res = await firstValueFrom(
+  //     this.http.post<{ file: string }>(this.uploadUrl, formData)
+  //   );
+  //   if (!res || !res.file) {
+  //     throw new Error('Upload failed: No file returned');
+  //   }
+
+  //   return res.file.replace(/\\/g, '/');
+  // }
+
+  async uploadFile(file: File, type: 'thumbnail' | 'image' | 'variant'): Promise<string> {
     const formData = new FormData();
-    formData.append('type', 'product');
     formData.append('file', file);
 
-    const res = await firstValueFrom(
-      this.http.post<{ file: string }>(this.uploadUrl, formData)
-    );
-    if (!res || !res.file) {
-      throw new Error('Upload failed: No file returned');
+    let endpoint = '';
+    if (type === 'thumbnail') {
+      endpoint = `${environment.apiUrl}/products/upload-thumbnail`;
+    } else if (type === 'image') {
+      endpoint = `${environment.apiUrl}/products/upload-image`;
+    } else if (type === 'variant') {
+      endpoint = `${environment.apiUrl}/products/upload-variant-image`;
     }
 
-    return res.file.replace(/\\/g, '/');
+    const res = await firstValueFrom(
+      this.http.post<{ path: string }>(endpoint, formData)
+    );
+
+    if (!res || !res.path) {
+      throw new Error('Upload failed: No path returned');
+    }
+
+    return res.path.replace(/\\/g, '/'); // normalize slashes for consistency
   }
+
+
 
   async submit(): Promise<void> {
     if (this.isSubmitting) {
@@ -383,8 +409,11 @@ export class ProductAddComponent implements OnInit {
 
       try {
         if (this.thumbnailFile) {
-          const thumbUrl = await this.uploadFile(this.thumbnailFile);
+          // const thumbUrl = await this.uploadFile(this.thumbnailFile);
+          // this.form.patchValue({ thumbnail: thumbUrl });
+          const thumbUrl = await this.uploadFile(this.thumbnailFile, 'thumbnail');
           this.form.patchValue({ thumbnail: thumbUrl });
+
         } else {
           Swal.fire('Error', 'Thumbnail is required.', 'error');
           this.isSubmitting = false;
@@ -392,10 +421,16 @@ export class ProductAddComponent implements OnInit {
         }
 
         if (this.multiplePhotoFiles.length > 0) {
+          // const photoUrls = await Promise.all(
+          //   this.multiplePhotoFiles.map((file) => this.uploadFile(file))
+          // );
+          //  this.form.patchValue({ images: photoUrls });
           const photoUrls = await Promise.all(
-            this.multiplePhotoFiles.map((file) => this.uploadFile(file))
+            this.multiplePhotoFiles.map((file) => this.uploadFile(file, 'image'))
           );
           this.form.patchValue({ images: photoUrls });
+
+
         } else {
           this.form.patchValue({ images: [] });
         }
@@ -403,9 +438,13 @@ export class ProductAddComponent implements OnInit {
         for (let i = 0; i < this.variationOptions.length; i++) {
           const files = this.variantImageFiles[i] || [];
           if (files.length > 0) {
+            // const urls = await Promise.all(
+            //   files.map((file) => this.uploadFile(file))
+            // );
             const urls = await Promise.all(
-              files.map((file) => this.uploadFile(file))
+              files.map((file) => this.uploadFile(file, 'variant'))
             );
+
             const variantGroup = this.variationOptions.at(i);
             const existingImages: string[] =
               variantGroup.get('images')?.value || [];

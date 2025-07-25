@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/AdminsController/productController");
 const UserProductController = require("../controllers/usersController/ProductController");
+const getCustomMulter = require('../utils/customMulter');
 
 // Frontend
 router.get("/all", UserProductController.getActiveProducts);
@@ -30,5 +31,16 @@ router.patch(
   "/change-request-status/:id",
   productController.changeProductRequestStatus
 );
+
+// Folder structure: uploads/products/thumbnails, uploads/products/images, uploads/products/variants
+const uploadThumbnail = getCustomMulter('products/thumbnails');
+const uploadImages = getCustomMulter('products/images');
+const uploadVariants = getCustomMulter('products/variants');
+
+// Routes
+router.post('/upload-thumbnail', uploadThumbnail.single('file'), productController.uploadThumbnail);
+router.post('/upload-image', uploadImages.single('file'), productController.uploadProductImage);
+router.post('/upload-variant-image', uploadVariants.single('file'), productController.uploadVariantImage);
+
 
 module.exports = router;
