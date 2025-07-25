@@ -32,6 +32,38 @@
   </c-col>
 </c-row>
 
+<c-row class="g-4 mt-2">
+  <c-col sm="12" md="4" xl="4">
+    <a [routerLink]="['/users']" style="text-decoration: none">
+      <div class="dashboard-stat border-primary d-flex justify-content-between">
+        <div class="das-side"><div class="dashboard-title">Wallet Balance</div>
+        <div class="dashboard-value">{{ userCount !== null ? userCount : '...' }}</div></div>
+        <div class="dashboard-icon text-primary"><i class="cil-wallet"></i></div>
+      </div>
+    </a>
+  </c-col>
+
+  <c-col sm="12" md="4" xl="4">
+    <a [routerLink]="['/sellers']" style="text-decoration: none">
+      <div class="dashboard-stat border-secondary d-flex justify-content-between">
+        <div class="das-side"> <div class="dashboard-title">Total Commision</div>
+        <div class="dashboard-value">{{ sellerCount !== null ? sellerCount : '...' }}</div></div>
+        <div class="dashboard-icon text-info"><i class="cil-chart-line"></i></div>
+      </div>
+    </a>
+  </c-col>
+
+  <c-col sm="12" md="4" xl="4">
+    <a [routerLink]="['/products']" style="text-decoration: none">
+      <div class="dashboard-stat border-success d-flex justify-content-between">
+        <div class="das-side">  <div class="dashboard-title">Total Delivery Charges</div>
+        <div class="dashboard-value">{{ allProductCount !== null ? allProductCount : '...' }}</div></div>
+        <div class="dashboard-icon text-success"><i class="cil-car-alt"></i></div>
+      </div>
+    </a>
+  </c-col>
+</c-row>
+
 
 <!-- Row for 8 Smaller Stats -->
 <c-row class="g-3 mt-3">
