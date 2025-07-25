@@ -91,7 +91,11 @@ getProductDetails(id: string): void {
       if (subCat && typeof subCat === 'object' && subCat.image) {
         if (!this.isAbsoluteUrl(subCat.image)) {
           subCat.image = this.mediaUrl + subCat.image;
+<<<<<<< HEAD
           this.subcategoryName = subCat.name || "N/A";
+=======
+        
+>>>>>>> 13cac87fe72d937439dcf713aa3ac4fc6427e9f2
         }
       }
 
