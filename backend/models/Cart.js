@@ -89,13 +89,21 @@ const cartSchema = new Schema(
       required: true,
       default: 0,
     },
+     variant_key: {
+      type: String,
+      required: true, // required to ensure unique index always works
+      index: true,
+    },
+
     shipping_type: String,
   },
+  
   {
     timestamps: true,
   }
 );
-cartSchema.index({ customer_id: 1, product_id: 1, variant_id: 1 }, { unique: true });
+// cartSchema.index({ customer_id: 1, product_id: 1, variant_id: 1 }, { unique: true });
 
+cartSchema.index({ customer_id: 1, variant_key: 1 }, { unique: true });
 
 module.exports = mongoose.model("Cart", cartSchema);
