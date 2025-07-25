@@ -21,14 +21,6 @@ exports.getAllSellers = async (req, res) => {
       .limit(parsedLimit)
       .sort({ created_at: -1 });
 
-    // Append full logo URL
-    // sellers = sellers.map((seller) => {
-    //   return {
-    //     ...seller._doc,
-    //     logo: seller.logo ? `${MEDIA_URL}${seller.logo}` : null,
-    //   };
-    // });
-
     res.json({
       status: true,
       message: "Sellers fetched successfully",
@@ -130,7 +122,7 @@ exports.getSellerDetails = async (req, res) => {
     const parsedLimit = Math.max(1, parseInt(limit));
     const parsedOffset = Math.max(0, parseInt(offset));
 
-    // ✅ Validate ObjectId
+    //  Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(sellerId)) {
       return res.status(400).json({
         status: false,
@@ -138,10 +130,10 @@ exports.getSellerDetails = async (req, res) => {
       });
     }
 
-    // ✅ Convert to ObjectId
+    //  Convert to ObjectId
     const sellerObjectId = new mongoose.Types.ObjectId(sellerId);
 
-    // ✅ Fetch seller info
+    //  Fetch seller info
     const seller = await Seller.findById(sellerObjectId).lean();
     if (!seller) {
       return res.status(404).json({
@@ -150,7 +142,7 @@ exports.getSellerDetails = async (req, res) => {
       });
     }
 
-    // ✅ Filter for seller's approved and active products
+    // Filter for seller's approved and active products
     const productFilter = {
       seller_id: sellerObjectId,
       status: 1,
@@ -172,7 +164,7 @@ exports.getSellerDetails = async (req, res) => {
       product_id: { $in: productIds },
     }).lean();
 
-    // ✅ Group variant options by product ID
+    //  Group variant options by product ID
     const groupedVariants = {};
     for (const variant of variantOptions) {
       const pid = variant.product_id.toString();
@@ -185,7 +177,7 @@ exports.getSellerDetails = async (req, res) => {
       variation_options: groupedVariants[prod._id.toString()] || [],
     }));
 
-    // ✅ Final response
+    // Final response
     res.status(200).json({
       status: true,
       message: "Seller details fetched successfully",
