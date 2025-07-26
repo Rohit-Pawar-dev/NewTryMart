@@ -27,6 +27,16 @@ const adminSchema = new mongoose.Schema({
     type: String, 
     default: null
   }
+  ,
+  seller_commission: {
+    type: Number,
+    default: 0
+  },
+  admin_wallet: {
+    type: Number,
+    default: 0
+  }
+
 }, {
   timestamps: true 
 });

@@ -82,6 +82,11 @@ const sellerSchema = new Schema(
       default: "inactive",
       enum: ["active", "inactive", "blocked"],
     },
+    seller_wallet: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: {

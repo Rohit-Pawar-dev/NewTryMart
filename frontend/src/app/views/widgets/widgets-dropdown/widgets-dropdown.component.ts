@@ -68,6 +68,9 @@ export class WidgetsDropdownComponent implements OnInit, AfterContentInit {
   @Input() confirmedOrderCount: number | null = null;
   @Input() outOfDeliveryCount: number | null = null;
   @Input() packagingOrderCount: number | null = null;
+  @Input() walletBalance: number | null = null;
+  @Input() totalcommission: number | null = null;
+  @Input() totalDeliveryCharges: number | null = null;
 
   @Output() statusSelected = new EventEmitter<string>();
 

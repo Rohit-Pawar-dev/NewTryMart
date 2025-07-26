@@ -104,6 +104,34 @@ exports.deliveryCharges = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/business-setup/seller-commission
+ * Returns the seller commission value from business setup
+ */
+exports.getSellerCommoision = async (req, res) => {
+  try {
+    const setup = await BusinessSetup.findOne();
+    if (!setup || typeof setup.sellerCommision === 'undefined') {
+      return res.status(404).json({
+        status: false,
+        message: 'Seller commission not found.'
+      });
+    }
+    res.status(200).json({
+      status: true,
+      message: 'Seller commission retrieved successfully.',
+      sellerCommission: setup.sellerCommision
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: 'Failed to fetch seller commission.',
+      error: error.message
+    });
+  }
+};
+
+
 exports.uploadLogo = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });

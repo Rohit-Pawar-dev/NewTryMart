@@ -4,8 +4,10 @@
   <c-col sm="12" md="4" xl="4">
     <a [routerLink]="['/users']" style="text-decoration: none">
       <div class="dashboard-stat border-primary d-flex justify-content-between">
-        <div class="das-side"><div class="dashboard-title">Users</div>
-        <div class="dashboard-value">{{ userCount !== null ? userCount : '...' }}</div></div>
+        <div class="das-side">
+          <div class="dashboard-title">Users</div>
+          <div class="dashboard-value">{{ userCount !== null ? userCount : '...' }}</div>
+        </div>
         <div class="dashboard-icon text-primary"><i class="cil-user"></i></div>
       </div>
     </a>
@@ -14,8 +16,10 @@
   <c-col sm="12" md="4" xl="4">
     <a [routerLink]="['/sellers']" style="text-decoration: none">
       <div class="dashboard-stat border-secondary d-flex justify-content-between">
-        <div class="das-side"> <div class="dashboard-title">Sellers</div>
-        <div class="dashboard-value">{{ sellerCount !== null ? sellerCount : '...' }}</div></div>
+        <div class="das-side">
+          <div class="dashboard-title">Sellers</div>
+          <div class="dashboard-value">{{ sellerCount !== null ? sellerCount : '...' }}</div>
+        </div>
         <div class="dashboard-icon text-info"><i class="cil-people"></i></div>
       </div>
     </a>
@@ -24,8 +28,10 @@
   <c-col sm="12" md="4" xl="4">
     <a [routerLink]="['/products']" style="text-decoration: none">
       <div class="dashboard-stat border-success d-flex justify-content-between">
-        <div class="das-side">  <div class="dashboard-title">Products</div>
-        <div class="dashboard-value">{{ allProductCount !== null ? allProductCount : '...' }}</div></div>
+        <div class="das-side">
+          <div class="dashboard-title">Products</div>
+          <div class="dashboard-value">{{ allProductCount !== null ? allProductCount : '...' }}</div>
+        </div>
         <div class="dashboard-icon text-success"><i class="cil-cart"></i></div>
       </div>
     </a>
@@ -34,30 +40,36 @@
 
 <c-row class="g-4 mt-2">
   <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/users']" style="text-decoration: none">
+    <a [routerLink]="['/']" style="text-decoration: none">
       <div class="dashboard-stat border-primary d-flex justify-content-between">
-        <div class="das-side"><div class="dashboard-title">Wallet Balance</div>
-        <div class="dashboard-value">{{ userCount !== null ? userCount : '...' }}</div></div>
+        <div class="das-side">
+          <div class="dashboard-title">Wallet Balance</div>
+          <div class="dashboard-value">{{ walletBalance !== null ? walletBalance : '...' }}</div>
+        </div>
         <div class="dashboard-icon text-primary"><i class="cil-wallet"></i></div>
       </div>
     </a>
   </c-col>
 
   <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/sellers']" style="text-decoration: none">
+    <a [routerLink]="['/']" style="text-decoration: none">
       <div class="dashboard-stat border-secondary d-flex justify-content-between">
-        <div class="das-side"> <div class="dashboard-title">Total Commision</div>
-        <div class="dashboard-value">{{ sellerCount !== null ? sellerCount : '...' }}</div></div>
+        <div class="das-side">
+          <div class="dashboard-title">Total Commission</div>
+          <div class="dashboard-value">{{ totalcommission !== null ? totalcommission : '...' }}</div>
+        </div>
         <div class="dashboard-icon text-info"><i class="cil-chart-line"></i></div>
       </div>
     </a>
   </c-col>
 
   <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/products']" style="text-decoration: none">
+    <a [routerLink]="['/']" style="text-decoration: none">
       <div class="dashboard-stat border-success d-flex justify-content-between">
-        <div class="das-side">  <div class="dashboard-title">Total Delivery Charges</div>
-        <div class="dashboard-value">{{ allProductCount !== null ? allProductCount : '...' }}</div></div>
+        <div class="das-side">
+          <div class="dashboard-title">Delivery Charges Earn</div>
+          <div class="dashboard-value">{{ totalDeliveryCharges !== null ? totalDeliveryCharges : '...' }}</div>
+        </div>
         <div class="dashboard-icon text-success"><i class="cil-car-alt"></i></div>
       </div>
     </a>
@@ -69,7 +81,7 @@
 <c-row class="g-3 mt-3">
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-success" (click)="onStatusClick('all')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('all')" aria-label="Filter Total Orders">
+      (keydown.enter)="onStatusClick('all')" aria-label="Filter Total Orders">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-list text-success fs-5"></i>
         <span class="status-title">Total Orders</span>
@@ -82,7 +94,7 @@
 
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-primary" (click)="onStatusClick('Pending')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('Pending')" aria-label="Filter Pending Orders">
+      (keydown.enter)="onStatusClick('Pending')" aria-label="Filter Pending Orders">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-task text-primary fs-5"></i>
         <span class="status-title">Pending</span>
@@ -95,7 +107,7 @@
 
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-success" (click)="onStatusClick('Confirmed')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('Confirmed')" aria-label="Filter Confirmed Orders">
+      (keydown.enter)="onStatusClick('Confirmed')" aria-label="Filter Confirmed Orders">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-check-circle text-success fs-5"></i>
         <span class="status-title">Confirmed</span>
@@ -108,7 +120,7 @@
 
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-primary" (click)="onStatusClick('Shipped')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('Shipped')" aria-label="Filter Shipped Orders">
+      (keydown.enter)="onStatusClick('Shipped')" aria-label="Filter Shipped Orders">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-cloud-download text-info fs-5"></i>
         <span class="status-title">Shipped</span>
@@ -121,7 +133,7 @@
 
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-warning" (click)="onStatusClick('outOfDelivery')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('outOfDelivery')" aria-label="Filter Out of Delivery">
+      (keydown.enter)="onStatusClick('outOfDelivery')" aria-label="Filter Out of Delivery">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-truck text-warning fs-5"></i>
         <span class="status-title">Out for Delivery</span>
@@ -134,7 +146,7 @@
 
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-primary" (click)="onStatusClick('Delivered')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('Delivered')" aria-label="Filter Delivered Orders">
+      (keydown.enter)="onStatusClick('Delivered')" aria-label="Filter Delivered Orders">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-envelope-open text-primary fs-5"></i>
         <span class="status-title">Delivered</span>
@@ -147,7 +159,7 @@
 
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-danger" (click)="onStatusClick('Cancelled')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('Cancelled')" aria-label="Filter Cancelled Orders">
+      (keydown.enter)="onStatusClick('Cancelled')" aria-label="Filter Cancelled Orders">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-ban text-danger fs-5"></i>
         <span class="status-title">Cancelled</span>
@@ -160,7 +172,7 @@
 
   <c-col sm="6" md="3" xl="3">
     <div class="status-card border border-info" (click)="onStatusClick('Returned')" tabindex="0" role="button"
-         (keydown.enter)="onStatusClick('Returned')" aria-label="Filter Returned Orders">
+      (keydown.enter)="onStatusClick('Returned')" aria-label="Filter Returned Orders">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-loop-circular text-dark fs-5"></i>
         <span class="status-title">Returned</span>

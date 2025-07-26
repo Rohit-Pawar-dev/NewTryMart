@@ -66,6 +66,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     cancelledOrderCount: null,
     returnOrderCount: null,
     outOfDeliveryCount: null,
+    walletBalance:null,
+    totalcommission:null ,
+    totalDeliveryCharges:null,
+
 
   };
 
@@ -153,6 +157,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           cancelledOrderCount: orders.cancelled ?? 0,
           returnOrderCount: orders.returned ?? 0,
           outOfDeliveryCount: orders.outForDelivery ?? 0,
+          walletBalance: orders.admin_wallet_balance ?? 0,
+          totalcommission : orders.seller_commission_collected ?? 0,
+          totalDeliveryCharges: orders.delivery_charges_collected??0,
         };
       },
       error: (err) => {

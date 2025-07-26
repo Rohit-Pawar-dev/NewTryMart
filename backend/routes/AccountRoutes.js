@@ -6,6 +6,7 @@ const User = require("../models/User");
 const Seller = require("../models/Seller");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const Admin = require("../models/Admin")
 router.get("/profile", auth, async (req, res) => {
   var user = await User.findById(req.user.id);
   if (!user)
@@ -105,6 +106,13 @@ router.get("/dashboard", async (req, res) => {
       ]
     );
 
+    const deliveryStats = await Order.aggregate([
+      { $group: { _id: null, totalDeliveryCharges: { $sum: "$delivery_charge" } } },
+    ]);
+    const totalDeliveryCharges = deliveryStats[0]?.totalDeliveryCharges || 0;
+
+    const admin = await Admin.findOne().select("admin_wallet seller_commission");
+
     // Final dashboard statistics
     const statistics = {
       users: {
@@ -119,6 +127,9 @@ router.get("/dashboard", async (req, res) => {
       orders: {
         total: totalOrders,
         ...orderStatusSummary, // dynamically spread in all status counts
+        delivery_charges_collected: totalDeliveryCharges,
+        seller_commission_collected: admin?.seller_commission || 0,
+        admin_wallet_balance: admin?.admin_wallet || 0,
       },
       products: {
         total: totalProducts,

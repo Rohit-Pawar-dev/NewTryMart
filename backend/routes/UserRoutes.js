@@ -96,6 +96,8 @@ router.get("/wallet/:userId/transactions", walletController.getWalletTransaction
 //Get delivery Charges
 
 router.get("/business-setup/deliveryCharges", bussinessController.deliveryCharges);
+router.get("/business-setup/seller-commission", bussinessController.getSellerCommoision);
+
 
 
 module.exports = router;
