@@ -35,7 +35,7 @@ const orderItemDetailSchema = new Schema(
     seller_id: {
       type: Schema.Types.ObjectId,
       ref: "Seller",
-      // required: true,
+      
     },
 
     shipping_cost: { type: Number, default: 0 },

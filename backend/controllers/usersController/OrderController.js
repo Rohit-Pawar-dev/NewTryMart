@@ -227,6 +227,46 @@ const getUserOrders = async (req, res) => {
   }
 };
 
+// const getUserOrderById = async (req, res) => {
+//   try {
+//     const order = await Order.findOne({
+//       _id: req.params.id,
+//       customer_id: req.user.id,
+//     })
+//       .populate("customer_id", "name email mobile")
+//       .populate("shipping_address")
+//       .populate({
+//         path: "order_items",
+//         populate: [
+//           {
+//             path: "product_id",
+//             select: "name thumbnail",
+//           },
+//           {
+//             path: "seller_id",
+//             select: "shop_name",
+//           },
+//         ],
+//       });
+
+//     if (!order) {
+//       return res.status(404).json({
+//         status: false,
+//         message: "Order not found or unauthorized",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       status: true,
+//       message: "Order fetched successfully",
+//       data: order,
+//     });
+//   } catch (err) {
+//     console.error("Error fetching order by ID:", err);
+//     return res.status(500).json({ status: false, message: "Server error" });
+//   }
+// };
+
 const getUserOrderById = async (req, res) => {
   try {
     const order = await Order.findOne({
@@ -256,16 +296,63 @@ const getUserOrderById = async (req, res) => {
       });
     }
 
+    // ✅ Calculation breakdown
+    let subtotal = 0;
+    let totalDiscount = 0;
+    let totalTax = 0;
+
+    for (const item of order.order_items) {
+      const itemBasePrice = item.unit_price * item.quantity;
+      subtotal += itemBasePrice;
+
+      // % or flat discount calculation
+      let discountValue = 0;
+      if (item.discount && item.discount_type) {
+        if (item.discount_type === "percent") {
+          discountValue = (item.unit_price * item.discount) / 100 * item.quantity;
+        } else {
+          discountValue = item.discount * item.quantity;
+        }
+      }
+      totalDiscount += discountValue;
+
+      // Tax (assuming tax is a percentage)
+      let taxValue = 0;
+      if (item.tax) {
+        taxValue = ((item.unit_price - (discountValue / item.quantity)) * item.tax / 100) * item.quantity;
+        totalTax += taxValue;
+      }
+    }
+
+    const couponAmount = order.coupon_amount || 0;
+    const deliveryCharge = order.delivery_charge || 0;
+
+    const finalPayable =
+      subtotal - totalDiscount + totalTax - couponAmount + deliveryCharge;
+
+    const breakdown = {
+      subtotal,
+      totalDiscount,
+      totalTax,
+      couponAmount,
+      deliveryCharge,
+      finalPayable,
+    };
+
     return res.status(200).json({
       status: true,
       message: "Order fetched successfully",
-      data: order,
+      data: {
+        ...order.toObject(),
+        breakdown,
+      },
     });
   } catch (err) {
     console.error("Error fetching order by ID:", err);
     return res.status(500).json({ status: false, message: "Server error" });
   }
 };
+
 
 async function placeOrderOnline(req, res) {
   try {
