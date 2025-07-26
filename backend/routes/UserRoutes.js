@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../utils/multer");
 const userController = require("../controllers/AdminsController/userController");
+const bussinessController = require("../controllers/AdminsController/bussinessController")
 const auth = require("../middleware/authMiddleware");
 const {
   getUserOrders,
@@ -91,6 +92,10 @@ router.post("/wallet/:userId/credit", walletController.addMoneyToWallet);
 // Get all wallet transactions
 router.get("/wallet/:userId/transactions", walletController.getWalletTransactions);
 
+
+//Get delivery Charges
+
+router.get("/business-setup/deliveryCharges", bussinessController.deliveryCharges);
 
 
 module.exports = router;

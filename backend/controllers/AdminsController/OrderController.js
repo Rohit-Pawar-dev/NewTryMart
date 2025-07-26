@@ -4,7 +4,6 @@ const User = require("../../models/User");
 const Transaction = require("../../models/Transaction");
 const Product = require("../../models/Product");
 const nlogger = require("../../logger");
-const PDFDocument = require("pdfkit");
 const OrderItemDetail = require("../../models/OrderDetails");
 
 const fs = require("fs");

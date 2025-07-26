@@ -79,6 +79,31 @@ exports.updateBusinessSetup = async (req, res) => {
     });
   }
 };
+
+// GET /api/business-setup/delivery-charges
+exports.deliveryCharges = async (req, res) => {
+  try {
+    const setup = await BusinessSetup.findOne();
+    if (!setup || typeof setup.deliveryCharges === 'undefined') {
+      return res.status(404).json({
+        status: false,
+        message: 'Delivery charges not found.'
+      });
+    }
+    res.status(200).json({
+      status: true,
+      message: 'Delivery charges retrieved successfully.',
+      deliveryCharges: setup.deliveryCharges
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: 'Failed to fetch delivery charges.',
+      error: error.message
+    });
+  }
+};
+
 exports.uploadLogo = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });

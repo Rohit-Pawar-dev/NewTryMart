@@ -61,6 +61,7 @@ const orderSchema = new Schema(
     coupon_code: { type: String, default: null },
     coupon_amount: { type: Number, default: 0 },
     shipping_cost: { type: Number, default: 0 },
+    delivery_charge: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
