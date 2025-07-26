@@ -9,25 +9,13 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { getStyle } from '@coreui/utils';
-import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { RouterLink } from '@angular/router';
-import { NgStyle } from '@angular/common';
 
 
 import {
   RowComponent,
   ColComponent,
-  WidgetStatAComponent,
-  TemplateIdDirective,
-  ThemeDirective,
-  DropdownComponent,
-  ButtonDirective,
-  DropdownToggleDirective,
-  DropdownMenuDirective,
-  DropdownItemDirective,
-  DropdownDividerDirective,
 } from '@coreui/angular';
-import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
   selector: 'app-widgets-dropdown',
@@ -38,19 +26,7 @@ import { IconDirective } from '@coreui/icons-angular';
   imports: [
     RowComponent,
     ColComponent,
-    WidgetStatAComponent,
-    TemplateIdDirective,
-    IconDirective,
-    ThemeDirective,
-    DropdownComponent,
-    ButtonDirective,
-    DropdownToggleDirective,
-    DropdownMenuDirective,
-    DropdownItemDirective,
     RouterLink,
-    DropdownDividerDirective,
-    ChartjsComponent,
-    NgStyle,
   ],
 })
 export class WidgetsDropdownComponent implements OnInit, AfterContentInit {
