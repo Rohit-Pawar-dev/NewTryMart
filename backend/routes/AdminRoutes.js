@@ -6,6 +6,8 @@ const adminController = require("../controllers/AdminsController/Auth/authContro
 const businessSetupController = require("../controllers/AdminsController/bussinessController");
 
 const attributeController = require("../controllers/AdminsController/attributeController");
+const { auth, adminOnly } = require("../middleware/auth");
+
 
 // Utilities
 const getCustomMulter = require("../utils/customMulter");
@@ -17,14 +19,14 @@ const uploadLogo = getCustomMulter("logos");             // For business logos
 router.post("/admin", uploadAdminProfile.single("image"), adminController.createAdmin);
 router.post("/admin/login", adminController.loginAdmin);
 router.get("/admin/edit/:id", adminController.getAdmin);
-router.put("/admin/update/:id", uploadAdminProfile.single("image"), adminController.updateAdmin);
-router.put("/admin/change-password/:id", adminController.changePassword);
+router.put("/admin/update/:id",auth ,adminOnly, uploadAdminProfile.single("image"), adminController.updateAdmin);
+router.put("/admin/change-password/:id",auth , adminOnly, adminController.changePassword);
 
 /** --------------- Business Setup Routes --------------- **/
 
 router.get("/admin/setting/business-setup", businessSetupController.getBusinessSetup);
 router.post("/admin/setting/business-setup", businessSetupController.createBusinessSetup);
-router.put("/admin/setting/business-setup", businessSetupController.updateBusinessSetup);
+router.put("/admin/setting/business-setup",auth , adminOnly, businessSetupController.updateBusinessSetup);
 router.post("/upload-logo", uploadLogo.single("logo"), businessSetupController.uploadLogo);
 
 

@@ -58,11 +58,16 @@ const loginAdmin = async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    const token = jwt.sign(
-      { id: admin._id, email: admin.email },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+   const token = jwt.sign(
+  {
+    id: admin._id,
+    email: admin.email,
+    role: 'admin' 
+  },
+  JWT_SECRET,
+  { expiresIn: '6h' }
+);
+
 
     res.status(200).json({
       status: true,
