@@ -31,7 +31,7 @@ exports.getAllCategories = async (req, res) => {
 
     const aggregationPipeline = [
       { $match: matchStage },
-      { $sort: { createdAt: -1 } },
+      { $sort: { created_at: -1 } },
     ];
 
     if (usePagination) {
