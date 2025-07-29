@@ -12,7 +12,7 @@
   </div>
 
   <!-- Tab Content -->
-  <div class="static_pages-content">
+  <div class="static_pages-content ">
     <h3 class="static_pages-heading">
       {{ pages[selectedTab]?.title }}
     </h3>
@@ -25,7 +25,7 @@
     ></ckeditor>
 
     <button
-      class="static_pages-update-btn"
+      class="static_pages-update-btn primary"
       (click)="updatePage(pages[selectedTab])"
     >
       Update {{ pages[selectedTab].title }}
