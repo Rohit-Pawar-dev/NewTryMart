@@ -32,13 +32,10 @@
       <!-- Status -->
       <div class="col-md-6 mb-3">
         <strong>Status:</strong>
-        <span
-          class="badge"
-          [ngClass]="{
+        <span class="badge" [ngClass]="{
             'bg-success': user.status === 'active',
             'bg-secondary': user.status === 'inactive'
-          }"
-        >
+          }">
           {{ user.status }}
         </span>
       </div>
@@ -47,14 +44,11 @@
       <div class="col-md-6 mb-3">
         <strong>Profile Picture:</strong><br />
         <span class="profile-img">
-          <img
-            *ngIf="user.profilePicture"
-            [src]="user.profilePicture"
-            alt="User Image"
-            class="img-thumbnail mt-2"
-          />
+          <img [src]="user.profilePicture || 'assets/images/user_default.png'" (error)="onImageError($event)"
+            alt="User Image" class="img-thumbnail mt-2" />
+
         </span>
-        <p *ngIf="!user.profilePicture" class="text-muted">
+        <p *ngIf="!user.profilePicture || imageFailedToLoad" class="text-muted">
           No profile picture uploaded.
         </p>
       </div>

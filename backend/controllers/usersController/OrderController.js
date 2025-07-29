@@ -4,7 +4,7 @@ const VariantOption = require("../../models/VariantOption");
 const Cart = require("../../models/Cart");
 const Transaction = require("../../models/Transaction");
 const WalletTransaction = require('../../models/WalletTransaction');
-const User = require('../../models/User'); 
+const User = require('../../models/User');
 const Product = require("../../models/Product");
 const axios = require("axios");
 const Seller = require("../../models/Seller");
@@ -22,11 +22,11 @@ async function placeOrder(req, res) {
       .populate("seller_id");
 
     if (!cartItems || cartItems.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" });
+      return res.status(400).json({ status : false ,message: "Cart is empty" });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ status : false ,message: "User not found" });
 
     const deliveryRes = await axios.get(`${process.env.BASE_URL}/users/business-setup/deliveryCharges`);
     const deliveryCharge = deliveryRes.data?.deliveryCharges || 0;
@@ -35,26 +35,26 @@ async function placeOrder(req, res) {
     const commissionPercent = commissionRes.data?.sellerCommission || 0;
 
     const admin = await Admin.findOne();
-    if (!admin) return res.status(500).json({ message: "Admin config missing" });
+    if (!admin) return res.status(500).json({ status : false ,message: "Admin config missing" });
 
-    // ✅ Validate stock
+    //  Validate stock
     for (const item of cartItems) {
       const product = item.product_id;
       if (!product) {
-        return res.status(400).json({ message: `Product not found for cart item ${item._id}` });
+        return res.status(400).json({status : false , message: `Product not found for cart item ${item._id}` });
       }
 
       if (item.is_variant && item.variant_id) {
         const variant = await VariantOption.findOne({ _id: item.variant_id, product_id: product._id });
         if (!variant || variant.stock < item.quantity) {
-          return res.status(400).json({ message: `Insufficient stock for variant of ${product.name}` });
+          return res.status(400).json({status : false , message: `Insufficient stock for variant of ${product.name}` });
         }
       } else if (product.current_stock < item.quantity) {
-        return res.status(400).json({ message: `Insufficient stock for product ${product.name}` });
+        return res.status(400).json({status : false , message: `Insufficient stock for product ${product.name}` });
       }
     }
 
-    // ✅ Group cart items
+    // Group cart items
     const groupedItems = {};
     for (const item of cartItems) {
       let sellerKey;
@@ -109,7 +109,7 @@ async function placeOrder(req, res) {
         await orderItem.save();
         orderItemIds.push(orderItem._id);
 
-        // ✅ Deduct stock
+        //  Deduct stock
         if (item.is_variant && item.variant_id) {
           await VariantOption.updateOne(
             { _id: item.variant_id },
@@ -121,7 +121,7 @@ async function placeOrder(req, res) {
         }
       }
 
-      // ✅ Apply coupon
+      //  Apply coupon
       const couponItem = items.find(item => item.coupon_code && item.coupon_amount);
       let couponCode = null;
       let couponAmount = 0;
@@ -131,7 +131,7 @@ async function placeOrder(req, res) {
         totalOrderPrice -= couponAmount;
       }
 
-      // ✅ Add delivery charge
+      //  Add delivery charge
       totalOrderPrice += deliveryCharge;
 
       const latestOrder = await Order.findOne().sort({ order_id: -1 }).select("order_id").lean();
@@ -158,7 +158,7 @@ async function placeOrder(req, res) {
 
       await OrderItemDetail.updateMany({ _id: { $in: orderItemIds } }, { order_id: order._id });
 
-      // ✅ Commission and Wallet Transfer
+      //  Commission and Wallet Transfer
       const amountBeforeDelivery = totalOrderPrice - deliveryCharge;
 
       if (sellerKey === "admin") {
@@ -174,7 +174,7 @@ async function placeOrder(req, res) {
         });
       }
 
-      // ✅ Transaction
+      //  Transaction
       await new Transaction({
         order_id: order._id,
         user_id: userId,
@@ -185,16 +185,17 @@ async function placeOrder(req, res) {
       }).save();
     }
 
-    await admin.save(); // ✅ Save admin updates
+    await admin.save(); // Save admin updates
     await Cart.deleteMany({ customer_id: userId, save_for_later: false });
 
     return res.status(201).json({
+      status : true ,
       message: "Orders placed successfully",
       order_ids: orderResults,
     });
   } catch (error) {
     console.error("Error placing order:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({status : false , message: "Server error", error: error.message });
   }
 }
 
@@ -296,7 +297,7 @@ const getUserOrderById = async (req, res) => {
       });
     }
 
-    // ✅ Calculation breakdown
+    // Calculation breakdown
     let subtotal = 0;
     let totalDiscount = 0;
     let totalTax = 0;
@@ -305,7 +306,7 @@ const getUserOrderById = async (req, res) => {
       const itemBasePrice = item.unit_price * item.quantity;
       subtotal += itemBasePrice;
 
-      // % or flat discount calculation
+      // Discount calculation
       let discountValue = 0;
       if (item.discount && item.discount_type) {
         if (item.discount_type === "percent") {
@@ -364,11 +365,11 @@ async function placeOrderOnline(req, res) {
       .populate("seller_id");
 
     if (!cartItems || cartItems.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" });
+      return res.status(400).json({ status : false ,message: "Cart is empty" });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ status : false ,message: "User not found" });
 
     const deliveryRes = await axios.get(`${process.env.BASE_URL}/users/business-setup/deliveryCharges`);
     const deliveryCharge = deliveryRes.data?.deliveryCharges || 0;
@@ -377,24 +378,24 @@ async function placeOrderOnline(req, res) {
     const commissionPercent = commissionRes.data?.sellerCommission || 0;
 
     const admin = await Admin.findOne();
-    if (!admin) return res.status(500).json({ message: "Admin config missing" });
+    if (!admin) return res.status(500).json({status : false , message: "Admin config missing" });
 
-    // ✅ Stock check
+    //  Stock check
     for (const item of cartItems) {
       const product = item.product_id;
-      if (!product) return res.status(400).json({ message: `Product not found for cart item ${item._id}` });
+      if (!product) return res.status(400).json({ status : false ,message: `Product not found for cart item ${item._id}` });
 
       if (item.is_variant && item.variant_id) {
         const variant = await VariantOption.findOne({ _id: item.variant_id, product_id: product._id });
         if (!variant || variant.stock < item.quantity) {
-          return res.status(400).json({ message: `Insufficient stock for variant of ${product.name}` });
+          return res.status(400).json({status : false , message: `Insufficient stock for variant of ${product.name}` });
         }
       } else if (product.current_stock < item.quantity) {
-        return res.status(400).json({ message: `Insufficient stock for product ${product.name}` });
+        return res.status(400).json({ status : false ,message: `Insufficient stock for product ${product.name}` });
       }
     }
 
-    // ✅ Group by seller
+    //  Group by seller
     const groupedItems = {};
     for (const item of cartItems) {
       const sellerKey = item.added_by === "admin" ? "admin" : item.seller_id?._id.toString();
@@ -404,7 +405,7 @@ async function placeOrderOnline(req, res) {
 
     const orderResults = [];
 
-    // ✅ Process each group
+    //  Process each group
     for (const [sellerKey, items] of Object.entries(groupedItems)) {
       let totalOrderPrice = 0;
       const orderItemIds = [];
@@ -444,7 +445,7 @@ async function placeOrderOnline(req, res) {
         await orderItem.save();
         orderItemIds.push(orderItem._id);
 
-        // ✅ Stock update
+        //  Stock update
         if (item.is_variant && item.variant_id) {
           await VariantOption.updateOne({ _id: item.variant_id }, { $inc: { stock: -item.quantity } });
         } else {
@@ -453,7 +454,7 @@ async function placeOrderOnline(req, res) {
         }
       }
 
-      // ✅ Coupon handling
+      //  Coupon handling
       const couponItem = items.find(i => i.coupon_code && i.coupon_amount);
       let couponCode = null;
       let couponAmount = 0;
@@ -489,7 +490,7 @@ async function placeOrderOnline(req, res) {
 
       await OrderItemDetail.updateMany({ _id: { $in: orderItemIds } }, { order_id: order._id });
 
-      // ✅ Commission & Wallet
+      //  Commission & Wallet
       const amountBeforeDelivery = totalOrderPrice - deliveryCharge;
 
       if (sellerKey === "admin") {
@@ -505,7 +506,7 @@ async function placeOrderOnline(req, res) {
         });
       }
 
-      // ✅ Transaction
+      //  Transaction
       await new Transaction({
         order_id: order._id,
         user_id: userId,
@@ -520,13 +521,14 @@ async function placeOrderOnline(req, res) {
     await Cart.deleteMany({ customer_id: userId, save_for_later: false });
 
     return res.status(201).json({
+      status : true ,
       message: "Online order placed successfully",
       order_ids: orderResults,
     });
 
   } catch (error) {
     console.error("Error placing Online order:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ status : false ,message: "Server error", error: error.message });
   }
 }
 
@@ -541,11 +543,11 @@ async function placeOrderFromWallet(req, res) {
     }).populate("product_id").populate("seller_id");
 
     if (!cartItems.length) {
-      return res.status(400).json({ message: "Cart is empty" });
+      return res.status(400).json({ status : false , message: "Cart is empty" });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ status : false , message: "User not found" });
 
     const deliveryRes = await axios.get(`${process.env.BASE_URL}/users/business-setup/deliveryCharges`);
     const deliveryCharge = deliveryRes.data?.deliveryCharges || 0;
@@ -554,24 +556,24 @@ async function placeOrderFromWallet(req, res) {
     const commissionPercent = commissionRes.data?.sellerCommission || 0;
 
     const admin = await Admin.findOne();
-    if (!admin) return res.status(500).json({ message: "Admin config missing" });
+    if (!admin) return res.status(500).json({ status : false , message: "Admin config missing" });
 
-    // ✅ Validate stock
+    //  Validate stock
     for (const item of cartItems) {
       const product = item.product_id;
-      if (!product) return res.status(400).json({ message: `Product not found for cart item ${item._id}` });
+      if (!product) return res.status(400).json({status : false , message: `Product not found for cart item ${item._id}` });
 
       if (item.is_variant && item.variant_id) {
         const variant = await VariantOption.findOne({ _id: item.variant_id, product_id: product._id });
         if (!variant || variant.stock < item.quantity) {
-          return res.status(400).json({ message: `Insufficient stock for variant of ${product.name}` });
+          return res.status(400).json({ status : false ,message: `Insufficient stock for variant of ${product.name}` });
         }
       } else if (product.current_stock < item.quantity) {
-        return res.status(400).json({ message: `Insufficient stock for product ${product.name}` });
+        return res.status(400).json({ status : false ,message: `Insufficient stock for product ${product.name}` });
       }
     }
 
-    // ✅ Group by seller
+    //  Group by seller
     const groupedItems = {};
     for (const item of cartItems) {
       const key = item.seller_is === "admin" ? "admin" : item.seller_id._id.toString();
@@ -582,7 +584,7 @@ async function placeOrderFromWallet(req, res) {
     const orderResults = [];
     let totalWalletAmountRequired = 0;
 
-    // ✅ Pre-calculate total wallet required
+    //  Pre-calculate total wallet required
     for (const items of Object.values(groupedItems)) {
       let subtotal = items.reduce((sum, i) => sum + i.total_price + (i.shipping_cost || 0), 0);
       const couponItem = items.find(i => i.coupon_amount);
@@ -592,7 +594,7 @@ async function placeOrderFromWallet(req, res) {
     }
 
     if (user.wallet_amount < totalWalletAmountRequired) {
-      return res.status(400).json({ message: "Insufficient wallet balance" });
+      return res.status(400).json({ status : false , message: "Insufficient wallet balance" });
     }
 
     for (const [key, items] of Object.entries(groupedItems)) {
@@ -618,7 +620,9 @@ async function placeOrderFromWallet(req, res) {
           discount_type: item.discount_type,
           tax_model: item.tax_model,
           slug: item.slug,
-          seller_id: item.seller_is === "admin" ? null : item.seller_id,
+          // seller_id: item.seller_is === "admin" ? null : item.seller_id,
+          seller_id: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
+
           seller_is: item.seller_is,
           shipping_cost: item.shipping_cost,
           shipping_type: item.shipping_type,
@@ -640,7 +644,7 @@ async function placeOrderFromWallet(req, res) {
         }
       }
 
-      // ✅ Apply coupon
+      //  Apply coupon
       const couponItem = items.find(i => i.coupon_amount);
       let couponCode = null;
       let couponAmount = 0;
@@ -667,7 +671,7 @@ async function placeOrderFromWallet(req, res) {
         payment_method: "wallet",
         coupon_code: couponCode,
         coupon_amount: couponAmount,
-        seller_id: key === "admin" ? null : items[0].seller_id._id,
+        seller_id: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
         seller_is: items[0].seller_is,
       });
 
@@ -676,7 +680,7 @@ async function placeOrderFromWallet(req, res) {
 
       await OrderItemDetail.updateMany({ _id: { $in: orderItemIds } }, { order_id: order._id });
 
-      // ✅ Calculate commission and update wallets
+      //  Calculate commission and update wallets
       const amountWithoutDelivery = totalOrderPrice - deliveryCharge;
 
       if (items[0].seller_is === "admin") {
@@ -695,13 +699,13 @@ async function placeOrderFromWallet(req, res) {
         order_id: order._id,
         user_id: userId,
         paid_by: userId,
-        paid_to: items[0].seller_is === "admin" ? null : items[0].seller_id._id,
+        paid_to: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
         amount: totalOrderPrice,
         payment_status: "Paid",
       }).save();
     }
 
-    // ✅ Final wallet deductions
+    //  Final wallet deductions
     user.wallet_amount -= totalWalletAmountRequired;
     await user.save();
     await admin.save();
@@ -717,13 +721,16 @@ async function placeOrderFromWallet(req, res) {
     await Cart.deleteMany({ customer_id: userId, save_for_later: false });
 
     return res.status(201).json({
+      status: true,
       message: "Order placed successfully using wallet",
       order_ids: orderResults,
     });
 
   } catch (error) {
     console.error("Error placing wallet order:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      status: false, message: "Server error", error: error.message
+    });
   }
 }
 

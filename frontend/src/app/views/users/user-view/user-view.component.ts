@@ -17,6 +17,8 @@ export class UserViewComponent implements OnInit {
   isLoading = true;
   error: string | null = null;
   mediaUrl=  environment.mediaUrl;
+  imageFailedToLoad = false;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -50,5 +52,11 @@ export class UserViewComponent implements OnInit {
     },
   });
 }
+onImageError(event: Event) {
+  const img = event.target as HTMLImageElement;
+  img.src = 'assets/images/user_default.png';
+  this.imageFailedToLoad = true;
+}
+
 
 }

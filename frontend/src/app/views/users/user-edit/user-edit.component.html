@@ -112,7 +112,7 @@
 
           <div *ngIf="imagePreview" class="mt-2">
             <img
-              [src]="imagePreview"
+            [src]="imagePreview || 'assets/images/user_default.png'"
               alt="Preview"
               class="img-thumbnail shadow-sm"
               style="max-height: 150px"

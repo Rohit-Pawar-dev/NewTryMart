@@ -16,6 +16,7 @@ export class UserListComponent implements OnInit {
   users: User[] = [];
   isLoading = false;
   mediaUrl = environment.mediaUrl;
+  imageFailedToLoad = false;
 
   searchTerm = '';
   page = 1;
@@ -105,4 +106,10 @@ export class UserListComponent implements OnInit {
       }
     });
   }
+  onImageError(event: Event) {
+  const img = event.target as HTMLImageElement;
+  img.src = 'assets/images/user_default.png';
+  this.imageFailedToLoad = true;
+}
+
 }

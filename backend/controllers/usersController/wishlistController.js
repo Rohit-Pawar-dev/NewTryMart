@@ -2,6 +2,7 @@ const mongoose = require('mongoose');  // <--- Add this line
 
 const Wishlist = require('../../models/wishlist');
 const Cart = require('../../models/Cart');
+const { log } = require('console');
 
 /**
  * Wishlist Controller
@@ -113,8 +114,8 @@ exports.removeFromWishlist = async (req, res) => {
         }
 
         const userObjectId = new mongoose.Types.ObjectId(userId);
-        const wishlistItem = await Wishlist.findOneAndDelete({ _id: itemId, userId: userObjectId });
-
+        const productObjectId = new mongoose.Types.ObjectId(itemId);
+        const wishlistItem = await Wishlist.findOneAndDelete({ productId: productObjectId, userId: userObjectId });
         if (!wishlistItem) {
             return res.status(404).json({ status: false, message: "Item not found in wishlist" });
         }

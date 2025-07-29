@@ -55,7 +55,11 @@ export class UserEditComponent implements OnInit {
       this.userService.getUser(this.userId).subscribe({
         next: (user) => {
           this.userForm.patchValue(user);
-          this.imagePreview =  this.mediaUrl+user.profilePicture || null;
+         if (user.profilePicture) {
+          this.imagePreview = this.mediaUrl + user.profilePicture;
+        } else {
+          this.imagePreview = null; 
+        }
         },
         error: (err) => {
           console.error('Error loading user:', err);
