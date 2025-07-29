@@ -51,7 +51,7 @@
       </div>
 
       <div class="mt-4 text-end">
-        <button type="submit" class="btn btn-success" [disabled]="catForm.invalid">
+        <button type="submit" class="btn btn-primary primary" [disabled]="catForm.invalid">
           Add Category
         </button>
       </div>
@@ -97,8 +97,8 @@
                   type="button"
                   class="btn btn-sm"
                   [ngClass]="{
-                    'btn-success': cat.status === 'inactive',
-                    'btn-secondary': cat.status === 'active'
+                    'btn-btn-outline-success': cat.status === 'inactive',
+                    'btn-outline-secondary': cat.status === 'active'
                   }"
                   (click)="toggleStatus(cat)"
                   title="{{ cat.status === 'active' ? 'Set Inactive' : 'Set Active' }}"
