@@ -177,13 +177,13 @@
           </div>
         </div>
         <div class="text-end">
-          <button class="btn btn-sm btn-secondary" type="button" (click)="addVariant()">➕ Add Variant</button>
+          <button class="btn btn-sm btn-primary primary" type="button" (click)="addVariant()">Add Variant</button>
           <button
-            class="btn btn-sm btn-outline-primary ms-2"
+            class="btn btn-sm btn-outline-primary primaryout ms-2"
             type="button"
             (click)="generateVariantOptions()"
           >
-            🔄 Generate Combinations
+            Generate Combinations
           </button>
         </div>
       </div>
@@ -249,7 +249,7 @@
 
       <!-- Submit & Cancel -->
       <div class="text-end">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary primary">
           {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
         </button>
         <button type="button" class="btn btn-secondary ms-2" (click)="onCancel()">Cancel</button>

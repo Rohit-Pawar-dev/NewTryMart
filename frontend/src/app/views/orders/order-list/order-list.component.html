@@ -28,7 +28,7 @@
       <!-- Show Data Button -->
       <div class="col-md-3">
         <label class="form-label d-block invisible">Show</label>
-        <button class="btn btn-primary w-100 sd-btn" (click)="fetchOrders()">Show Data</button>
+        <button class="btn btn-primary primary w-100 sd-btn" (click)="fetchOrders()">Show Data</button>
       </div>
     </div>
 
@@ -96,7 +96,7 @@
           </td>
           <td>
             <span class="badge rounded-pill px-3 py-1" [ngClass]="{
-              'bg-info text-dark': order.status === 'Pending',
+              'bg-primary text-dark': order.status === 'Pending',
               'bg-success': order.status === 'Delivered',
               'bg-warning text-dark': order.status === 'Processing',
               'bg-danger': order.status === 'Cancelled',
@@ -108,7 +108,7 @@
             </span>
           </td>
           <td class="d-flex gap-2 mt-2 bg-white">
-            <a [routerLink]="['/orders', order._id]" class="btn btn-outline-primary btn-sm" title="View">
+            <a [routerLink]="['/orders', order._id]" class="btn btn-outline-primary primaryout btn-sm" title="View">
               <i class="far fa-eye fs-6"></i>
             </a>
             <!-- <button class="btn btn-outline-success btn-sm" title="Download">
@@ -140,7 +140,7 @@
 
   <!-- Pagination -->
   <nav *ngIf="totalPages > 1" class="mt-4">
-    <ul class="pagination justify-content-center .pagination-ul">
+    <ul class="pagination justify-content-end .pagination-ul">
       <li class="page-item" [class.disabled]="currentPage === 1">
         <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
       </li>
