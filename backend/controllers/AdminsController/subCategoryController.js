@@ -32,7 +32,7 @@ exports.getAllSubCategories = async (req, res) => {
 
     const subCategories = await SubCategory.find(filter)
       .populate('category_id', 'name')
-      .sort({ createdAt: -1 })
+      .sort({ created_at: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit);
 

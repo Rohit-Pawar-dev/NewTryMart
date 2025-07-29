@@ -37,7 +37,7 @@ exports.getAllUsers = async (req, res) => {
 
     const total = await User.countDocuments(filter);
     const users = await User.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ created_at: -1 })
       .skip(offset)
       .limit(limit);
 
