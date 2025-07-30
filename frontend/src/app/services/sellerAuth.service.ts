@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class SellerAuthService {
   private apiUrl = `${environment.apiUrl}/sellers`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Register a new seller with form data including image upload
@@ -28,9 +28,7 @@ export class SellerAuthService {
     return this.http.post(`${this.apiUrl}/register`, formData);
   }
 
-  /**
-   * Login seller using mobile number
-   */
+
   loginSeller(mobile: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const body = JSON.stringify({ mobile });
@@ -38,9 +36,7 @@ export class SellerAuthService {
     return this.http.post(`${this.apiUrl}/login`, body, { headers });
   }
 
-  /**
-   * Verify seller OTP
-   */
+
   verifyOtp(mobile: string, otp: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const body = JSON.stringify({ mobile, otp });

@@ -64,8 +64,8 @@ export class DefaultLayoutComponent {
       next: (res) => {
         const logoPath = res?.data?.websiteLogo;
         if (logoPath) {
-          const baseUrl = environment.apiUrl.replace('/api', '');
-          this.logoUrl = logoPath.startsWith('http') ? logoPath : `${baseUrl}/${logoPath.replace(/^\/+/, '')}`;
+          const baseUrl = environment.mediaUrl;
+          this.logoUrl = logoPath.startsWith('http') ? logoPath : `${baseUrl}${logoPath.replace(/^\/+/, '')}`;
         } else {
           console.warn('No logo path found in response.');
         }

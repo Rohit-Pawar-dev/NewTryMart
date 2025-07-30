@@ -33,6 +33,11 @@ router.post('/upload/logo', uploadLogo.single('logo'), sellerController.uploadSe
 router.post("/register", upload.single("logo"), registerSeller);
 router.post("/login", loginSeller);
 router.post("/verify-otp", verifyOtpSeller);
-module.exports = router;
+
+// // Get a single seller by ID
+// router.get("/sellers/:id", sellerController.getSellerById);
+
+// // Update a seller by ID
+// router.put("/sellers/:id", sellerController.updateSeller);
 
 module.exports = router;

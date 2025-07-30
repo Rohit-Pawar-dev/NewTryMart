@@ -3,6 +3,7 @@ import { DefaultLayoutComponent } from './layout';
 import { AuthGuard } from './guards/auth.guard';
 import { AttributeComponent } from './views/attribute/attribute.component';
 import { BusinessCategoriesComponent } from './views/bussinessCategories/bussiness-Categories.component';
+import { SellerEditComponent } from './views/sellerViews/seller-edit/seller-edit.component';
 
 export const routes: Routes = [
   {
@@ -139,6 +140,10 @@ export const routes: Routes = [
           title: 'Seller Login',
         }
       },
+        {
+    path: 'seller/edit/:id',
+    component: SellerEditComponent,
+  },
       {
         path: 'seller-register',
         loadComponent: () =>

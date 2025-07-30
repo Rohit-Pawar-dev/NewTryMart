@@ -48,6 +48,37 @@ const loginSeller = async (req, res) => {
   }
 };
 
+// Get seller by ID
+exports.getSellerById = async (req, res) => {
+  try {
+    const seller = await Seller.findById(req.params.id);
+    if (!seller) return res.status(404).json({status: false, message: "Seller not found" });
+    res.status(200).json({status: true, data:seller});
+  } catch (err) {
+    res.status(500).json({status: false, error: err.message });
+  }
+};
+
+// Update seller
+exports.updateSeller = async (req, res) => {
+  try {
+    const updatedSeller = await Seller.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedSeller) {
+      return res.status(404).json({ status: false, message: "Seller not found" });
+    }
+   res.status(200).json({ status: true, data: updatedSeller });
+
+  } catch (err) {
+    res.status(400).json({ status: false, error: err.message });
+  }
+};
+
+
+
 module.exports = {
   loginSeller,
 };
