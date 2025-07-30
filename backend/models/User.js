@@ -82,7 +82,7 @@ const userSchema = new Schema(
   }
 );
 
-// 🔐 Hash password before saving (Create)
+//  Hash password before saving (Create)
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   try {

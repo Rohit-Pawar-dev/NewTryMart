@@ -1,0 +1,43 @@
+<div class="container mt-4">
+  <h3 class="mb-4">Seller Bank Information</h3>
+
+  <form [formGroup]="bankForm" (ngSubmit)="onSubmit()">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Account Holder Name</label>
+        <input type="text" class="form-control" formControlName="account_holder_name" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Bank Name</label>
+        <input type="text" class="form-control" formControlName="bank_name" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Account Number</label>
+        <input type="text" class="form-control" formControlName="account_number" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">IFSC Code</label>
+        <input type="text" class="form-control" formControlName="ifsc_code" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Branch Name</label>
+        <input type="text" class="form-control" formControlName="branch_name" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">UPI ID</label>
+        <input type="text" class="form-control" formControlName="upi_id" />
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <button class="btn btn-primary primary" type="submit" [disabled]="bankForm.invalid || loading">
+        {{ loading ? 'Saving...' : 'Save Bank Info' }}
+      </button>
+    </div>
+  </form>
+</div>

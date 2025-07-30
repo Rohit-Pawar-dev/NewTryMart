@@ -13,6 +13,7 @@ import { AttributeService, Attribute } from '../../services/attribute.service';
 export class AttributeComponent implements OnInit {
     attributes: Attribute[] = [];
     newAttribute: Attribute = { type: 'color', value: '' };
+    selectedType: 'color' | 'size' | '' = ''; // '' means no filter
 
     // Pagination
     limit = 10;
@@ -21,7 +22,6 @@ export class AttributeComponent implements OnInit {
     totalItems = 0;
 
     Math = Math;
-
 
     constructor(private attributeService: AttributeService) { }
 
@@ -32,16 +32,18 @@ export class AttributeComponent implements OnInit {
     loadAttributes(): void {
         const offset = (this.currentPage - 1) * this.limit;
 
-        this.attributeService.getAllAttributes('', this.limit, offset).subscribe({
-            next: (res) => {
-                this.attributes = res.data;
-                this.totalItems = res.total;
-                this.totalPages = res.totalPages;
-            },
-            error: () => {
-                Swal.fire('Error', 'Failed to load attributes.', 'error');
-            },
-        });
+        this.attributeService
+            .getAllAttributes('', this.limit, offset, this.selectedType)
+            .subscribe({
+                next: (res) => {
+                    this.attributes = res.data;
+                    this.totalItems = res.total;
+                    this.totalPages = res.totalPages;
+                },
+                error: () => {
+                    Swal.fire('Error', 'Failed to load attributes.', 'error');
+                },
+            });
     }
 
     createAttribute(): void {
@@ -97,5 +99,10 @@ export class AttributeComponent implements OnInit {
             this.currentPage = page;
             this.loadAttributes();
         }
+    }
+
+    onFilterChange(): void {
+        this.currentPage = 1;
+        this.loadAttributes();
     }
 }

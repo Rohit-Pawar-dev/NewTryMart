@@ -5,6 +5,7 @@ const getCustomMulter = require('../utils/customMulter');
 const uploadProfile = getCustomMulter('sellers/profile');
 const uploadLogo = getCustomMulter('sellers/logo');
 const sellerController = require("../controllers/AdminsController/sellerController");
+const bankInfoController = require("../controllers/sellersController/bankInfoController");
 const {
   registerSeller,
 } = require("../controllers/sellersController/Auth/SignupController");
@@ -31,13 +32,15 @@ router.post('/upload/logo', uploadLogo.single('logo'), sellerController.uploadSe
 
 // Single file upload with field name 'logo'
 router.post("/register", upload.single("logo"), registerSeller);
+
 router.post("/login", loginSeller);
+
 router.post("/verify-otp", verifyOtpSeller);
 
-// // Get a single seller by ID
-// router.get("/sellers/:id", sellerController.getSellerById);
+// Get a single bank account by ID
+router.get("/bank-info/:id", bankInfoController.getBankInfo);
 
-// // Update a seller by ID
-// router.put("/sellers/:id", sellerController.updateSeller);
+// Update bank info
+router.put("/bank-info/:id", bankInfoController.editBankInfo);
 
 module.exports = router;

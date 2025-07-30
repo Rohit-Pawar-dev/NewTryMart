@@ -23,16 +23,36 @@ export class AttributeService {
         return this.http.post(`${this.baseUrl}/add`, data);
     }
 
-    // Get all attributes
-    getAllAttributes(search: string = '', limit: number = 10, offset: number = 0): Observable<any> {
-        const params = {
-            search,
-            limit: limit.toString(),
-            offset: offset.toString(),
-        };
+    // // Get all attributes
+    // getAllAttributes(search: string = '', limit: number = 10, offset: number = 0): Observable<any> {
+    //     const params = {
+    //         search,
+    //         limit: limit.toString(),
+    //         offset: offset.toString(),
+    //     };
 
-        return this.http.get<any>(`${this.baseUrl}/view`, { params });
+    //     return this.http.get<any>(`${this.baseUrl}/view`, { params });
+    // }
+
+    getAllAttributes(
+    search: string = '',
+    limit: number = 10,
+    offset: number = 0,
+    type: string = ''
+): Observable<any> {
+    const params: any = {
+        search,
+        limit: limit.toString(),
+        offset: offset.toString(),
+    };
+
+    if (type) {
+        params.type = type;
     }
+
+    return this.http.get<any>(`${this.baseUrl}/view`, { params });
+}
+
 
 
     // Get attributes by type (color or size)

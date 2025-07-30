@@ -5,9 +5,7 @@ const dotenv = require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
-// ==========================
 // Create Admin
-// ==========================
 const createAdmin = async (req, res) => {
   try {
     const { name, mobile, email, password } = req.body;
@@ -38,9 +36,7 @@ const createAdmin = async (req, res) => {
   }
 };
 
-// ==========================
 // Login Admin
-// ==========================
 const loginAdmin = async (req, res) => {
   try {
     const { emailOrMobile, password } = req.body;
@@ -58,15 +54,15 @@ const loginAdmin = async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-   const token = jwt.sign(
-  {
-    id: admin._id,
-    email: admin.email,
-    role: 'admin' 
-  },
-  JWT_SECRET,
-  { expiresIn: '6h' }
-);
+    const token = jwt.sign(
+      {
+        id: admin._id,
+        email: admin.email,
+        role: 'admin'
+      },
+      JWT_SECRET,
+      { expiresIn: '6h' }
+    );
 
 
     res.status(200).json({
@@ -87,9 +83,7 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-// ==========================
 // Get Admin by ID
-// ==========================
 const getAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -106,9 +100,7 @@ const getAdmin = async (req, res) => {
   }
 };
 
-// ==========================
 // Update Admin (excluding password)
-// ==========================
 const updateAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -139,9 +131,7 @@ const updateAdmin = async (req, res) => {
   }
 };
 
-// ==========================
 // Change Admin Password
-// ==========================
 const changePassword = async (req, res) => {
   try {
     const { id } = req.params;
@@ -168,9 +158,7 @@ const changePassword = async (req, res) => {
   }
 };
 
-// ==========================
 // Export
-// ==========================
 module.exports = {
   createAdmin,
   loginAdmin,
