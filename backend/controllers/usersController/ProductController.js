@@ -730,12 +730,12 @@ exports.getProductDetails = async (req, res) => {
         message: "Product not found or inactive",
       });
 
-    // ✅ Fetch variant options from VariantOption table
+    //  Fetch variant options from VariantOption table
     const variation_options = await VariantOption.find({
       product_id: req.params.id,
     }).lean();
 
-    // ✅ Fetch active reviews for the product
+    // Fetch active reviews for the product
     const reviews = await Review.find({
       product_id: req.params.id,
       status: "active",
@@ -743,13 +743,13 @@ exports.getProductDetails = async (req, res) => {
       .populate("user_id", "name profilePicture")
       .sort({ createdAt: -1 });
 
-    // ✅ Calculate average rating
+    //  Calculate average rating
     const totalRatings = reviews.reduce((sum, r) => sum + r.rating, 0);
     const avgRating = reviews.length
       ? (totalRatings / reviews.length).toFixed(1)
       : null;
 
-    // ✅ Include variation_options in the product
+    //  Include variation_options in the product
     product.variation_options = variation_options;
 
     res.json({

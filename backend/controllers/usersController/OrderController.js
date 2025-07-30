@@ -29,11 +29,9 @@ async function placeOrder(req, res) {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ status: false, message: "User not found" });
 
-    const deliveryRes = await axios.get(`${process.env.BASE_URL}/users/business-setup/deliveryCharges`);
-    const deliveryCharge = deliveryRes.data?.deliveryCharges || 0;
-
-    const commissionRes = await axios.get(`${process.env.BASE_URL}/users/business-setup/seller-commission`);
-    const commissionPercent = commissionRes.data?.sellerCommission || 0;
+      const businessSetup = await BussinessSetup.findOne();
+    const deliveryCharge = businessSetup?.deliveryCharges || 0;
+    const commissionPercent = businessSetup?.sellerCommision || 0;
 
     const admin = await Admin.findOne();
     if (!admin) return res.status(500).json({ status: false, message: "Admin config missing" });
@@ -372,12 +370,9 @@ async function placeOrderOnline(req, res) {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ status: false, message: "User not found" });
 
-    const deliveryRes = await axios.get(`${process.env.BASE_URL}/users/business-setup/deliveryCharges`);
-    const deliveryCharge = deliveryRes.data?.deliveryCharges || 0;
-
-    const commissionRes = await axios.get(`${process.env.BASE_URL}/users/business-setup/seller-commission`);
-    const commissionPercent = commissionRes.data?.sellerCommission || 0;
-
+     const businessSetup = await BussinessSetup.findOne();
+    const deliveryCharge = businessSetup?.deliveryCharges || 0;
+    const commissionPercent = businessSetup?.sellerCommision || 0;
     const admin = await Admin.findOne();
     if (!admin) return res.status(500).json({ status: false, message: "Admin config missing" });
 
@@ -733,9 +728,6 @@ async function placeOrderFromWallet(req, res) {
     });
   }
 }
-
-
-
 
 module.exports = {
   placeOrder,
