@@ -150,6 +150,177 @@ exports.getActiveProducts = async (req, res) => {
   }
 };
 
+// exports.offersForYou = async (req, res) => {
+//   try {
+//     const {
+//       limit = 8,
+//       offset = 0,
+//       min_price,
+//       max_price,
+//       min_rating,
+//     } = req.query;
+
+//     const parsedLimit = Math.max(1, parseInt(limit));
+//     const parsedOffset = Math.max(0, parseInt(offset));
+
+//     const filter = {
+//       status: 1,
+//       request_status: 1,
+//       is_offers: true,
+//     };
+
+//     if (min_price || max_price) {
+//       filter.unit_price = {};
+//       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
+//       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
+//     }
+
+//     // Get base product list
+//     let products = await Product.find(filter)
+//       .sort({ created_at: -1 })
+//       .skip(parsedOffset)
+//       .limit(parsedLimit)
+//       .lean();
+
+//     const productIds = products.map((p) => p._id);
+
+//     // Get average ratings
+//     const avgRatings = await Review.aggregate([
+//       { $match: { product_id: { $in: productIds }, status: 'active' } },
+//       {
+//         $group: {
+//           _id: '$product_id',
+//           avgRating: { $avg: '$rating' },
+//         },
+//       },
+//     ]);
+
+//     const ratingMap = {};
+//     for (const r of avgRatings) {
+//       ratingMap[r._id.toString()] = r.avgRating;
+//     }
+
+//     // Attach average rating to products and filter by min_rating if needed
+//     products = products.map((product) => {
+//       const idStr = product._id.toString();
+//       const avg = ratingMap[idStr] || 0;
+
+//       if (min_rating && avg < parseFloat(min_rating)) {
+//         return null;
+//       }
+
+//       return {
+//         ...product,
+//         average_rating: avg,
+//       };
+//     }).filter(Boolean);
+
+//     const total = await Product.countDocuments(filter);
+
+//     res.json({
+//       message: 'Offer products fetched',
+//       data: products,
+//       total,
+//       limit: parsedLimit,
+//       offset: parsedOffset,
+//       totalPages: Math.ceil(total / parsedLimit),
+//     });
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+// exports.trendingProducts = async (req, res) => {
+//   try {
+//     const {
+//       limit = 8,
+//       offset = 0,
+//       min_price,
+//       max_price,
+//       min_rating,
+//     } = req.query;
+
+//     const parsedLimit = Math.max(1, parseInt(limit));
+//     const parsedOffset = Math.max(0, parseInt(offset));
+
+//     const filter = {
+//       status: 1,
+//       request_status: 1,
+//       is_trending: true,
+//     };
+
+//     if (min_price || max_price) {
+//       filter.unit_price = {};
+//       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
+//       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
+//     }
+
+//     // Step 1: Fetch products as plain objects
+//     let products = await Product.find(filter)
+//       .sort({ created_at: -1 })
+//       .skip(parsedOffset)
+//       .limit(parsedLimit)
+//       .populate("seller_id")
+//       .lean(); // ⬅️ Add lean()
+
+//     const productIds = products.map((p) => p._id);
+
+//     // Step 2: Get average ratings
+//     const reviews = await Review.aggregate([
+//       { $match: { product_id: { $in: productIds }, status: "active" } },
+//       {
+//         $group: {
+//           _id: "$product_id",
+//           avgRating: { $avg: "$rating" },
+//         },
+//       },
+//     ]);
+
+//     const ratingMap = {};
+//     for (const r of reviews) {
+//       ratingMap[r._id.toString()] = r.avgRating;
+//     }
+
+//     // Step 3: Attach average_rating to each product
+//     products = products.map((product) => {
+//       const idStr = product._id.toString();
+//       const avg = ratingMap[idStr] || 0;
+
+//       return {
+//         ...product,
+//         average_rating: avg,
+//       };
+//     });
+
+//     // Step 4: Filter by min_rating if needed
+//     if (min_rating !== undefined) {
+//       const minRatingVal = parseFloat(min_rating);
+//       products = products.filter((p) => p.average_rating >= minRatingVal);
+//     }
+
+//     // Step 5: Total count
+//     const total =
+//       min_rating !== undefined ? products.length : await Product.countDocuments(filter);
+
+//     res.json({
+//       message: "Trending products fetched",
+//       data: products,
+//       total,
+//       limit: parsedLimit,
+//       offset: parsedOffset,
+//       totalPages: Math.ceil(total / parsedLimit),
+//     });
+
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+
+// New Products
+
 exports.offersForYou = async (req, res) => {
   try {
     const {
@@ -158,10 +329,12 @@ exports.offersForYou = async (req, res) => {
       min_price,
       max_price,
       min_rating,
+      city,
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
     const parsedOffset = Math.max(0, parseInt(offset));
+    const userCity = city?.toLowerCase();
 
     const filter = {
       status: 1,
@@ -175,22 +348,23 @@ exports.offersForYou = async (req, res) => {
       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
     }
 
-    // Get base product list
+    // Step 1: Fetch products without pagination
     let products = await Product.find(filter)
       .sort({ created_at: -1 })
-      .skip(parsedOffset)
-      .limit(parsedLimit)
+      .populate({
+        path: "seller_id",
+        select: "city name",
+      })
       .lean();
 
+    // Step 2: Get average ratings
     const productIds = products.map((p) => p._id);
-
-    // Get average ratings
     const avgRatings = await Review.aggregate([
-      { $match: { product_id: { $in: productIds }, status: 'active' } },
+      { $match: { product_id: { $in: productIds }, status: "active" } },
       {
         $group: {
-          _id: '$product_id',
-          avgRating: { $avg: '$rating' },
+          _id: "$product_id",
+          avgRating: { $avg: "$rating" },
         },
       },
     ]);
@@ -200,30 +374,40 @@ exports.offersForYou = async (req, res) => {
       ratingMap[r._id.toString()] = r.avgRating;
     }
 
-    // Attach average rating to products and filter by min_rating if needed
-    products = products.map((product) => {
-      const idStr = product._id.toString();
-      const avg = ratingMap[idStr] || 0;
+    // Step 3: Attach average_rating and apply min_rating filter
+    products = products
+      .map((product) => {
+        const avg = ratingMap[product._id.toString()] || 0;
+        if (min_rating && avg < parseFloat(min_rating)) return null;
+        return { ...product, average_rating: avg };
+      })
+      .filter(Boolean);
 
-      if (min_rating && avg < parseFloat(min_rating)) {
-        return null;
+    // Step 4: Prioritize city matches
+    const cityMatched = [];
+    const others = [];
+
+    for (const product of products) {
+      const sellerCity = product.seller_id?.city?.trim()?.toLowerCase() || "";
+      if (userCity && sellerCity === userCity) {
+        cityMatched.push(product);
+      } else {
+        others.push(product);
       }
+    }
 
-      return {
-        ...product,
-        average_rating: avg,
-      };
-    }).filter(Boolean);
+    const sortedProducts = [...cityMatched, ...others];
 
-    const total = await Product.countDocuments(filter);
+    // Step 5: Apply pagination after filtering
+    const paginated = sortedProducts.slice(parsedOffset, parsedOffset + parsedLimit);
 
     res.json({
-      message: 'Offer products fetched',
-      data: products,
-      total,
+      message: "Offer products fetched",
+      data: paginated,
+      total: sortedProducts.length,
       limit: parsedLimit,
       offset: parsedOffset,
-      totalPages: Math.ceil(total / parsedLimit),
+      totalPages: Math.ceil(sortedProducts.length / parsedLimit),
     });
 
   } catch (err) {
@@ -231,6 +415,7 @@ exports.offersForYou = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.trendingProducts = async (req, res) => {
   try {
@@ -240,6 +425,7 @@ exports.trendingProducts = async (req, res) => {
       min_price,
       max_price,
       min_rating,
+      city,
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
@@ -257,13 +443,17 @@ exports.trendingProducts = async (req, res) => {
       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
     }
 
-    // Step 1: Fetch products as plain objects
+    const userCity = city?.toLowerCase();
+
+    // console.log(userCity);
+
     let products = await Product.find(filter)
       .sort({ created_at: -1 })
-      .skip(parsedOffset)
-      .limit(parsedLimit)
-      .populate("seller_id")
-      .lean(); // ⬅️ Add lean()
+      .populate({
+        path: "seller_id",
+        select: "city name",
+      })
+      .lean();
 
     const productIds = products.map((p) => p._id);
 
@@ -283,34 +473,41 @@ exports.trendingProducts = async (req, res) => {
       ratingMap[r._id.toString()] = r.avgRating;
     }
 
-    // Step 3: Attach average_rating to each product
+    // Step 3: Attach average_rating
     products = products.map((product) => {
-      const idStr = product._id.toString();
-      const avg = ratingMap[idStr] || 0;
-
-      return {
-        ...product,
-        average_rating: avg,
-      };
+      const avg = ratingMap[product._id.toString()] || 0;
+      return { ...product, average_rating: avg };
     });
 
-    // Step 4: Filter by min_rating if needed
+    // Step 4: Filter by rating if needed
     if (min_rating !== undefined) {
       const minRatingVal = parseFloat(min_rating);
       products = products.filter((p) => p.average_rating >= minRatingVal);
     }
 
-    // Step 5: Total count
-    const total =
-      min_rating !== undefined ? products.length : await Product.countDocuments(filter);
+    // Step 5: Prioritize by city match
+    const cityMatched = [];
+    const otherProducts = [];
+
+    for (const product of products) {
+      const sellerCity = product.seller_id?.city?.toLowerCase();
+      if (userCity && sellerCity === userCity) {
+        cityMatched.push(product);
+      } else {
+        otherProducts.push(product);
+      }
+    }
+
+    const sortedProducts = [...cityMatched, ...otherProducts];
+    const paginated = sortedProducts.slice(parsedOffset, parsedOffset + parsedLimit);
 
     res.json({
       message: "Trending products fetched",
-      data: products,
-      total,
+      data: paginated,
+      total: sortedProducts.length,
       limit: parsedLimit,
       offset: parsedOffset,
-      totalPages: Math.ceil(total / parsedLimit),
+      totalPages: Math.ceil(sortedProducts.length / parsedLimit),
     });
 
   } catch (err) {
@@ -318,8 +515,6 @@ exports.trendingProducts = async (req, res) => {
   }
 };
 
-
-// New Products
 exports.getNewProducts = async (req, res) => {
   try {
     const {
@@ -609,6 +804,112 @@ exports.getProductsByCategory = async (req, res) => {
 //   }
 // };
 
+// exports.getProductsBySubCategory = async (req, res) => {
+//   try {
+//     const {
+//       limit = 20,
+//       offset = 0,
+//       min_price,
+//       max_price,
+//       min_rating,
+//     } = req.query;
+
+//     const parsedLimit = Math.max(1, parseInt(limit));
+//     const parsedOffset = Math.max(0, parseInt(offset));
+
+//     const filter = {
+//       status: 1,
+//       request_status: 1,
+//       sub_category_id: req.params.sub_category_id,
+//     };
+
+//     // Price filtering
+//     if (min_price || max_price) {
+//       filter.unit_price = {};
+//       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
+//       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
+//     }
+
+//     // Step 1: Fetch products
+//     let products = await Product.find(filter)
+//       .sort({ created_at: -1 })
+//       .skip(parsedOffset)
+//       .limit(parsedLimit)
+//       .lean();
+
+//     const productIds = products.map((p) => p._id);
+
+//     // Step 2: Get average ratings
+//     const reviews = await Review.aggregate([
+//       { $match: { product_id: { $in: productIds }, status: "active" } },
+//       {
+//         $group: {
+//           _id: "$product_id",
+//           avgRating: { $avg: "$rating" },
+//         },
+//       },
+//     ]);
+
+//     const ratingMap = {};
+//     for (const r of reviews) {
+//       ratingMap[r._id.toString()] = r.avgRating;
+//     }
+
+//     // Step 3: Attach average_rating to each product
+//     products = products.map((product) => {
+//       const idStr = product._id.toString();
+//       const avg = ratingMap[idStr] || 0;
+
+//       return {
+//         ...product,
+//         average_rating: avg,
+//       };
+//     });
+
+//     // Step 4: Filter by min_rating
+//     if (min_rating !== undefined) {
+//       const minRatingVal = parseFloat(min_rating);
+//       products = products.filter((p) => p.average_rating >= minRatingVal);
+//     }
+
+//     // Step 5: Fetch variation options for final products
+//     const filteredProductIds = products.map((p) => p._id);
+//     const variantOptions = await VariantOption.find({
+//       product_id: { $in: filteredProductIds },
+//     }).lean();
+
+//     const grouped = {};
+//     for (const variant of variantOptions) {
+//       const pid = variant.product_id.toString();
+//       if (!grouped[pid]) grouped[pid] = [];
+//       grouped[pid].push(variant);
+//     }
+
+//     const enrichedProducts = products.map((prod) => ({
+//       ...prod,
+//       variation_options: grouped[prod._id.toString()] || [],
+//     }));
+
+//     const total =
+//       min_rating !== undefined
+//         ? enrichedProducts.length
+//         : await Product.countDocuments(filter);
+
+//     res.json({
+//       message: "Sub-category-wise products fetched",
+//       data: enrichedProducts,
+//       total,
+//       limit: parsedLimit,
+//       offset: parsedOffset,
+//       totalPages: Math.ceil(total / parsedLimit),
+//     });
+
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+
 exports.getProductsBySubCategory = async (req, res) => {
   try {
     const {
@@ -617,6 +918,7 @@ exports.getProductsBySubCategory = async (req, res) => {
       min_price,
       max_price,
       min_rating,
+      city,
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
@@ -628,18 +930,21 @@ exports.getProductsBySubCategory = async (req, res) => {
       sub_category_id: req.params.sub_category_id,
     };
 
-    // Price filtering
     if (min_price || max_price) {
       filter.unit_price = {};
       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
     }
 
-    // Step 1: Fetch products
+    const userCity = city?.trim().toLowerCase();
+
+    // Step 1: Fetch products with seller info
     let products = await Product.find(filter)
       .sort({ created_at: -1 })
-      .skip(parsedOffset)
-      .limit(parsedLimit)
+      .populate({
+        path: "seller_id",
+        select: "city name",
+      })
       .lean();
 
     const productIds = products.map((p) => p._id);
@@ -660,15 +965,11 @@ exports.getProductsBySubCategory = async (req, res) => {
       ratingMap[r._id.toString()] = r.avgRating;
     }
 
-    // Step 3: Attach average_rating to each product
+    // Step 3: Attach average_rating
     products = products.map((product) => {
       const idStr = product._id.toString();
       const avg = ratingMap[idStr] || 0;
-
-      return {
-        ...product,
-        average_rating: avg,
-      };
+      return { ...product, average_rating: avg };
     });
 
     // Step 4: Filter by min_rating
@@ -677,10 +978,27 @@ exports.getProductsBySubCategory = async (req, res) => {
       products = products.filter((p) => p.average_rating >= minRatingVal);
     }
 
-    // Step 5: Fetch variation options for final products
-    const filteredProductIds = products.map((p) => p._id);
+    // Step 5: City-wise prioritization
+    const cityMatched = [];
+    const otherProducts = [];
+
+    for (const product of products) {
+      const sellerCity = product.seller_id?.city?.trim().toLowerCase() || "";
+      if (userCity && sellerCity === userCity) {
+        cityMatched.push(product);
+      } else {
+        otherProducts.push(product);
+      }
+    }
+
+    const sortedProducts = [...cityMatched, ...otherProducts];
+
+    // Step 6: Fetch variant options for visible products
+    const paginated = sortedProducts.slice(parsedOffset, parsedOffset + parsedLimit);
+    const paginatedIds = paginated.map((p) => p._id);
+
     const variantOptions = await VariantOption.find({
-      product_id: { $in: filteredProductIds },
+      product_id: { $in: paginatedIds },
     }).lean();
 
     const grouped = {};
@@ -690,23 +1008,18 @@ exports.getProductsBySubCategory = async (req, res) => {
       grouped[pid].push(variant);
     }
 
-    const enrichedProducts = products.map((prod) => ({
+    const enrichedProducts = paginated.map((prod) => ({
       ...prod,
       variation_options: grouped[prod._id.toString()] || [],
     }));
 
-    const total =
-      min_rating !== undefined
-        ? enrichedProducts.length
-        : await Product.countDocuments(filter);
-
     res.json({
       message: "Sub-category-wise products fetched",
       data: enrichedProducts,
-      total,
+      total: sortedProducts.length,
       limit: parsedLimit,
       offset: parsedOffset,
-      totalPages: Math.ceil(total / parsedLimit),
+      totalPages: Math.ceil(sortedProducts.length / parsedLimit),
     });
 
   } catch (err) {
@@ -730,12 +1043,10 @@ exports.getProductDetails = async (req, res) => {
         message: "Product not found or inactive",
       });
 
-    //  Fetch variant options from VariantOption table
     const variation_options = await VariantOption.find({
       product_id: req.params.id,
     }).lean();
 
-    // Fetch active reviews for the product
     const reviews = await Review.find({
       product_id: req.params.id,
       status: "active",
@@ -743,13 +1054,12 @@ exports.getProductDetails = async (req, res) => {
       .populate("user_id", "name profilePicture")
       .sort({ createdAt: -1 });
 
-    //  Calculate average rating
     const totalRatings = reviews.reduce((sum, r) => sum + r.rating, 0);
     const avgRating = reviews.length
       ? (totalRatings / reviews.length).toFixed(1)
       : null;
 
-    //  Include variation_options in the product
+
     product.variation_options = variation_options;
 
     res.json({

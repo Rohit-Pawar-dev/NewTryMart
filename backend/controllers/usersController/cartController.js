@@ -212,11 +212,11 @@ module.exports = {
       });
 
       // Remove the product from wishlist if it exists
-await Wishlist.deleteOne({
-  userId: userId,
-  productId: productId,
-  variantValues: selectedVariant && Object.keys(selectedVariant).length > 0 ? selectedVariant : null,
-});
+      await Wishlist.deleteOne({
+        userId: userId,
+        productId: productId,
+        variantValues: selectedVariant && Object.keys(selectedVariant).length > 0 ? selectedVariant : null,
+      });
 
 
       res.json({

@@ -152,4 +152,35 @@ export class SellerProductListComponent implements OnInit {
       this.loadProducts();
     }
   }
+
+  
+  toggleOffer(product: Product): void {
+    const updatedValue = !product.is_offers;
+    this.productService.updateProduct(product._id!, { is_offers: updatedValue }).subscribe({
+      next: () => {
+        product.is_offers = updatedValue;
+        Swal.fire('Updated', `Offer ${updatedValue ? 'enabled' : 'disabled'}`, 'success');
+      },
+      error: (err) => {
+        console.error('Toggle Offer Error:', err);
+        Swal.fire('Error', 'Failed to update offer status', 'error');
+      }
+    });
+  }
+
+  toggleTrending(product: Product): void {
+    const updatedValue = !product.is_trending;
+    this.productService.updateProduct(product._id!, { is_trending: updatedValue }).subscribe({
+      next: () => {
+        product.is_trending = updatedValue;
+        Swal.fire('Updated', `Trending ${updatedValue ? 'enabled' : 'disabled'}`, 'success');
+      },
+      error: (err) => {
+        console.error('Toggle Trending Error:', err);
+        Swal.fire('Error', 'Failed to update trending status', 'error');
+      }
+    });
+  }
+
+
 }
