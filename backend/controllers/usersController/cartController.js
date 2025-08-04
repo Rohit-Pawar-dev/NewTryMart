@@ -1,8 +1,8 @@
 const Cart = require("../../models/Cart");
 const Product = require("../../models/Product");
 const VariantOption = require("../../models/VariantOption");
-const mongoose = require("mongoose");
-
+const Mongoose = require("mongoose");
+const Wishlist = require("../../models/wishlist");
 module.exports = {
   async getCart(req, res) {
     const userId = req.params.userId;
@@ -121,105 +121,6 @@ module.exports = {
     }
   },
 
-  // Add to cart or update quantity if already exists
-  // async addToCart(req, res) {
-  //   const { userId, productId, variantId, is_variant, quantity = 1 } = req.body;
-
-  //   if (!userId || !productId) {
-  //     return res
-  //       .status(400)
-  //       .json({ status: false, message: "userId and productId are required" });
-  //   }
-
-  //   try {
-  //     const product = await Product.findById(productId);
-  //     if (!product) {
-  //       return res
-  //         .status(404)
-  //         .json({ status: false, message: "Product not found" });
-  //     }
-
-  //     let variant = null;
-  //     let finalPrice = product.unit_price;
-  //     let stock = product.current_stock;
-  //     let selectedVariant = null;
-
-  //     // ✅ Variant logic
-  //     if (is_variant && variantId) {
-  //       variant = await VariantOption.findOne({
-  //         _id: variantId,
-  //         product_id: productId,
-  //       });
-
-  //       if (!variant) {
-  //         return res
-  //           .status(404)
-  //           .json({ status: false, message: "Variant not found" });
-  //       }
-
-  //       finalPrice = variant.price;
-  //       stock = variant.stock;
-
-  //       selectedVariant =
-  //         variant?.options && Object.keys(variant.options).length > 0
-  //           ? variant.options
-  //           : {};
-  //     }
-
-  //     // ✅ Find existing cart item using variant_id instead of selected_variant
-  //     const existingItem = await Cart.findOne({
-  //       customer_id: userId,
-  //       product_id: productId,
-  //       variant_id: is_variant ? variantId : null,
-  //     });
-
-  //     if (existingItem) {
-  //       if (existingItem.save_for_later === true) {
-  //         // Replace if saved for later
-  //         await Cart.deleteOne({ _id: existingItem._id });
-  //       } else {
-  //         return res.status(400).json({
-  //           status: false,
-  //           message: "Product already in cart.",
-  //         });
-  //       }
-  //     }
-
-  //     if (quantity > stock) {
-  //       return res.status(400).json({
-  //         status: false,
-  //         message: `Only ${stock} units available in stock`,
-  //       });
-  //     }
-
-  //     const cartItem = await Cart.create({
-  //       customer_id: userId,
-  //       product_id: productId,
-  //       variant_id: is_variant ? variantId : null,
-  //       is_variant: !!is_variant,
-  //       selected_variant: selectedVariant,
-  //       quantity,
-  //       total_price: finalPrice,
-  //       unit_price: finalPrice,
-  //       name: product.name,
-  //       tax: product.tax || 0,
-  //       discount: product.discount,
-  //       discount_type: product.discount_type,
-  //       thumbnail: product.thumbnail,
-  //       seller_id: product.seller_id,
-  //       seller_is: product.added_by || "admin",
-  //     });
-
-  //     res.json({
-  //       status: true,
-  //       message: "Product added to cart",
-  //       data: cartItem,
-  //     });
-  //   } catch (error) {
-  //     console.error("Add to cart error:", error);
-  //     res.status(500).json({ status: false, message: error.message });
-  //   }
-  // },
   async addToCart(req, res) {
     const { userId, productId, variantId, is_variant, quantity = 1 } = req.body;
 
@@ -262,12 +163,12 @@ module.exports = {
             : {};
       }
 
-      // ✅ Create a variant key (for uniqueness)
+      //  Create a variant key (for uniqueness)
       const variantKey = is_variant && variantId
         ? `${productId}_${variantId}`
         : `${productId}_default`;
 
-      // ✅ Check for existing cart item
+      // Check for existing cart item
       const existingItem = await Cart.findOne({
         customer_id: userId,
         variant_key: variantKey,
@@ -307,8 +208,16 @@ module.exports = {
         thumbnail: product.thumbnail,
         seller_id: product.seller_id,
         seller_is: product.added_by || "admin",
-        variant_key: variantKey, // ✅ added here
+        variant_key: variantKey,
       });
+
+      // Remove the product from wishlist if it exists
+await Wishlist.deleteOne({
+  userId: userId,
+  productId: productId,
+  variantValues: selectedVariant && Object.keys(selectedVariant).length > 0 ? selectedVariant : null,
+});
+
 
       res.json({
         status: true,
