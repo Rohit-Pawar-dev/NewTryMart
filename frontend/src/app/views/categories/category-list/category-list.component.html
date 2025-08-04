@@ -34,7 +34,9 @@
             <td>{{ category.name }}</td>
             <td>
               <span class="table-img">
-                <img [src]="category.image" class="img-thumbnail" />
+                <!-- <img [src]="category.image" class="img-thumbnail" /> -->
+                <img [src]="category.image|| 'assets/images/default-product.jpg'" [alt]="category.name" class="img-thumbnail"
+                  (error)="onImageError($event)" />
               </span>
             </td>
             <td>

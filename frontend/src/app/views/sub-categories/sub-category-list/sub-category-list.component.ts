@@ -23,7 +23,7 @@ export class SubCategoryListComponent implements OnInit {
   categoriesMap: { [id: string]: string } = {};
   searchTerm = '';
   isLoading = false;
-   mediaBaseUrl = environment.mediaUrl; 
+  mediaBaseUrl = environment.mediaUrl;
 
   // Pagination properties
   page = 1;
@@ -65,15 +65,15 @@ export class SubCategoryListComponent implements OnInit {
         search: this.searchTerm,
         page: this.page,
         pageSize: this.pageSize,
-        all: true, 
+        all: true,
       })
       .subscribe({
         next: (res) => {
           // res shape: { data: SubCategory[], total: number, ... }
-           this.subCategories = res.data.map((subCat) => ({
-          ...subCat,
-          image: subCat.image ? this.mediaBaseUrl + subCat.image : '',
-        }));
+          this.subCategories = res.data.map((subCat) => ({
+            ...subCat,
+            image: subCat.image ? this.mediaBaseUrl + subCat.image : '',
+          }));
           this.totalRecords = res.total;
           this.totalPages = Math.ceil(res.total / this.pageSize);
           this.isLoading = false;
@@ -142,5 +142,10 @@ export class SubCategoryListComponent implements OnInit {
       return cat.name;
     }
     return cat && this.categoriesMap[cat] ? this.categoriesMap[cat] : 'N/A';
+  }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/images/default-product.jpg';
   }
 }

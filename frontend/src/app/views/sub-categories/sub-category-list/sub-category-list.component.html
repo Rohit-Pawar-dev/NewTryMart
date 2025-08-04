@@ -39,11 +39,14 @@
             <td>{{ getCategoryName(sub.category_id) }}</td>
             <td>
               <span class="table-img">
-                <img
+                <!-- <img
                   [src]="sub.image"
                   class="img-thumbnail"
                   alt="SubCategory Image"
-                />
+                /> -->
+
+                <img [src]="sub.image|| 'assets/images/default-product.jpg'" [alt]="sub.name" class="img-thumbnail"
+                  (error)="onImageError($event)" />
               </span>
             </td>
             <td>

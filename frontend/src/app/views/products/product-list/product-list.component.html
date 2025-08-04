@@ -48,7 +48,10 @@
 
             <td>
               <span class="table-img">
-                <img [src]="product.thumbnail" class="img-thumbnail" />
+                <!-- <img [src]="product.thumbnail" class="img-thumbnail" /> -->
+                <img [src]="product.thumbnail|| 'assets/images/default-product.jpg'" [alt]="product.name" class="img-thumbnail"
+                  (error)="onImageError($event)" />
+
               </span>
             </td>
             <td>{{ product.name }}</td>

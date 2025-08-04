@@ -293,4 +293,9 @@ export class ProductListComponent implements OnInit {
     );
     return [headers, ...rows].join('\r\n');
   }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/images/default-product.jpg';
+  }
 }

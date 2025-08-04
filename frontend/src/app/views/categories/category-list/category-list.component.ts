@@ -18,7 +18,7 @@ export class CategoryListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
   public Math = Math;
-   mediaBaseUrl = environment.mediaUrl;
+  mediaBaseUrl = environment.mediaUrl;
 
   // Pagination properties
   page = 1;
@@ -48,7 +48,7 @@ export class CategoryListComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-           this.categories = res.data.map((category) => ({
+          this.categories = res.data.map((category) => ({
             ...category,
             image: this.mediaBaseUrl + category.image,
           }));
@@ -125,5 +125,10 @@ export class CategoryListComponent implements OnInit {
           Swal.fire('Error', 'Failed to update category status', 'error');
         },
       });
+  }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/images/default-product.jpg';
   }
 }
