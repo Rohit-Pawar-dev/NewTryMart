@@ -42,45 +42,45 @@ export class ProductListComponent implements OnInit {
       search: this.searchTerm,
       added_by: 'admin',
     };
-this.productService.getAllProducts(queryParams).subscribe({
-  next: (res) => {
-    const prependBase = (path: string) =>
-      path && !/^https?:\/\//i.test(path) ? this.mediaUrl+path : path;
+    this.productService.getAllProducts(queryParams).subscribe({
+      next: (res) => {
+        const prependBase = (path: string) =>
+          path && !/^https?:\/\//i.test(path) ? this.mediaUrl + path : path;
 
-    this.products = (res.data || []).map((product: any) => {
-      return {
-        ...product,
-        thumbnail: prependBase(product.thumbnail),
-        images: (product.images || []).map(prependBase),
-        category_id: product.category_id
-          ? {
-              ...product.category_id,
-              image: prependBase(product.category_id.image),
-            }
-          : null,
-        sub_category_id: product.sub_category_id
-          ? {
-              ...product.sub_category_id,
-              image: prependBase(product.sub_category_id.image),
-            }
-          : null,
-        variation_options: (product.variation_options || []).map((opt: any) => ({
-          ...opt,
-          images: (opt.images || []).map(prependBase),
-        })),
-      };
+        this.products = (res.data || []).map((product: any) => {
+          return {
+            ...product,
+            thumbnail: prependBase(product.thumbnail),
+            images: (product.images || []).map(prependBase),
+            category_id: product.category_id
+              ? {
+                ...product.category_id,
+                image: prependBase(product.category_id.image),
+              }
+              : null,
+            sub_category_id: product.sub_category_id
+              ? {
+                ...product.sub_category_id,
+                image: prependBase(product.sub_category_id.image),
+              }
+              : null,
+            variation_options: (product.variation_options || []).map((opt: any) => ({
+              ...opt,
+              images: (opt.images || []).map(prependBase),
+            })),
+          };
+        });
+
+        this.totalItems = res.total || 0;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading products:', err);
+        this.isLoading = false;
+        Swal.fire('Error', 'Failed to load products', 'error');
+      },
     });
-
-    this.totalItems = res.total || 0;
-    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-    this.isLoading = false;
-  },
-  error: (err) => {
-    console.error('Error loading products:', err);
-    this.isLoading = false;
-    Swal.fire('Error', 'Failed to load products', 'error');
-  },
-});
 
 
   }
@@ -134,6 +134,35 @@ this.productService.getAllProducts(queryParams).subscribe({
     });
   }
 
+  toggleOffer(product: Product): void {
+    const updatedValue = !product.is_offers;
+    this.productService.updateProduct(product._id!, { is_offers: updatedValue }).subscribe({
+      next: () => {
+        product.is_offers = updatedValue;
+        Swal.fire('Updated', `Offer ${updatedValue ? 'enabled' : 'disabled'}`, 'success');
+      },
+      error: (err) => {
+        console.error('Toggle Offer Error:', err);
+        Swal.fire('Error', 'Failed to update offer status', 'error');
+      }
+    });
+  }
+
+  toggleTrending(product: Product): void {
+    const updatedValue = !product.is_trending;
+    this.productService.updateProduct(product._id!, { is_trending: updatedValue }).subscribe({
+      next: () => {
+        product.is_trending = updatedValue;
+        Swal.fire('Updated', `Trending ${updatedValue ? 'enabled' : 'disabled'}`, 'success');
+      },
+      error: (err) => {
+        console.error('Toggle Trending Error:', err);
+        Swal.fire('Error', 'Failed to update trending status', 'error');
+      }
+    });
+  }
+
+
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -176,7 +205,7 @@ this.productService.getAllProducts(queryParams).subscribe({
     });
 
     const queryParams = {
-      limit: 1000000, // fetch all products
+      limit: 1000000, 
       offset: 0,
       added_by: 'admin'
     };

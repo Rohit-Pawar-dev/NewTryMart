@@ -6,15 +6,13 @@ const AddressController = {
     try {
       const { customer_id, is_default } = req.body;
 
-      // Check if user already has any addresses
+
       const existingAddresses = await Address.find({ customer_id });
 
-      // If no existing addresses, force is_default to true
+
       if (existingAddresses.length === 0) {
         req.body.is_default = true;
       }
-
-      // If is_default is true, unset previous default addresses for user
       if (req.body.is_default) {
         await Address.updateMany(
           { customer_id },

@@ -25,6 +25,8 @@ export interface Product {
   request_status?: number;
   created_at?: string;
   sku_code?: string;
+  is_trending?:boolean;
+  is_offers?: boolean;
   unit?: string;
   updated_at?: string;
   variants?: {
