@@ -36,7 +36,7 @@ exports.getCoupons = async (req, res) => {
 
     // filter to search couponTitle, and optionally filter active coupons only
     const filter = {
-      ...(all === "true" ? {} : { expireDate: { $gte: new Date() } }), // example filter: only non-expired coupons if all != true
+      ...(all === "true" ? {} : { expireDate: { $gte: new Date() } }),
       couponTitle: { $regex: search, $options: "i" },
     };
 
@@ -71,24 +71,7 @@ exports.getCouponById = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
-// exports.getCouponById = async (req, res) => {
-//   try {
-//     const coupon = await Coupon.findById(req.params.id);
-//     if (!coupon) {
-//       return res.status(404).json({ status: false, message: 'Coupon not found' });
-//     }
-//     res.json({
-//       status: true,
-//       message: 'Coupon fetched successfully',
-//       data: coupon
-//     });
-//   } catch (error) {
-//     res.status(500).json({ status: false, message: 'Internal server error' });
-//   }
-// };
-
-// UPDATE coupon by ID
+ 
 exports.updateCoupon = async (req, res) => {
   try {
     const coupon = await Coupon.findByIdAndUpdate(req.params.id, req.body, {
@@ -110,7 +93,6 @@ exports.updateCoupon = async (req, res) => {
   }
 };
 
-// DELETE coupon by ID
 exports.deleteCoupon = async (req, res) => {
   try {
     const coupon = await Coupon.findByIdAndDelete(req.params.id);
@@ -128,7 +110,6 @@ exports.deleteCoupon = async (req, res) => {
   }
 };
 
-// GENERATE coupon code
 exports.generateCouponCode = (req, res) => {
   const code = generateCouponCode(8);
   res.json({

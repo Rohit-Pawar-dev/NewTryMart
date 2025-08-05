@@ -1,10 +1,10 @@
-const User = require("../../models/User"); 
+const User = require("../../models/User");
 const WalletTransaction = require("../../models/WalletTransaction");
 
 // Add money (Credit)
 exports.addMoneyToWallet = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user?.id;
         const { amount, description } = req.body;
 
         if (!amount || amount <= 0) {
@@ -36,7 +36,7 @@ exports.addMoneyToWallet = async (req, res) => {
 // Deduct money (Debit)
 exports.debitMoneyFromWallet = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user?.id;
         const { amount, description } = req.body;
 
         if (!amount || amount <= 0) {
@@ -72,7 +72,7 @@ exports.debitMoneyFromWallet = async (req, res) => {
 // Get current wallet balance
 exports.getWalletBalance = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user?.id;
 
         const user = await User.findById(userId).select("wallet_amount");
         if (!user) return res.status(404).json({ message: "User not found" });
@@ -84,46 +84,31 @@ exports.getWalletBalance = async (req, res) => {
     }
 };
 
-// Get wallet transactions
-// exports.getWalletTransactions = async (req, res) => {
-//     try {
-//         const { userId } = req.params;
-
-//         const transactions = await WalletTransaction.find({ user: userId })
-//             .sort({ createdAt: -1 });
-
-//         res.json({ transactions });
-//     } catch (error) {
-//         console.error("Get transactions error:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// };
-
 exports.getWalletTransactions = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = parseInt(req.query.offset) || 0;
+    try {
+        const userId = req.user?.id;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = parseInt(req.query.offset) || 0;
 
-    const filter = { user: userId };
+        const filter = { user: userId };
 
-    const total = await WalletTransaction.countDocuments(filter);
-    const transactions = await WalletTransaction.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(offset)
-      .limit(limit);
+        const total = await WalletTransaction.countDocuments(filter);
+        const transactions = await WalletTransaction.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit);
 
-    res.json({
-      status: true,
-      message: "Transactions fetched successfully",
-      transactions,
-      total,
-      limit,
-      offset,
-      totalPages: Math.ceil(total / limit),
-    });
-  } catch (error) {
-    console.error("Get transactions error:", error);
-    res.status(500).json({ status: false, message: "Internal server error" });
-  }
+        res.json({
+            status: true,
+            message: "Transactions fetched successfully",
+            transactions,
+            total,
+            limit,
+            offset,
+            totalPages: Math.ceil(total / limit),
+        });
+    } catch (error) {
+        console.error("Get transactions error:", error);
+        res.status(500).json({ status: false, message: "Internal server error" });
+    }
 };

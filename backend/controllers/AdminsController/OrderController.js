@@ -82,8 +82,8 @@ async function getOrders(req, res) {
   }
 }
 
-// Get Single Order by ID
-async function getOrderById(req, res) {
+
+const getOrderById = async (req, res) => {
   try {
     let order = await Order.findById(req.params.id)
       .populate("customer_id", "name email mobile profilePicture")
@@ -98,21 +98,42 @@ async function getOrderById(req, res) {
       });
 
     if (!order) {
-      return res
-        .status(404)
-        .json({ status: false, message: "Order not found" });
+      return res.status(404).json({ status: false, message: "Order not found" });
     }
 
-    // 👇 Convert to plain object to append custom data
+    // Convert to plain object
     order = order.toObject();
 
-    // 👇 Count total orders by the same customer
+    // Count customer's total orders
     const orderCount = await Order.countDocuments({
       customer_id: order.customer_id._id,
     });
-
-    // 👇 Attach order count
     order.customer_order_count = orderCount;
+
+    // Use stored values for accurate breakdown
+    let subtotal = 0;
+    let totalDiscount = 0;
+    let totalTax = 0;
+
+    for (const item of order.order_items) {
+      subtotal += item.unit_price * item.quantity;
+      totalDiscount += (item.discount || 0) * item.quantity;
+      totalTax += (item.tax || 0) * item.quantity;
+    }
+
+    const couponAmount = order.coupon_amount || 0;
+    const deliveryCharge = order.delivery_charge || 0;
+
+    const finalPayable = subtotal - totalDiscount + totalTax - couponAmount + deliveryCharge;
+
+    order.breakdown = {
+      subtotal: parseFloat(subtotal.toFixed(2)),
+      totalDiscount: parseFloat(totalDiscount.toFixed(2)),
+      totalTax: parseFloat(totalTax.toFixed(2)),
+      couponAmount: parseFloat(couponAmount.toFixed(2)),
+      deliveryCharge: parseFloat(deliveryCharge.toFixed(2)),
+      finalPayable: parseFloat(finalPayable.toFixed(2)),
+    };
 
     return res.status(200).json({
       status: true,
@@ -123,14 +144,15 @@ async function getOrderById(req, res) {
     console.error("Error fetching order by ID", err);
     return res.status(500).json({ status: false, message: "Server error" });
   }
-}
+};
+
 
 const getTransactions = async (req, res) => {
   try {
     const searchText = req.query.search || "";
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
-    const paymentStatus = req.query.status; // Optional filter
+    const paymentStatus = req.query.status; 
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
 
@@ -205,10 +227,6 @@ const getTransactions = async (req, res) => {
     });
   }
 };
-
-
-
-
 module.exports = {
   getOrders,
   getOrderById,

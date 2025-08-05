@@ -1,6 +1,8 @@
 const Product = require("../../models/Product");
 const Review = require("../../models/Review");
 const VariantOption = require("../../models/VariantOption");
+const Wishlist = require("../../models/wishlist");
+const Cart = require("../../models/Cart");
 
 // Frontend
 
@@ -329,12 +331,11 @@ exports.offersForYou = async (req, res) => {
       min_price,
       max_price,
       min_rating,
-      city,
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
     const parsedOffset = Math.max(0, parseInt(offset));
-    const userCity = city?.toLowerCase();
+    const userCity = req.user?.city.toLowerCase();
 
     const filter = {
       status: 1,
@@ -425,7 +426,6 @@ exports.trendingProducts = async (req, res) => {
       min_price,
       max_price,
       min_rating,
-      city,
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
@@ -443,8 +443,7 @@ exports.trendingProducts = async (req, res) => {
       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
     }
 
-    const userCity = city?.toLowerCase();
-
+    const userCity = req.user?.city.toLowerCase();
     // console.log(userCity);
 
     let products = await Product.find(filter)
@@ -918,7 +917,6 @@ exports.getProductsBySubCategory = async (req, res) => {
       min_price,
       max_price,
       min_rating,
-      city,
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
@@ -936,7 +934,8 @@ exports.getProductsBySubCategory = async (req, res) => {
       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
     }
 
-    const userCity = city?.trim().toLowerCase();
+    // const userCity = city?.trim().toLowerCase();
+      const userCity = req.user?.city.toLowerCase();
 
     // Step 1: Fetch products with seller info
     let products = await Product.find(filter)
@@ -1027,8 +1026,57 @@ exports.getProductsBySubCategory = async (req, res) => {
   }
 };
 
+// exports.getProductDetails = async (req, res) => {
+//   try {
+//     const product = await Product.findOne({
+//       _id: req.params.id,
+//       status: 1,
+//       request_status: 1,
+//     })
+//       .populate("seller_id", "shop_name logo")
+//       .lean();
+
+//     if (!product)
+//       return res.status(404).json({
+//         status: false,
+//         message: "Product not found or inactive",
+//       });
+
+//     const variation_options = await VariantOption.find({
+//       product_id: req.params.id,
+//     }).lean();
+
+//     const reviews = await Review.find({
+//       product_id: req.params.id,
+//       status: "active",
+//     })
+//       .populate("user_id", "name profilePicture")
+//       .sort({ createdAt: -1 });
+
+//     const totalRatings = reviews.reduce((sum, r) => sum + r.rating, 0);
+//     const avgRating = reviews.length
+//       ? (totalRatings / reviews.length).toFixed(1)
+//       : null;
+
+
+//     product.variation_options = variation_options;
+
+//     res.json({
+//       status: true,
+//       product,
+//       reviews,
+//       average_rating: avgRating,
+//       total_reviews: reviews.length,
+//     });
+//   } catch (err) {
+//     res.status(400).json({ status: false, message: err.message });
+//   }
+// };
 exports.getProductDetails = async (req, res) => {
   try {
+    const userId = req.user?.id;
+    // const userId = req.user && req.user.id ? req.user.id : null;
+
     const product = await Product.findOne({
       _id: req.params.id,
       status: 1,
@@ -1059,12 +1107,59 @@ exports.getProductDetails = async (req, res) => {
       ? (totalRatings / reviews.length).toFixed(1)
       : null;
 
-
+    // Add variation options to product
     product.variation_options = variation_options;
+
+    // Default values if user not logged in
+    let cartItems = [];
+    let wishlistItems = [];
+    // console.log("userId >>>>", userId);
+
+    if (userId) {
+      // Find cart items for this user and product
+      cartItems = await Cart.find({
+
+        customer_id: userId,
+        product_id: req.params.id,
+      }).lean();
+
+      // Find wishlist items for this user and product
+      wishlistItems = await Wishlist.find({
+
+        userId: userId,
+        productId: req.params.id,
+      }).lean();
+      // console.log(req.params.id);
+      // console.log("...............", cartItems);
+      // console.log("........", wishlistItems);
+    }
+    product.variation_options = variation_options.map((option) => {
+      const inCart = cartItems.some(
+        (item) =>
+          item.variant_option_id?.toString() === option._id.toString()
+      );
+      const inWishlist = wishlistItems.some(
+        (item) =>
+          item.variant_option_id?.toString() === option._id.toString()
+      );
+
+      return {
+        ...option,
+        in_cart: inCart,
+        in_wishlist: inWishlist,
+      };
+    });
+
+    const productInCart = cartItems.some((item) => !item.variant_option_id);
+    const productInWishlist = wishlistItems.some((item) => !item.variant_option_id);
 
     res.json({
       status: true,
-      product,
+      product: {
+        ...product,
+        in_cart: productInCart,
+        in_wishlist: productInWishlist,
+      },
       reviews,
       average_rating: avgRating,
       total_reviews: reviews.length,

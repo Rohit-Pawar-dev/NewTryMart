@@ -14,7 +14,7 @@ const wishlistSchema = new Schema({
     },
     variantValues: {
         type: Map,
-        of: String, 
+        of: String,
         default: null,
     },
     addedAt: {
@@ -25,6 +25,6 @@ const wishlistSchema = new Schema({
     timestamps: true,
 });
 
-wishlistSchema.index({ userId: 1, productId: 1, variantValues: 1 }, { unique: true }); 
+wishlistSchema.index({ userId: 1, productId: 1, variantValues: 1 }, { unique: true });
 
 module.exports = mongoose.model('Wishlist', wishlistSchema);

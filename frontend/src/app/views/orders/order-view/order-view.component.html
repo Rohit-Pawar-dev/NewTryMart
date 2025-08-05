@@ -25,9 +25,9 @@
             <div>
               <strong>Payment Status: </strong>
               <span [ngClass]="{
-                  'text-success fw-bold': o.payment_status === 'Paid',
-                  'text-danger fw-bold': o.payment_status === 'Unpaid'
-                }">
+                'text-success fw-bold': o.payment_status === 'Paid',
+                'text-danger fw-bold': o.payment_status === 'Unpaid'
+              }">
                 {{ o.payment_status }}
               </span>
             </div>
@@ -37,7 +37,7 @@
 
       <!-- Linked Orders Placeholder -->
       <div class="mb-3">
-        <span class="badge bg-primary primary text-white">Linked Orders (0)</span>
+        <span class="badge bg-primary text-white">Linked Orders (0)</span>
       </div>
 
       <!-- Item Table -->
@@ -49,7 +49,7 @@
               <th>Item Details</th>
               <th>Tax</th>
               <th>Discount</th>
-              <th>Price</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -61,18 +61,25 @@
                   <div>
                     <div class="fw-semibold">{{ item.name }}</div>
                     <div class="small text-success">
-                      Price : {{ item.unit_price | number : "1.2-2" }}₹
+                      Price: {{ item.unit_price | number : "1.2-2" }}₹
                     </div>
                     <div class="text-muted small">
-                      Qty : {{ item.quantity }}
+                      Qty: {{ item.quantity }}
                     </div>
                   </div>
                 </div>
               </td>
               <td>
-                <div class="small text-success">{{ item.tax || 0 }}₹</div>
+                <div class="small text-success">
+                  {{ item.tax || 0 }}{{ item.tax ? '%' : '' }}
+                </div>
               </td>
-              <td>{{ item.discount || 0 }}₹</td>
+              <td>
+                <div class="small text-danger">
+                  {{ item.product_detail.discount || 0 }}
+                  {{ item.product_detail.discount_type === 'percent' ? '%' : '₹' }}
+                </div>
+              </td>
               <td>{{ item.total_price | number : "1.2-2" }}₹</td>
             </tr>
           </tbody>
@@ -80,22 +87,37 @@
       </div>
 
       <!-- Totals -->
-      <div class="mt-3">
+      <div class="mt-3" *ngIf="order.breakdown as b">
         <div class="d-flex justify-content-between">
-          <div>Shipping</div>
-          <div><strong>0.00₹</strong></div>
+          <div>Subtotal</div>
+          <div><strong>{{ b.subtotal | number : "1.2-2" }}₹</strong></div>
         </div>
 
         <div class="d-flex justify-content-between">
-          <div>Coupon discount</div>
-          <div>
-            <strong>- {{ order.coupon_amount || 0 }}₹</strong>
-          </div>
+          <div>Total Discount</div>
+          <div><strong>- {{ b.totalDiscount | number : "1.2-2" }}₹</strong></div>
         </div>
+
+        <div class="d-flex justify-content-between">
+          <div>Total Tax</div>
+          <div><strong>+ {{ b.totalTax | number : "1.2-2" }}₹</strong></div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <div>Coupon Discount</div>
+          <div><strong>- {{ b.couponAmount | number : "1.2-2" }}₹</strong></div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <div>Delivery Charge</div>
+          <div><strong>+ {{ b.deliveryCharge | number : "1.2-2" }}₹</strong></div>
+        </div>
+
         <hr />
+
         <div class="d-flex justify-content-between fs-5 fw-bold">
-          <div>Total</div>
-          <div>{{ order.total_price | number : "1.2-2" }}₹</div>
+          <div>Total Payable</div>
+          <div>{{ b.finalPayable | number : "1.2-2" }}₹</div>
         </div>
       </div>
     </div>
@@ -111,10 +133,10 @@
           <select class="form-select" [(ngModel)]="order.status">
             <option>Pending</option>
             <option>Processing</option>
-            <option>Delivered</option>
-            <option>Cancelled</option>
             <option>Shipped</option>
+            <option>Delivered</option>
             <option>Returned</option>
+            <option>Cancelled</option>
           </select>
         </div>
 
@@ -127,7 +149,7 @@
           </select>
         </div>
 
-        <!-- Shipping -->
+        <!-- Shipping Type -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Shipping Type (Order Wise)</label>
           <p class="text-muted small">Shipping Method (NORMAL SHIPPING)</p>
@@ -141,10 +163,13 @@
       <div class="border rounded p-3 mt-3 bg-white shadow">
         <h6 class="fw-bold mb-3">Customer information</h6>
         <div class="d-flex align-items-center gap-2 mb-2">
-          <img [src]="
-              order.customer_id?.profilePicture ||
-              '/assets/img/default-user.png'
-            " class="rounded-circle" width="48" height="48" alt="profile" />
+          <img
+            [src]="order.customer_id?.profilePicture || '/assets/img/default-user.png'"
+            class="rounded-circle"
+            width="48"
+            height="48"
+            alt="profile"
+          />
           <div>
             <div class="fw-semibold text-capitalize">
               {{ order.customer_id?.name || "N/A" }}
@@ -159,29 +184,14 @@
       </div>
 
       <!-- Shipping Address -->
-      <div class="border rounded p-3 mt-3 bg-white shadow mb-2" *ngIf="
-          order.shipping_address && isAddressObject(order.shipping_address);
-          else noAddress
-        ">
+      <div class="border rounded p-3 mt-3 bg-white shadow mb-2" *ngIf="order.shipping_address && isAddressObject(order.shipping_address); else noAddress">
         <h6 class="fw-bold mb-3">Shipping Address</h6>
 
-        <div class="mb-1">
-          <strong>Name:</strong> {{ order.shipping_address.name || "N/A" }}
-        </div>
-        <div class="mb-1">
-          <strong>Contact:</strong> {{ order.shipping_address.phone || "N/A" }}
-        </div>
-        <div class="mb-1">
-          <strong>City:</strong> {{ order.shipping_address.city || "N/A" }}
-        </div>
-        <div class="mb-1">
-          <strong>Pincode:</strong>
-          {{ order.shipping_address.pincode || "N/A" }}
-        </div>
-        <div class="mb-1">
-          <strong>Address:</strong>
-          {{ order.shipping_address.address || "N/A" }}
-        </div>
+        <div class="mb-1"><strong>Name:</strong> {{ order.shipping_address.name || "N/A" }}</div>
+        <div class="mb-1"><strong>Contact:</strong> {{ order.shipping_address.mobile || "N/A" }}</div>
+        <div class="mb-1"><strong>City:</strong> {{ order.shipping_address.city || "N/A" }}</div>
+        <div class="mb-1"><strong>Pincode:</strong> {{ order.shipping_address.pincode || "N/A" }}</div>
+        <div class="mb-1"><strong>Address:</strong> {{ order.shipping_address.address || "N/A" }}</div>
       </div>
 
       <ng-template #noAddress>

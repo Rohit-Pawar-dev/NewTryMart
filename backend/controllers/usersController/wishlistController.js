@@ -1,17 +1,18 @@
-const mongoose = require('mongoose');  // <--- Add this line
-
+const mongoose = require('mongoose');
 const Wishlist = require('../../models/wishlist');
 const Cart = require('../../models/Cart');
-const { log } = require('console');
-
-/**
- * Wishlist Controller
- * Handles adding, retrieving, and removing items from the user's wishlist.
- */
 
 exports.addToWishlist = async (req, res) => {
     try {
-        const { userId, productId, variantValues } = req.body;
+        const userId = req.user?.id;
+        const { productId, variantValues } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({
+                status: false,
+                message: "Unauthorized: User not logged in",
+            });
+        }
 
         if (!productId) {
             return res.status(400).json({
@@ -23,7 +24,7 @@ exports.addToWishlist = async (req, res) => {
         const existingWishlistItem = await Wishlist.findOne({
             userId,
             productId,
-            variantValues: variantValues,
+            variantValues,
         });
 
         if (existingWishlistItem) {
@@ -63,20 +64,27 @@ exports.addToWishlist = async (req, res) => {
     }
 };
 
-
 exports.getWishlist = async (req, res) => {
     try {
-        const { userId } = req.query;
+        const userId = req.user?.id;
 
         if (!userId) {
-            return res.status(400).json({
+            return res.status(401).json({
                 status: false,
-                message: "User ID is required",
+                message: "Unauthorized: User not logged in",
             });
         }
 
-        // Convert userId string to ObjectId
-        const userObjectId = new mongoose.Types.ObjectId(userId);
+        const userObjectId = mongoose.Types.ObjectId.isValid(userId)
+            ? new mongoose.Types.ObjectId(userId)
+            : null;
+
+        if (!userObjectId) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid user ID",
+            });
+        }
 
         const wishlistItems = await Wishlist.find({ userId: userObjectId }).populate('productId');
 
@@ -85,7 +93,6 @@ exports.getWishlist = async (req, res) => {
             message: "Wishlist retrieved successfully",
             data: wishlistItems,
         });
-
     } catch (error) {
         console.error("Error retrieving wishlist:", error);
         return res.status(500).json({
@@ -95,15 +102,15 @@ exports.getWishlist = async (req, res) => {
         });
     }
 };
+
+
 exports.removeFromWishlist = async (req, res) => {
     try {
         const { itemId } = req.params;
-        const userId = (req.query && req.query.userId) || (req.body && req.body.userId);
-
-        // console.log("Removing wishlist item:", { itemId, userId });
+        const userId = req.user?.id;
 
         if (!userId) {
-            return res.status(400).json({ status: false, message: "User ID is required" });
+            return res.status(401).json({ status: false, message: "Unauthorized: User not logged in" });
         }
         if (!itemId) {
             return res.status(400).json({ status: false, message: "Wishlist item ID is required" });
@@ -114,8 +121,11 @@ exports.removeFromWishlist = async (req, res) => {
         }
 
         const userObjectId = new mongoose.Types.ObjectId(userId);
-        const productObjectId = new mongoose.Types.ObjectId(itemId);
-        const wishlistItem = await Wishlist.findOneAndDelete({ productId: productObjectId, userId: userObjectId });
+        // const wishlistItemId = new mongoose.Types.ObjectId(itemId);
+          const productObjectId = new mongoose.Types.ObjectId(itemId);
+
+        const wishlistItem = await Wishlist.findOneAndDelete({productId: productObjectId, userId: userObjectId });
+
         if (!wishlistItem) {
             return res.status(404).json({ status: false, message: "Item not found in wishlist" });
         }
@@ -126,4 +136,3 @@ exports.removeFromWishlist = async (req, res) => {
         return res.status(500).json({ status: false, message: "Internal server error" });
     }
 };
-

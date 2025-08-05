@@ -4,7 +4,6 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// Create
 // Login
 router.post("/login", async (req, res) => {
   try {
@@ -39,7 +38,7 @@ router.post("/register", async (req, res) => {
     const user = await User.create(post);
 
     // Generate token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id , city : user.city}, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
@@ -54,6 +53,9 @@ router.post("/register", async (req, res) => {
 router.post("/send-otp", async (req, res) => {
   try {
     const { mobile } = req.body;
+
+    // console.log("Hello world");
+
 
     // Generate 4-digit OTP
     let otp = Math.floor(1000 + Math.random() * 9000);
@@ -72,8 +74,6 @@ router.post("/send-otp", async (req, res) => {
         message: "OTP sent to registered mobile number",
       });
     } else {
-      // Optionally store OTP in a temporary store (e.g., Redis or session) if needed
-
       return res.json({
         status: true,
         otp: otp.toString(),
@@ -121,7 +121,7 @@ router.post("/verify-otp", async (req, res) => {
     }
 
     // Generate token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id , city: user.city }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 

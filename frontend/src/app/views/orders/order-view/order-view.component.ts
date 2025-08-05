@@ -42,16 +42,18 @@ export class OrderViewComponent implements OnInit {
     });
   }
 
-  // ✅ Helper to check if the shipping address is an object
+  // Helper to check if the shipping address is an object
   isAddressObject(addr: any): addr is Address {
     return addr && typeof addr === 'object' && 'address' in addr;
   }
 }
 
-// ✅ Address type interface
+// Address type interface
 interface Address {
   name: string;
-  phone: string;
+  // phone?: string;   
+ 
+  mobile: string;
   city: string;
   pincode: string;
   address: string;

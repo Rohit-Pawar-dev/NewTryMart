@@ -109,6 +109,14 @@ export interface Order {
   payment_method?: string;
   createdAt?: string;
   updatedAt?: string;
+    breakdown: {
+    subtotal: number;
+    totalDiscount: number;
+    totalTax: number;
+    couponAmount: number;
+    deliveryCharge: number;
+    finalPayable: number;
+  };
 }
 
 // ✅ Injectable Service

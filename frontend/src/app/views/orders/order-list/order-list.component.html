@@ -52,7 +52,6 @@
   </div>
 
   <!-- Orders Table -->
-  <!-- Orders Table -->
   <div class="table-responsive" *ngIf="!isLoading && orders.length > 0">
     <table class="table align-middle table-bordered shadow-sm rounded">
       <thead class="bg-light text-muted border-bottom">
@@ -114,15 +113,11 @@
             <!-- <button class="btn btn-outline-success btn-sm" title="Download">
               <i class="cil-cloud-download"></i>
             </button> -->
-           <!-- Cloud download button in OrderListComponent -->
-<button
-  class="btn btn-outline-success btn-sm"
-  title="Download Invoice"
-  [routerLink]="['/orders/invoice', order._id]"
-  [queryParams]="{ download: true }"
->
-  <i class="cil-cloud-download"></i>
-</button>
+            <!-- Cloud download button in OrderListComponent -->
+            <button class="btn btn-outline-success btn-sm" title="Download Invoice"
+              [routerLink]="['/orders/invoice', order._id]" [queryParams]="{ download: true }">
+              <i class="cil-cloud-download"></i>
+            </button>
 
 
           </td>

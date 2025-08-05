@@ -3,7 +3,126 @@ const Product = require("../../models/Product");
 const VariantOption = require("../../models/VariantOption");
 const Mongoose = require("mongoose");
 const Wishlist = require("../../models/wishlist");
+const BusinessSetup = require('../../models/BussinessSetup');
 module.exports = {
+  // async getCart(req, res) {
+  //   const userId = req.params.userId;
+
+  //   try {
+  //     const cartItems = await Cart.find({
+  //       customer_id: userId,
+  //       save_for_later: false,
+  //     });
+  //     let totalAmount = 0;
+  //     let totalDiscount = 0;
+  //     let totalTax = 0;
+  //     let couponAmount = 0;
+  //     let couponCode = null;
+
+  //     // Added for breakdown
+  //     let totalBasePrice = 0;
+  //     let totalPriceAfterDiscount = 0;
+
+  //     const updatedCart = [];
+
+  //     for (const item of cartItems) {
+  //       let basePrice,
+  //         discountAmount = 0,
+  //         taxAmount = 0,
+  //         finalPrice = 0;
+  //       let variant = null;
+
+  //       const product = await Product.findById(item.product_id);
+  //       if (!product) continue;
+
+  //       if (item.is_variant && item.variant_id) {
+  //         variant = await VariantOption.findOne({
+  //           _id: item.variant_id,
+  //           product_id: item.product_id,
+  //         });
+  //         if (!variant) continue;
+
+  //         basePrice = variant.price;
+  //       } else {
+  //         basePrice = product.unit_price;
+  //       }
+
+  //       // Calculate discount
+  //       if (product.discount_type === "percent") {
+  //         discountAmount = (product.discount / 100) * basePrice;
+  //       } else {
+  //         discountAmount = product.discount;
+  //       }
+  //       discountAmount = Math.min(discountAmount, basePrice);
+
+  //       const priceAfterDiscount = basePrice - discountAmount;
+
+  //       // Calculate tax
+  //       taxAmount = (product.tax / 100) * priceAfterDiscount;
+  //       finalPrice = priceAfterDiscount + taxAmount;
+
+  //       // Add to totals (no change to original logic)
+  //       totalDiscount += discountAmount * item.quantity;
+  //       totalTax += taxAmount * item.quantity;
+  //       totalAmount += finalPrice * item.quantity;
+
+  //       // Add to new totals for breakdown
+  //       totalBasePrice += basePrice * item.quantity;
+  //       totalPriceAfterDiscount += priceAfterDiscount * item.quantity;
+
+  //       // Coupon info (once)
+  //       if (item.coupon_code && item.coupon_amount && couponAmount === 0) {
+  //         couponAmount = item.coupon_amount;
+  //         couponCode = item.coupon_code;
+  //       }
+
+  //       updatedCart.push({
+  //         ...item._doc,
+  //         variant,
+  //         product_name: product.name,
+  //         thumbnail: product.thumbnail,
+  //         base_price: basePrice,
+  //         discount: discountAmount,
+  //         price_after_discount: priceAfterDiscount,
+  //         tax: taxAmount,
+  //         final_price: finalPrice,
+  //       });
+  //     }
+
+  //     // Calculate final total after coupon
+  //     const finalTotalAmount = Math.max(0, totalAmount - couponAmount);
+
+  //     res.json({
+  //       status: true,
+  //       message: "Cart fetched successfully",
+  //       data: {
+  //         cartItems: updatedCart,
+  //         totalAmount: finalTotalAmount,
+  //         totalDiscount,
+  //         totalTax,
+  //         coupon: couponCode
+  //           ? {
+  //             code: couponCode,
+  //             discount: couponAmount,
+  //           }
+  //           : null,
+
+  //         breakdown: {
+  //           totalBasePrice,
+  //           totalDiscount,
+  //           totalPriceAfterDiscount,
+  //           totalTax,
+  //           couponAmount,
+  //           finalPayable: finalTotalAmount,
+  //         },
+  //       },
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({ status: false, message: error.message });
+  //   }
+  // },
+
+
   async getCart(req, res) {
     const userId = req.params.userId;
 
@@ -12,13 +131,12 @@ module.exports = {
         customer_id: userId,
         save_for_later: false,
       });
+
       let totalAmount = 0;
       let totalDiscount = 0;
       let totalTax = 0;
       let couponAmount = 0;
       let couponCode = null;
-
-      // Added for breakdown
       let totalBasePrice = 0;
       let totalPriceAfterDiscount = 0;
 
@@ -60,16 +178,13 @@ module.exports = {
         taxAmount = (product.tax / 100) * priceAfterDiscount;
         finalPrice = priceAfterDiscount + taxAmount;
 
-        // Add to totals (no change to original logic)
         totalDiscount += discountAmount * item.quantity;
         totalTax += taxAmount * item.quantity;
         totalAmount += finalPrice * item.quantity;
 
-        // Add to new totals for breakdown
         totalBasePrice += basePrice * item.quantity;
         totalPriceAfterDiscount += priceAfterDiscount * item.quantity;
 
-        // Coupon info (once)
         if (item.coupon_code && item.coupon_amount && couponAmount === 0) {
           couponAmount = item.coupon_amount;
           couponCode = item.coupon_code;
@@ -88,8 +203,13 @@ module.exports = {
         });
       }
 
-      // Calculate final total after coupon
-      const finalTotalAmount = Math.max(0, totalAmount - couponAmount);
+      // Fetch delivery charges from BusinessSetup
+      const businessSetup = await BusinessSetup.findOne().lean();
+      const deliveryCharges = businessSetup?.deliveryCharges || 0;
+
+      // Final calculation
+      const subtotalAfterCoupon = Math.max(0, totalAmount - couponAmount);
+      const finalTotalAmount = subtotalAfterCoupon + deliveryCharges;
 
       res.json({
         status: true,
@@ -105,13 +225,13 @@ module.exports = {
               discount: couponAmount,
             }
             : null,
-
           breakdown: {
             totalBasePrice,
             totalDiscount,
             totalPriceAfterDiscount,
             totalTax,
             couponAmount,
+            deliveryCharges,
             finalPayable: finalTotalAmount,
           },
         },
@@ -120,7 +240,7 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
+  
   async addToCart(req, res) {
     const { userId, productId, variantId, is_variant, quantity = 1 } = req.body;
 
@@ -218,7 +338,6 @@ module.exports = {
         variantValues: selectedVariant && Object.keys(selectedVariant).length > 0 ? selectedVariant : null,
       });
 
-
       res.json({
         status: true,
         message: "Product added to cart",
@@ -228,9 +347,7 @@ module.exports = {
       console.error("Add to cart error:", error);
       res.status(500).json({ status: false, message: error.message });
     }
-  }
-  ,
-
+  },
   // Remove a product from cart
   async removeFromCart(req, res) {
     const { userId, productId, variantId, is_variant } = req.body;

@@ -21,12 +21,13 @@ const getCustomMulter = require('./../utils/customMulter');
 
 const uploadSubCategory = getCustomMulter('user');
 const walletController = require("../controllers/usersController/walletController");
+const optionalAuth = require ("../middleware/optionalAuth");
 
 // Routes
 
 // product routes
-router.get("/products/offers_for_you", productController.offersForYou);
-router.get("/products/trending", productController.trendingProducts);
+router.get("/products/offers_for_you", optionalAuth , productController.offersForYou);
+router.get("/products/trending", optionalAuth , productController.trendingProducts);
 
 // order routes
 router.get("/orders", auth, getUserOrders);
@@ -72,25 +73,25 @@ router.post("/place-order-wallet", auth, placeOrderFromWallet);
 
 /** ------------------ Wishlist Routes ------------------- **/
 
-router.post("/wishlist/add", wishlistController.addToWishlist);
-router.get("/wishlist/view", wishlistController.getWishlist);
-router.delete("/wishlist/remove/:itemId", wishlistController.removeFromWishlist);
+router.post("/wishlist/add",auth, wishlistController.addToWishlist);
+router.get("/wishlist/view", auth, wishlistController.getWishlist);
+router.delete("/wishlist/remove/:itemId",auth, wishlistController.removeFromWishlist);
 
 
 
 /**---------------------Wallet Routes-------------------- */
-router.post("/wallet/:userId/debit", walletController.debitMoneyFromWallet);
+router.post("/wallet/debit",auth, walletController.debitMoneyFromWallet);
 
 // Get wallet balance
-router.get("/wallet/:userId/balance", walletController.getWalletBalance);
+router.get("/wallet/balance",auth, walletController.getWalletBalance);
 
 
 // Add monet to wallet
-router.post("/wallet/:userId/credit", walletController.addMoneyToWallet);
+router.post("/wallet/credit",auth, walletController.addMoneyToWallet);
 
 
 // Get all wallet transactions
-router.get("/wallet/:userId/transactions", walletController.getWalletTransactions);
+router.get("/wallet/transactions",auth, walletController.getWalletTransactions);
 
 
 //Get delivery Charges

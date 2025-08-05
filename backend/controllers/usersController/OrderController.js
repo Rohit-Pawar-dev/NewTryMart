@@ -199,8 +199,6 @@ async function placeOrder(req, res) {
 }
 
 
-
-
 const getUserOrders = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -528,6 +526,205 @@ async function placeOrderOnline(req, res) {
   }
 }
 
+// async function placeOrderFromWallet(req, res) {
+//   try {
+//     const userId = req.user.id;
+//     const shippingAddressId = req.body.address_id;
+
+//     const cartItems = await Cart.find({
+//       customer_id: userId,
+//       save_for_later: false,
+//     }).populate("product_id").populate("seller_id");
+
+//     if (!cartItems.length) {
+//       return res.status(400).json({ status: false, message: "Cart is empty" });
+//     }
+
+//     const user = await User.findById(userId);
+//     if (!user) return res.status(404).json({ status: false, message: "User not found" });
+
+//     const businessSetup = await BussinessSetup.findOne();
+//     const deliveryCharge = businessSetup?.deliveryCharges || 0;
+//     const commissionPercent = businessSetup?.sellerCommision || 0;
+
+
+//     const admin = await Admin.findOne();
+//     if (!admin) return res.status(500).json({ status: false, message: "Admin config missing" });
+
+//     //  Validate stock
+//     for (const item of cartItems) {
+//       const product = item.product_id;
+//       if (!product) return res.status(400).json({ status: false, message: `Product not found for cart item ${item._id}` });
+
+//       if (item.is_variant && item.variant_id) {
+//         const variant = await VariantOption.findOne({ _id: item.variant_id, product_id: product._id });
+//         if (!variant || variant.stock < item.quantity) {
+//           return res.status(400).json({ status: false, message: `Insufficient stock for variant of ${product.name}` });
+//         }
+//       } else if (product.current_stock < item.quantity) {
+//         return res.status(400).json({ status: false, message: `Insufficient stock for product ${product.name}` });
+//       }
+//     }
+
+//     //  Group by seller
+//     const groupedItems = {};
+//     for (const item of cartItems) {
+//       const key = item.seller_is === "admin" ? "admin" : item.seller_id._id.toString();
+//       if (!groupedItems[key]) groupedItems[key] = [];
+//       groupedItems[key].push(item);
+//     }
+
+//     const orderResults = [];
+//     let totalWalletAmountRequired = 0;
+
+//     //  Pre-calculate total wallet required
+//     for (const items of Object.values(groupedItems)) {
+//       let subtotal = items.reduce((sum, i) => sum + i.total_price + (i.shipping_cost || 0), 0);
+//       const couponItem = items.find(i => i.coupon_amount);
+//       if (couponItem) subtotal -= couponItem.coupon_amount || 0;
+//       subtotal += deliveryCharge;
+//       totalWalletAmountRequired += subtotal;
+//     }
+
+//     if (user.wallet_amount < totalWalletAmountRequired) {
+//       return res.status(400).json({ status: false, message: "Insufficient wallet balance" });
+//     }
+
+//     for (const [key, items] of Object.entries(groupedItems)) {
+//       let totalOrderPrice = 0;
+//       const orderItemIds = [];
+
+//       for (const item of items) {
+//         const product = item.product_id;
+//         const itemTotal = item.total_price + (item.shipping_cost || 0);
+//         totalOrderPrice += itemTotal;
+
+//         const orderItem = new OrderItemDetail({
+//           product_id: product._id,
+//           product_detail: product.toObject(),
+//           name: product.name,
+//           thumbnail: product.thumbnail,
+//           selected_variant: item.selected_variant,
+//           quantity: item.quantity,
+//           unit_price: item.unit_price,
+//           total_price: itemTotal,
+//           tax: item.tax,
+//           discount: item.discount,
+//           discount_type: item.discount_type,
+//           tax_model: item.tax_model,
+//           slug: item.slug,
+//           seller_id: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
+//           seller_is: item.seller_is,
+//           shipping_cost: item.shipping_cost,
+//           shipping_type: item.shipping_type,
+//           shipping_address: shippingAddressId,
+//           delivery_status: "Pending",
+//         });
+
+//         await orderItem.save();
+//         orderItemIds.push(orderItem._id);
+
+//         if (item.is_variant && item.variant_id) {
+//           await VariantOption.updateOne(
+//             { _id: item.variant_id },
+//             { $inc: { stock: -item.quantity } }
+//           );
+//         } else {
+//           product.current_stock -= item.quantity;
+//           await product.save();
+//         }
+//       }
+
+//       //  Apply coupon
+//       const couponItem = items.find(i => i.coupon_amount);
+//       let couponCode = null;
+//       let couponAmount = 0;
+//       if (couponItem) {
+//         couponCode = couponItem.coupon_code;
+//         couponAmount = couponItem.coupon_amount || 0;
+//         totalOrderPrice -= couponAmount;
+//       }
+
+//       totalOrderPrice += deliveryCharge;
+
+//       const latestOrder = await Order.findOne().sort({ order_id: -1 }).select("order_id").lean();
+//       const newOrderId = latestOrder?.order_id ? latestOrder.order_id + 1 : 100001;
+
+//       const order = new Order({
+//         customer_id: userId,
+//         order_id: newOrderId,
+//         order_items: orderItemIds,
+//         shipping_address: shippingAddressId,
+//         total_price: totalOrderPrice,
+//         delivery_charge: deliveryCharge,
+//         status: "Confirmed",
+//         payment_status: "Paid",
+//         payment_method: "wallet",
+//         coupon_code: couponCode,
+//         coupon_amount: couponAmount,
+//         seller_id: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
+//         seller_is: items[0].seller_is,
+//       });
+
+//       await order.save();
+//       orderResults.push(order._id);
+
+//       await OrderItemDetail.updateMany({ _id: { $in: orderItemIds } }, { order_id: order._id });
+
+//       //  Calculate commission and update wallets
+//       const amountWithoutDelivery = totalOrderPrice - deliveryCharge;
+
+//       if (items[0].seller_is === "admin") {
+//         admin.admin_wallet += amountWithoutDelivery;
+//       } else {
+//         const commission = (amountWithoutDelivery * commissionPercent) / 100;
+//         const sellerEarning = amountWithoutDelivery - commission;
+
+//         admin.seller_commission += commission;
+//         await Seller.findByIdAndUpdate(items[0].seller_id._id, {
+//           $inc: { seller_wallet: sellerEarning }
+//         });
+//       }
+
+//       await new Transaction({
+//         order_id: order._id,
+//         user_id: userId,
+//         paid_by: userId,
+//         paid_to: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
+//         amount: totalOrderPrice,
+//         payment_status: "Paid",
+//       }).save();
+//     }
+
+//     //  Final wallet deductions
+//     user.wallet_amount -= totalWalletAmountRequired;
+//     await user.save();
+//     await admin.save();
+
+//     await new WalletTransaction({
+//       user: userId,
+//       type: "debit",
+//       amount: totalWalletAmountRequired,
+//       balanceAfter: user.wallet_amount,
+//       description: "Order Payment from Wallet",
+//     }).save();
+
+//     await Cart.deleteMany({ customer_id: userId, save_for_later: false });
+
+//     return res.status(201).json({
+//       status: true,
+//       message: "Order placed successfully using wallet",
+//       order_ids: orderResults,
+//     });
+
+//   } catch (error) {
+//     console.error("Error placing wallet order:", error);
+//     return res.status(500).json({
+//       status: false, message: "Server error", error: error.message
+//     });
+//   }
+// }
+
 async function placeOrderFromWallet(req, res) {
   try {
     const userId = req.user.id;
@@ -549,75 +746,99 @@ async function placeOrderFromWallet(req, res) {
     const deliveryCharge = businessSetup?.deliveryCharges || 0;
     const commissionPercent = businessSetup?.sellerCommision || 0;
 
-
     const admin = await Admin.findOne();
     if (!admin) return res.status(500).json({ status: false, message: "Admin config missing" });
 
-    //  Validate stock
+    // Stock validation...
     for (const item of cartItems) {
-      const product = item.product_id;
-      if (!product) return res.status(400).json({ status: false, message: `Product not found for cart item ${item._id}` });
-
+      const prod = item.product_id;
+      if (!prod) return res.status(400).json({ status: false, message: `Product missing for cart item ${item._id}` });
       if (item.is_variant && item.variant_id) {
-        const variant = await VariantOption.findOne({ _id: item.variant_id, product_id: product._id });
+        const variant = await VariantOption.findOne({ _id: item.variant_id, product_id: prod._id });
         if (!variant || variant.stock < item.quantity) {
-          return res.status(400).json({ status: false, message: `Insufficient stock for variant of ${product.name}` });
+          return res.status(400).json({ status: false, message: `Insufficient stock for variant ${prod.name}` });
         }
-      } else if (product.current_stock < item.quantity) {
-        return res.status(400).json({ status: false, message: `Insufficient stock for product ${product.name}` });
+      } else if (prod.current_stock < item.quantity) {
+        return res.status(400).json({ status: false, message: `Insufficient stock for product ${prod.name}` });
       }
     }
 
-    //  Group by seller
-    const groupedItems = {};
+    // Group items by seller
+    const grouped = {};
     for (const item of cartItems) {
-      const key = item.seller_is === "admin" ? "admin" : item.seller_id._id.toString();
-      if (!groupedItems[key]) groupedItems[key] = [];
-      groupedItems[key].push(item);
+      const key = (item.seller_is === "admin") ? "admin" : item.seller_id._id.toString();
+      (grouped[key] ||= []).push(item);
     }
 
-    const orderResults = [];
-    let totalWalletAmountRequired = 0;
+    let totalWalletRequired = 0;
+    // Pre-calc total required
+    for (const items of Object.values(grouped)) {
+      let subtotal = 0;
+      for (const i of items) {
+        const unit = i.unit_price;
+        let discountAmt = 0;
+        if (i.discount_type === "flat") discountAmt = i.discount || 0;
+        else discountAmt = (unit * (i.discount || 0)) / 100;
 
-    //  Pre-calculate total wallet required
-    for (const items of Object.values(groupedItems)) {
-      let subtotal = items.reduce((sum, i) => sum + i.total_price + (i.shipping_cost || 0), 0);
-      const couponItem = items.find(i => i.coupon_amount);
-      if (couponItem) subtotal -= couponItem.coupon_amount || 0;
+        const priceAfterDiscount = unit - discountAmt;
+        const taxAmt = (i.tax_model === "exclusive")
+          ? (priceAfterDiscount * (i.tax || 0)) / 100
+          : 0;
+
+        const finalUnit = priceAfterDiscount + taxAmt;
+        subtotal += finalUnit * i.quantity;
+      }
       subtotal += deliveryCharge;
-      totalWalletAmountRequired += subtotal;
+      const couponItem = items.find(x => x.coupon_amount);
+      if (couponItem) subtotal -= (couponItem.coupon_amount || 0);
+      totalWalletRequired += subtotal;
     }
 
-    if (user.wallet_amount < totalWalletAmountRequired) {
+    if (user.wallet_amount < totalWalletRequired) {
       return res.status(400).json({ status: false, message: "Insufficient wallet balance" });
     }
 
-    for (const [key, items] of Object.entries(groupedItems)) {
-      let totalOrderPrice = 0;
+    const orderIds = [];
+    // For each seller group, create order
+    for (const [key, items] of Object.entries(grouped)) {
+      let orderPrice = 0;
+      let totalDiscount = 0;
+      let totalTax = 0;
       const orderItemIds = [];
 
       for (const item of items) {
-        const product = item.product_id;
-        const itemTotal = item.total_price + (item.shipping_cost || 0);
-        totalOrderPrice += itemTotal;
+        const unit = item.unit_price;
+        let discountAmt = 0;
+        if (item.discount_type === "flat") discountAmt = item.discount || 0;
+        else discountAmt = (unit * (item.discount || 0)) / 100;
+
+        const priceAfterDiscount = unit - discountAmt;
+        const taxAmt = (item.tax_model === "exclusive")
+          ? (priceAfterDiscount * (item.tax || 0)) / 100
+          : 0;
+
+        const finalUnit = priceAfterDiscount + taxAmt;
+        const itemTotal = finalUnit * item.quantity;
+
+        totalDiscount += discountAmt * item.quantity;
+        totalTax += taxAmt * item.quantity;
+        orderPrice += itemTotal;
 
         const orderItem = new OrderItemDetail({
-          product_id: product._id,
-          product_detail: product.toObject(),
-          name: product.name,
-          thumbnail: product.thumbnail,
+          product_id: item.product_id._id,
+          product_detail: item.product_id.toObject(),
+          name: item.product_id.name,
+          thumbnail: item.product_id.thumbnail,
           selected_variant: item.selected_variant,
           quantity: item.quantity,
-          unit_price: item.unit_price,
+          unit_price: unit,
           total_price: itemTotal,
-          tax: item.tax,
-          discount: item.discount,
+          tax: taxAmt,
+          discount: discountAmt,
           discount_type: item.discount_type,
           tax_model: item.tax_model,
           slug: item.slug,
-          // seller_id: item.seller_is === "admin" ? null : item.seller_id,
-          seller_id: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
-
+          seller_id: (item.seller_is === "admin") ? admin._id : item.seller_id._id,
           seller_is: item.seller_is,
           shipping_cost: item.shipping_cost,
           shipping_type: item.shipping_type,
@@ -628,87 +849,88 @@ async function placeOrderFromWallet(req, res) {
         await orderItem.save();
         orderItemIds.push(orderItem._id);
 
+        // decrement stock
         if (item.is_variant && item.variant_id) {
-          await VariantOption.updateOne(
-            { _id: item.variant_id },
-            { $inc: { stock: -item.quantity } }
-          );
+          await VariantOption.updateOne({ _id: item.variant_id }, { $inc: { stock: -item.quantity } });
         } else {
-          product.current_stock -= item.quantity;
-          await product.save();
+          item.product_id.current_stock -= item.quantity;
+          await item.product_id.save();
         }
       }
 
-      //  Apply coupon
-      const couponItem = items.find(i => i.coupon_amount);
-      let couponCode = null;
-      let couponAmount = 0;
-      if (couponItem) {
-        couponCode = couponItem.coupon_code;
-        couponAmount = couponItem.coupon_amount || 0;
-        totalOrderPrice -= couponAmount;
+      // apply coupon
+      let couponAmt = 0, couponCode = null;
+      const cp = items.find(i => i.coupon_amount);
+      if (cp) {
+        couponAmt = cp.coupon_amount || 0;
+        couponCode = cp.coupon_code;
+        orderPrice -= couponAmt;
       }
 
-      totalOrderPrice += deliveryCharge;
+      orderPrice += deliveryCharge;
 
-      const latestOrder = await Order.findOne().sort({ order_id: -1 }).select("order_id").lean();
-      const newOrderId = latestOrder?.order_id ? latestOrder.order_id + 1 : 100001;
+      // generate new order_id
+      const latest = await Order.findOne().sort({ order_id: -1 }).select("order_id").lean();
+      const newOrderId = latest?.order_id ? latest.order_id + 1 : 100001;
 
-      const order = new Order({
+      const newOrder = new Order({
         customer_id: userId,
         order_id: newOrderId,
         order_items: orderItemIds,
         shipping_address: shippingAddressId,
-        total_price: totalOrderPrice,
+        total_price: orderPrice,
         delivery_charge: deliveryCharge,
         status: "Confirmed",
         payment_status: "Paid",
         payment_method: "wallet",
         coupon_code: couponCode,
-        coupon_amount: couponAmount,
-        seller_id: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
+        coupon_amount: couponAmt,
+        seller_id: (items[0].seller_is === "admin") ? admin._id : items[0].seller_id._id,
         seller_is: items[0].seller_is,
+        // breakdown: {
+        //   subtotal: orderPrice - deliveryCharge + couponAmt,
+        //   totalDiscount: totalDiscount,
+        //   totalTax: totalTax,
+        //   deliveryCharge: deliveryCharge,
+        //   couponAmount: couponAmt,
+        //   finalPayable: orderPrice
+        // }
       });
 
-      await order.save();
-      orderResults.push(order._id);
+      await newOrder.save();
+      orderIds.push(newOrder._id);
 
-      await OrderItemDetail.updateMany({ _id: { $in: orderItemIds } }, { order_id: order._id });
+      await OrderItemDetail.updateMany({ _id: { $in: orderItemIds } }, { order_id: newOrder._id });
 
-      //  Calculate commission and update wallets
-      const amountWithoutDelivery = totalOrderPrice - deliveryCharge;
-
+      // update wallets & commission
+      const amtNet = orderPrice - deliveryCharge;
       if (items[0].seller_is === "admin") {
-        admin.admin_wallet += amountWithoutDelivery;
+        admin.admin_wallet += amtNet;
       } else {
-        const commission = (amountWithoutDelivery * commissionPercent) / 100;
-        const sellerEarning = amountWithoutDelivery - commission;
-
+        const commission = (amtNet * commissionPercent) / 100;
+        const sellerEarning = amtNet - commission;
         admin.seller_commission += commission;
-        await Seller.findByIdAndUpdate(items[0].seller_id._id, {
-          $inc: { seller_wallet: sellerEarning }
-        });
+        await Seller.findByIdAndUpdate(items[0].seller_id._id, { $inc: { seller_wallet: sellerEarning } });
       }
 
       await new Transaction({
-        order_id: order._id,
+        order_id: newOrder._id,
         user_id: userId,
         paid_by: userId,
-        paid_to: items[0].seller_is === "admin" ? admin._id : items[0].seller_id._id,
-        amount: totalOrderPrice,
+        paid_to: (items[0].seller_is === "admin") ? admin._id : items[0].seller_id._id,
+        amount: orderPrice,
         payment_status: "Paid",
       }).save();
     }
 
-    //  Final wallet deductions
-    user.wallet_amount -= totalWalletAmountRequired;
+    user.wallet_amount -= totalWalletRequired;
     await user.save();
     await admin.save();
 
     await new WalletTransaction({
       user: userId,
       type: "debit",
-      amount: totalWalletAmountRequired,
+      amount: totalWalletRequired,
       balanceAfter: user.wallet_amount,
       description: "Order Payment from Wallet",
     }).save();
@@ -717,17 +939,16 @@ async function placeOrderFromWallet(req, res) {
 
     return res.status(201).json({
       status: true,
-      message: "Order placed successfully using wallet",
-      order_ids: orderResults,
+      message: "Order(s) placed successfully using wallet",
+      order_ids: orderIds,
     });
 
-  } catch (error) {
-    console.error("Error placing wallet order:", error);
-    return res.status(500).json({
-      status: false, message: "Server error", error: error.message
-    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ status: false, message: "Server error", error: err.message });
   }
 }
+
 
 module.exports = {
   placeOrder,

@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require("../controllers/AdminsController/productController");
 const UserProductController = require("../controllers/usersController/ProductController");
 const getCustomMulter = require('../utils/customMulter');
+const optionalAuth = require('../middleware/optionalAuth');
 
 // Frontend
 router.get("/all", UserProductController.getActiveProducts);
@@ -13,10 +14,10 @@ router.get(
   UserProductController.getProductsByCategory
 );
 router.get(
-  "/subcategory/:sub_category_id",
+  "/subcategory/:sub_category_id", optionalAuth,
   UserProductController.getProductsBySubCategory
 );
-router.get("/details/:id", UserProductController.getProductDetails);
+router.get("/details/:id",optionalAuth, UserProductController.getProductDetails);
 
 // Admin
 router.post("/", productController.createProduct);
