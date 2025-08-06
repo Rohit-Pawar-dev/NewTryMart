@@ -49,7 +49,6 @@ exports.getAllCategories = async (req, res) => {
     }
 };
 
-// CREATE a new category
 exports.createCategory = async (req, res) => {
     try {
         const { name, description, status } = req.body;
@@ -66,7 +65,6 @@ exports.createCategory = async (req, res) => {
     }
 };
 
-// UPDATE a category by ID
 exports.updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
@@ -87,7 +85,6 @@ exports.updateCategory = async (req, res) => {
     }
 };
 
-// DELETE a category by ID
 exports.deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;

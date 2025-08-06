@@ -7,13 +7,24 @@ const BusinessSetup = require('../../models/BussinessSetup');
 module.exports = {
 
   async getCart(req, res) {
-    // const userId = req.params.userId;
     const userId = req.user?.id;
     try {
       const cartItems = await Cart.find({
         customer_id: userId,
         save_for_later: false,
-      });
+      }).lean();
+
+      // Extract all product_ids and variant_ids from cart
+      const productIds = cartItems.map(item => item.product_id);
+      const variantIds = cartItems
+        .filter(item => item.is_variant && item.variant_id)
+        .map(item => item.variant_id);
+
+      const products = await Product.find({ _id: { $in: productIds } }).lean();
+      const variants = await VariantOption.find({ _id: { $in: variantIds } }).lean();
+
+      const productMap = new Map(products.map(p => [p._id.toString(), p]));
+      const variantMap = new Map(variants.map(v => [v._id.toString(), v]));
 
       let totalAmount = 0;
       let totalDiscount = 0;
@@ -26,22 +37,18 @@ module.exports = {
       const updatedCart = [];
 
       for (const item of cartItems) {
-        let basePrice,
+        let basePrice = 0,
           discountAmount = 0,
           taxAmount = 0,
           finalPrice = 0;
-        let variant = null;
 
-        const product = await Product.findById(item.product_id);
+        const product = productMap.get(item.product_id.toString());
         if (!product) continue;
 
+        let variant = null;
         if (item.is_variant && item.variant_id) {
-          variant = await VariantOption.findOne({
-            _id: item.variant_id,
-            product_id: item.product_id,
-          });
+          variant = variantMap.get(item.variant_id.toString());
           if (!variant) continue;
-
           basePrice = variant.price;
         } else {
           basePrice = product.unit_price;
@@ -74,7 +81,7 @@ module.exports = {
         }
 
         updatedCart.push({
-          ...item._doc,
+          ...item,
           variant,
           product_name: product.name,
           thumbnail: product.thumbnail,
@@ -86,11 +93,10 @@ module.exports = {
         });
       }
 
-      // Fetch delivery charges from BusinessSetup
+      // Fetch delivery charges once
       const businessSetup = await BusinessSetup.findOne().lean();
       const deliveryCharges = businessSetup?.deliveryCharges || 0;
 
-      // Final calculation
       const subtotalAfterCoupon = Math.max(0, totalAmount - couponAmount);
       const finalTotalAmount = subtotalAfterCoupon + deliveryCharges;
 
@@ -216,11 +222,11 @@ module.exports = {
       });
 
       // Remove the product from wishlist if it exists
-      await Wishlist.deleteOne({
-        userId: userId,
-        productId: productId,
-        variantValues: selectedVariant && Object.keys(selectedVariant).length > 0 ? selectedVariant : null,
-      });
+      // await Wishlist.deleteOne({
+      //   userId: userId,
+      //   productId: productId,
+      //   variantValues: selectedVariant && Object.keys(selectedVariant).length > 0 ? selectedVariant : null,
+      // });
 
       res.json({
         status: true,
@@ -356,15 +362,19 @@ module.exports = {
 
       let availableStock = product.current_stock;
       if (is_variant && variantId) {
-        const variant = product.variation_options.find(
-          (v) => v._id.toString() === variantId
-        );
+        const variant = await VariantOption.findOne({
+          _id: variantId,
+          product_id: productId,
+        });
+
         if (!variant) {
           return res
             .status(404)
             .json({ status: false, message: "Variant not found" });
         }
+
         availableStock = variant.stock;
+
       }
 
       if (cartItem.quantity + 1 > availableStock) {

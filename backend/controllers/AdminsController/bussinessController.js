@@ -5,13 +5,6 @@ exports.getBusinessSetup = async (req, res) => {
   try {
     const setup = await BusinessSetup.findOne();
 
-    // if (!setup) {
-    //   return res.status(404).json({
-    //     status: false,
-    //     message: 'No business setup found.'
-    //   });
-    // }
-
     res.status(200).json({
       status: true,
       message: 'Business setup retrieved successfully.',
@@ -57,12 +50,12 @@ exports.createBusinessSetup = async (req, res) => {
 exports.updateBusinessSetup = async (req, res) => {
   try {
     const updated = await BusinessSetup.findOneAndUpdate(
-      {}, // filter: we only expect one document
-      req.body, // data to update
+      {},
+      req.body,
       {
-        new: true,           // return the modified document
-        upsert: true,        // create if not exists
-        runValidators: true  // ensure schema validation
+        new: true,
+        upsert: true,
+        runValidators: true
       }
     );
 
@@ -104,10 +97,7 @@ exports.deliveryCharges = async (req, res) => {
   }
 };
 
-/**
- * GET /api/business-setup/seller-commission
- * Returns the seller commission value from business setup
- */
+
 exports.getSellerCommoision = async (req, res) => {
   try {
     const setup = await BusinessSetup.findOne();
@@ -136,13 +126,11 @@ exports.uploadLogo = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-
-  // Path is already correct since multer saved it in the right folder
-  const filePath = req.file.path.replace(/\\/g, '/'); // ensures cross-platform compatibility
-
+  const filePath = req.file.path.replace(/\\/g, '/');
   res.status(201).json({
     status: true,
     message: 'Logo uploaded successfully',
     path: filePath
   });
 };
+

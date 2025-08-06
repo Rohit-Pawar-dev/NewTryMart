@@ -3,8 +3,7 @@ const Review = require("../../models/Review");
 const VariantOption = require("../../models/VariantOption");
 const Wishlist = require("../../models/wishlist");
 const Cart = require("../../models/Cart");
-
-// Frontend
+const _ = require("lodash");
 
 // Top Products
 exports.getTopProducts = async (req, res) => {
@@ -151,177 +150,6 @@ exports.getActiveProducts = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-// exports.offersForYou = async (req, res) => {
-//   try {
-//     const {
-//       limit = 8,
-//       offset = 0,
-//       min_price,
-//       max_price,
-//       min_rating,
-//     } = req.query;
-
-//     const parsedLimit = Math.max(1, parseInt(limit));
-//     const parsedOffset = Math.max(0, parseInt(offset));
-
-//     const filter = {
-//       status: 1,
-//       request_status: 1,
-//       is_offers: true,
-//     };
-
-//     if (min_price || max_price) {
-//       filter.unit_price = {};
-//       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
-//       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
-//     }
-
-//     // Get base product list
-//     let products = await Product.find(filter)
-//       .sort({ created_at: -1 })
-//       .skip(parsedOffset)
-//       .limit(parsedLimit)
-//       .lean();
-
-//     const productIds = products.map((p) => p._id);
-
-//     // Get average ratings
-//     const avgRatings = await Review.aggregate([
-//       { $match: { product_id: { $in: productIds }, status: 'active' } },
-//       {
-//         $group: {
-//           _id: '$product_id',
-//           avgRating: { $avg: '$rating' },
-//         },
-//       },
-//     ]);
-
-//     const ratingMap = {};
-//     for (const r of avgRatings) {
-//       ratingMap[r._id.toString()] = r.avgRating;
-//     }
-
-//     // Attach average rating to products and filter by min_rating if needed
-//     products = products.map((product) => {
-//       const idStr = product._id.toString();
-//       const avg = ratingMap[idStr] || 0;
-
-//       if (min_rating && avg < parseFloat(min_rating)) {
-//         return null;
-//       }
-
-//       return {
-//         ...product,
-//         average_rating: avg,
-//       };
-//     }).filter(Boolean);
-
-//     const total = await Product.countDocuments(filter);
-
-//     res.json({
-//       message: 'Offer products fetched',
-//       data: products,
-//       total,
-//       limit: parsedLimit,
-//       offset: parsedOffset,
-//       totalPages: Math.ceil(total / parsedLimit),
-//     });
-
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-// exports.trendingProducts = async (req, res) => {
-//   try {
-//     const {
-//       limit = 8,
-//       offset = 0,
-//       min_price,
-//       max_price,
-//       min_rating,
-//     } = req.query;
-
-//     const parsedLimit = Math.max(1, parseInt(limit));
-//     const parsedOffset = Math.max(0, parseInt(offset));
-
-//     const filter = {
-//       status: 1,
-//       request_status: 1,
-//       is_trending: true,
-//     };
-
-//     if (min_price || max_price) {
-//       filter.unit_price = {};
-//       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
-//       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
-//     }
-
-//     // Step 1: Fetch products as plain objects
-//     let products = await Product.find(filter)
-//       .sort({ created_at: -1 })
-//       .skip(parsedOffset)
-//       .limit(parsedLimit)
-//       .populate("seller_id")
-//       .lean(); // ⬅️ Add lean()
-
-//     const productIds = products.map((p) => p._id);
-
-//     // Step 2: Get average ratings
-//     const reviews = await Review.aggregate([
-//       { $match: { product_id: { $in: productIds }, status: "active" } },
-//       {
-//         $group: {
-//           _id: "$product_id",
-//           avgRating: { $avg: "$rating" },
-//         },
-//       },
-//     ]);
-
-//     const ratingMap = {};
-//     for (const r of reviews) {
-//       ratingMap[r._id.toString()] = r.avgRating;
-//     }
-
-//     // Step 3: Attach average_rating to each product
-//     products = products.map((product) => {
-//       const idStr = product._id.toString();
-//       const avg = ratingMap[idStr] || 0;
-
-//       return {
-//         ...product,
-//         average_rating: avg,
-//       };
-//     });
-
-//     // Step 4: Filter by min_rating if needed
-//     if (min_rating !== undefined) {
-//       const minRatingVal = parseFloat(min_rating);
-//       products = products.filter((p) => p.average_rating >= minRatingVal);
-//     }
-
-//     // Step 5: Total count
-//     const total =
-//       min_rating !== undefined ? products.length : await Product.countDocuments(filter);
-
-//     res.json({
-//       message: "Trending products fetched",
-//       data: products,
-//       total,
-//       limit: parsedLimit,
-//       offset: parsedOffset,
-//       totalPages: Math.ceil(total / parsedLimit),
-//     });
-
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-
-// New Products
 
 exports.offersForYou = async (req, res) => {
   try {
@@ -609,7 +437,6 @@ exports.getNewProducts = async (req, res) => {
   }
 };
 
-// By Category
 exports.getProductsByCategory = async (req, res) => {
   try {
     const {
@@ -706,209 +533,6 @@ exports.getProductsByCategory = async (req, res) => {
   }
 };
 
-// By Subcategory
-// exports.getProductsBySubCategory = async (req, res) => {
-//   try {
-//     const {
-//       limit = 20,
-//       offset = 0,
-//       min_price,
-//       max_price,
-//       min_rating,
-//     } = req.query;
-
-//     const parsedLimit = Math.max(1, parseInt(limit));
-//     const parsedOffset = Math.max(0, parseInt(offset));
-
-//     // Build initial filter
-//     const filter = {
-//       status: 1,
-//       request_status: 1,
-//       sub_category_id: req.params.sub_category_id,
-//     };
-
-//     // Apply price range filters if provided
-//     if (min_price || max_price) {
-//       filter.unit_price = {};
-//       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
-//       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
-//     }
-
-//     // Fetch products
-//     let products = await Product.find(filter)
-//       .sort({ created_at: -1 })
-//       .skip(parsedOffset)
-//       .limit(parsedLimit)
-//       .lean();
-
-//     const productIds = products.map((p) => p._id);
-
-//     // Filter by rating if needed
-//     if (min_rating !== undefined) {
-//       const reviews = await Review.aggregate([
-//         { $match: { product_id: { $in: productIds }, status: "active" } },
-//         {
-//           $group: {
-//             _id: "$product_id",
-//             avgRating: { $avg: "$rating" },
-//           },
-//         },
-//       ]);
-
-//       const ratingMap = {};
-//       for (const r of reviews) {
-//         ratingMap[r._id.toString()] = r.avgRating;
-//       }
-
-//       products = products.filter((p) => {
-//         const avg = ratingMap[p._id.toString()] ?? 0;
-//         return avg >= parseFloat(min_rating);
-//       });
-//     }
-
-//     // Get variation options for filtered products
-//     const filteredProductIds = products.map((p) => p._id);
-//     const variantOptions = await VariantOption.find({
-//       product_id: { $in: filteredProductIds },
-//     }).lean();
-
-//     const grouped = {};
-//     for (const variant of variantOptions) {
-//       const pid = variant.product_id.toString();
-//       if (!grouped[pid]) grouped[pid] = [];
-//       grouped[pid].push(variant);
-//     }
-
-//     const enrichedProducts = products.map((prod) => ({
-//       ...prod,
-//       variation_options: grouped[prod._id.toString()] || [],
-//     }));
-
-//     // Adjust total if min_rating was applied
-//     const total =
-//       min_rating !== undefined
-//         ? enrichedProducts.length
-//         : await Product.countDocuments(filter);
-
-//     res.json({
-//       message: "Sub-category-wise products fetched",
-//       data: enrichedProducts,
-//       total,
-//       limit: parsedLimit,
-//       offset: parsedOffset,
-//       totalPages: Math.ceil(total / parsedLimit),
-//     });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-// exports.getProductsBySubCategory = async (req, res) => {
-//   try {
-//     const {
-//       limit = 20,
-//       offset = 0,
-//       min_price,
-//       max_price,
-//       min_rating,
-//     } = req.query;
-
-//     const parsedLimit = Math.max(1, parseInt(limit));
-//     const parsedOffset = Math.max(0, parseInt(offset));
-
-//     const filter = {
-//       status: 1,
-//       request_status: 1,
-//       sub_category_id: req.params.sub_category_id,
-//     };
-
-//     // Price filtering
-//     if (min_price || max_price) {
-//       filter.unit_price = {};
-//       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
-//       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
-//     }
-
-//     // Step 1: Fetch products
-//     let products = await Product.find(filter)
-//       .sort({ created_at: -1 })
-//       .skip(parsedOffset)
-//       .limit(parsedLimit)
-//       .lean();
-
-//     const productIds = products.map((p) => p._id);
-
-//     // Step 2: Get average ratings
-//     const reviews = await Review.aggregate([
-//       { $match: { product_id: { $in: productIds }, status: "active" } },
-//       {
-//         $group: {
-//           _id: "$product_id",
-//           avgRating: { $avg: "$rating" },
-//         },
-//       },
-//     ]);
-
-//     const ratingMap = {};
-//     for (const r of reviews) {
-//       ratingMap[r._id.toString()] = r.avgRating;
-//     }
-
-//     // Step 3: Attach average_rating to each product
-//     products = products.map((product) => {
-//       const idStr = product._id.toString();
-//       const avg = ratingMap[idStr] || 0;
-
-//       return {
-//         ...product,
-//         average_rating: avg,
-//       };
-//     });
-
-//     // Step 4: Filter by min_rating
-//     if (min_rating !== undefined) {
-//       const minRatingVal = parseFloat(min_rating);
-//       products = products.filter((p) => p.average_rating >= minRatingVal);
-//     }
-
-//     // Step 5: Fetch variation options for final products
-//     const filteredProductIds = products.map((p) => p._id);
-//     const variantOptions = await VariantOption.find({
-//       product_id: { $in: filteredProductIds },
-//     }).lean();
-
-//     const grouped = {};
-//     for (const variant of variantOptions) {
-//       const pid = variant.product_id.toString();
-//       if (!grouped[pid]) grouped[pid] = [];
-//       grouped[pid].push(variant);
-//     }
-
-//     const enrichedProducts = products.map((prod) => ({
-//       ...prod,
-//       variation_options: grouped[prod._id.toString()] || [],
-//     }));
-
-//     const total =
-//       min_rating !== undefined
-//         ? enrichedProducts.length
-//         : await Product.countDocuments(filter);
-
-//     res.json({
-//       message: "Sub-category-wise products fetched",
-//       data: enrichedProducts,
-//       total,
-//       limit: parsedLimit,
-//       offset: parsedOffset,
-//       totalPages: Math.ceil(total / parsedLimit),
-//     });
-
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-
 exports.getProductsBySubCategory = async (req, res) => {
   try {
     const {
@@ -935,7 +559,7 @@ exports.getProductsBySubCategory = async (req, res) => {
     }
 
     // const userCity = city?.trim().toLowerCase();
-      const userCity = req.user?.city.toLowerCase();
+    const userCity = req.user?.city.toLowerCase();
 
     // Step 1: Fetch products with seller info
     let products = await Product.find(filter)
@@ -1026,56 +650,9 @@ exports.getProductsBySubCategory = async (req, res) => {
   }
 };
 
-// exports.getProductDetails = async (req, res) => {
-//   try {
-//     const product = await Product.findOne({
-//       _id: req.params.id,
-//       status: 1,
-//       request_status: 1,
-//     })
-//       .populate("seller_id", "shop_name logo")
-//       .lean();
-
-//     if (!product)
-//       return res.status(404).json({
-//         status: false,
-//         message: "Product not found or inactive",
-//       });
-
-//     const variation_options = await VariantOption.find({
-//       product_id: req.params.id,
-//     }).lean();
-
-//     const reviews = await Review.find({
-//       product_id: req.params.id,
-//       status: "active",
-//     })
-//       .populate("user_id", "name profilePicture")
-//       .sort({ createdAt: -1 });
-
-//     const totalRatings = reviews.reduce((sum, r) => sum + r.rating, 0);
-//     const avgRating = reviews.length
-//       ? (totalRatings / reviews.length).toFixed(1)
-//       : null;
-
-
-//     product.variation_options = variation_options;
-
-//     res.json({
-//       status: true,
-//       product,
-//       reviews,
-//       average_rating: avgRating,
-//       total_reviews: reviews.length,
-//     });
-//   } catch (err) {
-//     res.status(400).json({ status: false, message: err.message });
-//   }
-// };
 exports.getProductDetails = async (req, res) => {
   try {
     const userId = req.user?.id;
-    // const userId = req.user && req.user.id ? req.user.id : null;
 
     const product = await Product.findOne({
       _id: req.params.id,
@@ -1085,11 +662,12 @@ exports.getProductDetails = async (req, res) => {
       .populate("seller_id", "shop_name logo")
       .lean();
 
-    if (!product)
+    if (!product) {
       return res.status(404).json({
         status: false,
         message: "Product not found or inactive",
       });
+    }
 
     const variation_options = await VariantOption.find({
       product_id: req.params.id,
@@ -1107,38 +685,33 @@ exports.getProductDetails = async (req, res) => {
       ? (totalRatings / reviews.length).toFixed(1)
       : null;
 
-    // Add variation options to product
-    product.variation_options = variation_options;
-
-    // Default values if user not logged in
     let cartItems = [];
     let wishlistItems = [];
-    // console.log("userId >>>>", userId);
 
     if (userId) {
-      // Find cart items for this user and product
       cartItems = await Cart.find({
-
         customer_id: userId,
         product_id: req.params.id,
       }).lean();
 
-      // Find wishlist items for this user and product
       wishlistItems = await Wishlist.find({
-
         userId: userId,
         productId: req.params.id,
       }).lean();
     }
-    product.variation_options = variation_options.map((option) => {
-      const inCart = cartItems.some(
-        (item) =>
-          item.variant_option_id?.toString() === option._id.toString()
-      );
-      const inWishlist = wishlistItems.some(
-        (item) =>
-          item.variant_option_id?.toString() === option._id.toString()
-      );
+
+    const enrichedVariationOptions = variation_options.map((option) => {
+      const inCart = cartItems.some((item) => {
+        return item.variant_id?.toString() === option._id?.toString();
+      });
+
+      const inWishlist = wishlistItems.some((item) => {
+        return (
+          item.variantValues &&
+          Object.keys(item.variantValues).length > 0 &&
+          _.isEqual(item.variantValues, option.variant_values)
+        );
+      });
 
       return {
         ...option,
@@ -1147,8 +720,12 @@ exports.getProductDetails = async (req, res) => {
       };
     });
 
-    const productInCart = cartItems.some((item) => !item.variant_option_id);
-    const productInWishlist = wishlistItems.some((item) => !item.variant_option_id);
+    const productInCart = cartItems.some((item) => !item.is_variant);
+    const productInWishlist = wishlistItems.some(
+      (item) => !item.variantValues || Object.keys(item.variantValues).length === 0
+    );
+
+    product.variation_options = enrichedVariationOptions;
 
     res.json({
       status: true,
@@ -1162,6 +739,8 @@ exports.getProductDetails = async (req, res) => {
       total_reviews: reviews.length,
     });
   } catch (err) {
-    res.status(400).json({ status: false, message: err.message });
+    console.error("Get product details error:", err);
+    res.status(500).json({ status: false, message: err.message });
   }
 };
+

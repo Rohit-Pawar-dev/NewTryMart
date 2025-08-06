@@ -1,11 +1,9 @@
 const jwt = require("jsonwebtoken");
 const optionalAuth = (req, res, next) => {
   const authHeader = req.header("Authorization");
-//   console.log("Authorization header received:", authHeader);
-
+  //   console.log("Authorization header received:", authHeader);
   const token = authHeader?.split(" ")[1];
-//   console.log("Extracted token:", token);
-
+  //   console.log("Extracted token:", token);
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -17,9 +15,7 @@ const optionalAuth = (req, res, next) => {
   } else {
     req.user = null;
   }
-
   next();
 };
-
 
 module.exports = optionalAuth;
