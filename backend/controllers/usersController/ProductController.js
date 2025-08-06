@@ -1129,9 +1129,6 @@ exports.getProductDetails = async (req, res) => {
         userId: userId,
         productId: req.params.id,
       }).lean();
-      // console.log(req.params.id);
-      // console.log("...............", cartItems);
-      // console.log("........", wishlistItems);
     }
     product.variation_options = variation_options.map((option) => {
       const inCart = cartItems.some(

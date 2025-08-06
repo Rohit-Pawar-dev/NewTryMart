@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const couponController = require("../controllers/AdminsController/couponController");
+const auth = require("../middleware/authMiddleware");
 
 // GENERATE coupon code (place before :id to avoid conflict)
 router.get("/generate/code", couponController.generateCouponCode);
@@ -22,7 +23,7 @@ router.delete("/:id", couponController.deleteCoupon);
 
 // APPLY coupon
 
-router.post("/apply", couponController.applyCoupon);
-router.delete("/remove-coupon/:userId", couponController.removeCoupon);
+router.post("/apply", auth, couponController.applyCoupon);
+router.post("/remove-coupon", auth, couponController.removeCoupon);
 
 module.exports = router;

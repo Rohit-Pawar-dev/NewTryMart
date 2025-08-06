@@ -121,7 +121,6 @@ exports.removeFromWishlist = async (req, res) => {
         }
 
         const userObjectId = new mongoose.Types.ObjectId(userId);
-        // const wishlistItemId = new mongoose.Types.ObjectId(itemId);
           const productObjectId = new mongoose.Types.ObjectId(itemId);
 
         const wishlistItem = await Wishlist.findOneAndDelete({productId: productObjectId, userId: userObjectId });

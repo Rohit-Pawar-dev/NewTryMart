@@ -8,7 +8,6 @@ const {
   getUserOrders,
   getUserOrderById,
 } = require("../controllers/usersController/OrderController");
-
 const productController = require("../controllers/usersController/ProductController");
 const sellerController = require("../controllers/usersController/SellerController");
 const NotificationController = require("../controllers/usersController/NotificationController");
@@ -18,16 +17,13 @@ const {
 } = require("../controllers/usersController/OrderController");
 const wishlistController = require("../controllers/usersController/wishlistController");
 const getCustomMulter = require('./../utils/customMulter');
-
 const uploadSubCategory = getCustomMulter('user');
 const walletController = require("../controllers/usersController/walletController");
-const optionalAuth = require ("../middleware/optionalAuth");
-
-// Routes
+const optionalAuth = require("../middleware/optionalAuth");
 
 // product routes
-router.get("/products/offers_for_you", optionalAuth , productController.offersForYou);
-router.get("/products/trending", optionalAuth , productController.trendingProducts);
+router.get("/products/offers_for_you", optionalAuth, productController.offersForYou);
+router.get("/products/trending", optionalAuth, productController.trendingProducts);
 
 // order routes
 router.get("/orders", auth, getUserOrders);
@@ -57,48 +53,34 @@ router.post(
   upload.single("profile"),
   userController.uploadProfilePicture
 );
-
-router.post('/upload-profilePicture', uploadSubCategory.single('profilePicture'),userController.uploadProfileImage);
+router.post('/upload-profilePicture', uploadSubCategory.single('profilePicture'), userController.uploadProfileImage);
 router.post("/update-profile", auth, userController.updateProfile);
-
-
-router.post
-
 router.get("/profile", auth, userController.getProfile);
-
 router.post("/place-order-online", auth, placeOrderOnline);
 
 // Wallet payment order
 router.post("/place-order-wallet", auth, placeOrderFromWallet);
 
 /** ------------------ Wishlist Routes ------------------- **/
-
-router.post("/wishlist/add",auth, wishlistController.addToWishlist);
+router.post("/wishlist/add", auth, wishlistController.addToWishlist);
 router.get("/wishlist/view", auth, wishlistController.getWishlist);
-router.delete("/wishlist/remove/:itemId",auth, wishlistController.removeFromWishlist);
-
-
+router.delete("/wishlist/remove/:itemId", auth, wishlistController.removeFromWishlist);
 
 /**---------------------Wallet Routes-------------------- */
-router.post("/wallet/debit",auth, walletController.debitMoneyFromWallet);
+router.post("/wallet/debit", auth, walletController.debitMoneyFromWallet);
 
 // Get wallet balance
-router.get("/wallet/balance",auth, walletController.getWalletBalance);
-
+router.get("/wallet/balance", auth, walletController.getWalletBalance);
 
 // Add monet to wallet
-router.post("/wallet/credit",auth, walletController.addMoneyToWallet);
+router.post("/wallet/credit", auth, walletController.addMoneyToWallet);
 
 
 // Get all wallet transactions
-router.get("/wallet/transactions",auth, walletController.getWalletTransactions);
-
+router.get("/wallet/transactions", auth, walletController.getWalletTransactions);
 
 //Get delivery Charges
-
 router.get("/business-setup/deliveryCharges", bussinessController.deliveryCharges);
 router.get("/business-setup/seller-commission", bussinessController.getSellerCommoision);
-
-
 
 module.exports = router;

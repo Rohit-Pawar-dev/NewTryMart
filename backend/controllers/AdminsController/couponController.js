@@ -121,7 +121,8 @@ exports.generateCouponCode = (req, res) => {
 
 (exports.applyCoupon = async (req, res) => {
   try {
-    const { couponCode, userId } = req.body;
+    const userId = req.user?.id;
+    const { couponCode } = req.body;
 
     if (!couponCode || !userId) {
       return res.status(400).json({
@@ -244,8 +245,8 @@ exports.generateCouponCode = (req, res) => {
   }
 }),
   (exports.removeCoupon = async (req, res) => {
-    const userId = req.params.userId;
-
+    const userId = req.user?.id;
+      //  console.log(userId);
     if (!userId) {
       return res.status(400).json({
         status: false,

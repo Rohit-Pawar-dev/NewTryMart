@@ -11,26 +11,6 @@ exports.create = async (req, res) => {
   }
 };
 
-// Create single
-// exports.create = async (req, res) => {
-//   try {
-//     const { product_id, user_id, order_id } = req.body;
-
-//     const existingReview = await Review.findOne({ product_id, user_id, order_id });
-//     if (existingReview) {
-//       return res.status(400).json({ error: 'You have already reviewed this product in this order.' });
-//     }
-
-//     const review = await Review.create(req.body);
-//     res.status(201).json(review);
-//   } catch (err) {
-//     res.status(400).json({ error: err.message });
-//   }
-// };
-
-// Read All with search, filter, pagination
-
-
 exports.getAll = async (req, res) => {
   try {
     const {
@@ -57,7 +37,7 @@ exports.getAll = async (req, res) => {
     const total = await Review.countDocuments(filter);
 
     const reviews = await Review.find(filter)
-      .populate("product_id user_id") // add order_id here when orders added
+      .populate("product_id user_id") 
       .sort({ createdAt: -1 })
       .skip(parseInt(offset))
       .limit(parseInt(limit));

@@ -5,127 +5,10 @@ const Mongoose = require("mongoose");
 const Wishlist = require("../../models/wishlist");
 const BusinessSetup = require('../../models/BussinessSetup');
 module.exports = {
-  // async getCart(req, res) {
-  //   const userId = req.params.userId;
-
-  //   try {
-  //     const cartItems = await Cart.find({
-  //       customer_id: userId,
-  //       save_for_later: false,
-  //     });
-  //     let totalAmount = 0;
-  //     let totalDiscount = 0;
-  //     let totalTax = 0;
-  //     let couponAmount = 0;
-  //     let couponCode = null;
-
-  //     // Added for breakdown
-  //     let totalBasePrice = 0;
-  //     let totalPriceAfterDiscount = 0;
-
-  //     const updatedCart = [];
-
-  //     for (const item of cartItems) {
-  //       let basePrice,
-  //         discountAmount = 0,
-  //         taxAmount = 0,
-  //         finalPrice = 0;
-  //       let variant = null;
-
-  //       const product = await Product.findById(item.product_id);
-  //       if (!product) continue;
-
-  //       if (item.is_variant && item.variant_id) {
-  //         variant = await VariantOption.findOne({
-  //           _id: item.variant_id,
-  //           product_id: item.product_id,
-  //         });
-  //         if (!variant) continue;
-
-  //         basePrice = variant.price;
-  //       } else {
-  //         basePrice = product.unit_price;
-  //       }
-
-  //       // Calculate discount
-  //       if (product.discount_type === "percent") {
-  //         discountAmount = (product.discount / 100) * basePrice;
-  //       } else {
-  //         discountAmount = product.discount;
-  //       }
-  //       discountAmount = Math.min(discountAmount, basePrice);
-
-  //       const priceAfterDiscount = basePrice - discountAmount;
-
-  //       // Calculate tax
-  //       taxAmount = (product.tax / 100) * priceAfterDiscount;
-  //       finalPrice = priceAfterDiscount + taxAmount;
-
-  //       // Add to totals (no change to original logic)
-  //       totalDiscount += discountAmount * item.quantity;
-  //       totalTax += taxAmount * item.quantity;
-  //       totalAmount += finalPrice * item.quantity;
-
-  //       // Add to new totals for breakdown
-  //       totalBasePrice += basePrice * item.quantity;
-  //       totalPriceAfterDiscount += priceAfterDiscount * item.quantity;
-
-  //       // Coupon info (once)
-  //       if (item.coupon_code && item.coupon_amount && couponAmount === 0) {
-  //         couponAmount = item.coupon_amount;
-  //         couponCode = item.coupon_code;
-  //       }
-
-  //       updatedCart.push({
-  //         ...item._doc,
-  //         variant,
-  //         product_name: product.name,
-  //         thumbnail: product.thumbnail,
-  //         base_price: basePrice,
-  //         discount: discountAmount,
-  //         price_after_discount: priceAfterDiscount,
-  //         tax: taxAmount,
-  //         final_price: finalPrice,
-  //       });
-  //     }
-
-  //     // Calculate final total after coupon
-  //     const finalTotalAmount = Math.max(0, totalAmount - couponAmount);
-
-  //     res.json({
-  //       status: true,
-  //       message: "Cart fetched successfully",
-  //       data: {
-  //         cartItems: updatedCart,
-  //         totalAmount: finalTotalAmount,
-  //         totalDiscount,
-  //         totalTax,
-  //         coupon: couponCode
-  //           ? {
-  //             code: couponCode,
-  //             discount: couponAmount,
-  //           }
-  //           : null,
-
-  //         breakdown: {
-  //           totalBasePrice,
-  //           totalDiscount,
-  //           totalPriceAfterDiscount,
-  //           totalTax,
-  //           couponAmount,
-  //           finalPayable: finalTotalAmount,
-  //         },
-  //       },
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({ status: false, message: error.message });
-  //   }
-  // },
-
 
   async getCart(req, res) {
-    const userId = req.params.userId;
-
+    // const userId = req.params.userId;
+    const userId = req.user?.id;
     try {
       const cartItems = await Cart.find({
         customer_id: userId,
@@ -240,10 +123,11 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-  
   async addToCart(req, res) {
-    const { userId, productId, variantId, is_variant, quantity = 1 } = req.body;
+    const userId = req.user?.id;
+    const { productId, variantId, is_variant, quantity = 1 } = req.body;
 
+    // console.log(userId);
     if (!userId || !productId) {
       return res
         .status(400)
@@ -348,9 +232,9 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-  // Remove a product from cart
   async removeFromCart(req, res) {
-    const { userId, productId, variantId, is_variant } = req.body;
+    const userId = req.user?.id;
+    const { productId, variantId, is_variant } = req.body;
 
     if (!userId || !productId) {
       return res
@@ -374,10 +258,9 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
-  // Update quantity for a cart item
   async updateQuantity(req, res) {
-    const { userId, productId, variantId, is_variant, quantity } = req.body;
+    const userId = req.user?.id;
+    const { productId, variantId, is_variant, quantity } = req.body;
 
     if (!userId || !productId || quantity === undefined) {
       return res.status(400).json({
@@ -417,10 +300,9 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
-  // Clear cart for a user
   async clearCart(req, res) {
-    const userId = req.params.userId;
+    // const userId = req.params.userId;
+    const userId = req.user?.id;
 
     try {
       await Cart.deleteMany({ customer_id: userId });
@@ -432,10 +314,9 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
-  // Increase quantity (+)
   async increaseQuantity(req, res) {
-    const { userId, productId, variantId, is_variant } = req.body;
+    const userId = req.user?.id;
+    const { productId, variantId, is_variant } = req.body;
 
     if (!userId || !productId) {
       return res.status(400).json({
@@ -509,10 +390,9 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
-  // Decrease quantity (–)
   async decreaseQuantity(req, res) {
-    const { userId, productId, variantId, is_variant } = req.body;
+    const userId = req.user?.id;
+    const { productId, variantId, is_variant } = req.body;
 
     if (!userId || !productId) {
       return res.status(400).json({
@@ -563,9 +443,9 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
   async toggleSaveForLater(req, res) {
-    const { userId, productId, variantId, is_variant, saveForLater } = req.body;
+    const userId = req.user?.id;
+    const { productId, variantId, is_variant, saveForLater } = req.body;
 
     if (!userId || !productId || typeof saveForLater !== "boolean") {
       return res.status(400).json({
@@ -601,9 +481,9 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
   async toggleMoveToCart(req, res) {
-    const { userId, productId, variantId, is_variant, saveForLater } = req.body;
+    const userId = req.user?.id;
+    const { productId, variantId, is_variant, saveForLater } = req.body;
 
     if (!userId || !productId || typeof saveForLater !== "boolean") {
       return res.status(400).json({
@@ -646,9 +526,8 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
   async getSavedForLater(req, res) {
-    const userId = req.params.userId;
+    const userId = req.user?.id;
 
     try {
       const savedItems = await Cart.find({
@@ -665,9 +544,8 @@ module.exports = {
       res.status(500).json({ status: false, message: error.message });
     }
   },
-
   async cartCount(req, res) {
-    const userId = req.params.userId;
+    const userId = req.user?.id;
     if (!userId) {
       return res.status(400).json({
         status: false,

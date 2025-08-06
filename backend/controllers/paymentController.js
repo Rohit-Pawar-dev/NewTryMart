@@ -110,7 +110,7 @@ const createRazorpayOrder = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("🔥 Razorpay Order Error:", error);
+    console.error("Razorpay Order Error:", error);
     return res.status(500).json({
       status: false,
       message: "Failed to create Razorpay order",
@@ -158,7 +158,7 @@ const verifyRazorpaySignature = (req, res) => {
       });
     }
   } catch (error) {
-    console.error("🔥 Razorpay Verify Error:", error);
+    console.error("Razorpay Verify Error:", error);
     return res.status(500).json({
       status: false,
       message: "Failed to verify payment",
