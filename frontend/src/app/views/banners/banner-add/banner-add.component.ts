@@ -197,7 +197,7 @@ export class BannerAddComponent implements OnDestroy {
     this.bannerService.createBanner(payload).subscribe({
       next: () => {
         Swal.fire('Success', 'Banner created successfully!', 'success').then(() =>
-          this.router.navigate(['/banners'])
+          this.router.navigate(['/admin/banners'])
         );
       },
       error: (err) => {

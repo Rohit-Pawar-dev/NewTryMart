@@ -77,7 +77,7 @@ export class SubCategoryAddComponent implements OnInit {
       this.subCategoryService.createSubCategory(this.form.value).subscribe({
         next: () => {
           Swal.fire('Success', 'Sub-category created successfully!', 'success');
-          this.router.navigate(['/sub-categories']);
+          this.router.navigate(['/admin/sub-categories']);
         },
         error: () => {
           Swal.fire('Error', 'Failed to create sub-category.', 'error');

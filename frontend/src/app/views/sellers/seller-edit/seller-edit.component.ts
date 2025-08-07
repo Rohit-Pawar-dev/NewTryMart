@@ -172,7 +172,7 @@ export class SellerEditComponent implements OnInit {
       this.sellerService.updateSeller(this.sellerId, updatedSeller).subscribe({
         next: () => {
           Swal.fire('Updated!', 'Seller has been updated.', 'success');
-          this.router.navigate(['/sellers']);
+          this.router.navigate(['/admin/sellers']);
         },
         error: (err) => {
           console.error('Error updating seller:', err);

@@ -64,7 +64,7 @@ export class CouponAddComponent {
               text: 'The coupon has been successfully added!',
               confirmButtonText: 'OK',
             }).then(() => {
-              this.router.navigate(['/coupons']);
+              this.router.navigate(['/admin/coupons']);
             });
           },
           error: () => {

@@ -167,7 +167,7 @@ onProfileSelected(event: Event): void {
     this.sellerService.createSeller(newSeller).subscribe({
       next: () => {
         Swal.fire('Created!', 'Seller has been created.', 'success');
-        this.router.navigate(['/sellers']);
+        this.router.navigate(['/admin/sellers']);
       },
       error: (err) => {
         console.error('Error creating seller:', err);

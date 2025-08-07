@@ -12,7 +12,7 @@
         class="form-control w-25"
         placeholder="Search by title"
       />
-      <button class="btn btn-primary primary" routerLink="/banners/add">
+      <button class="btn btn-primary primary" routerLink="/admin/banners/add">
         Add New Banner
       </button>
     </div>
@@ -70,7 +70,7 @@
               <div class="btn-group" role="group">
                 <button
                   class="btn btn-sm btn-outline-primary primaryout"
-                  [routerLink]="['/banners/view', banner._id]"
+                  [routerLink]="['/admin/banners/view', banner._id]"
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
                   title="View"
@@ -80,7 +80,7 @@
 
                 <button
                   class="btn btn-sm btn-outline-warning"
-                  [routerLink]="['/banners/edit', banner._id]"
+                  [routerLink]="['/admin/banners/edit', banner._id]"
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
                   title="Edit"

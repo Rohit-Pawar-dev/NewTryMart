@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment'; // adjust if needed
+import { environment } from '../../../environments/environment'; 
 
 
 import { IconDirective } from '@coreui/icons-angular';

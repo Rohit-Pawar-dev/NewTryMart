@@ -94,7 +94,7 @@ export class SubCategoryEditComponent implements OnInit {
       this.subCategoryService.updateSubCategory(this.id, this.form.value).subscribe({
         next: () => {
           Swal.fire('Success', 'Sub-category updated successfully!', 'success');
-          this.router.navigate(['/sub-categories']);
+          this.router.navigate(['/admin/sub-categories']);
         },
         error: () => {
           Swal.fire('Error', 'Failed to update sub-category.', 'error');

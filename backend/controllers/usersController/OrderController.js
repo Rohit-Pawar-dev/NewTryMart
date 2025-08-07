@@ -356,6 +356,7 @@ async function placeOrderOnline(req, res) {
   try {
     const userId = req.user.id;
     const shippingAddressId = req.body.address_id;
+    const razorpayPaymentId = req.body.razorpay_payment_id;
 
     const cartItems = await Cart.find({ customer_id: userId, save_for_later: false })
       .populate("product_id")
@@ -477,6 +478,7 @@ async function placeOrderOnline(req, res) {
         coupon_amount: couponAmount,
         seller_id: sellerKey === "admin" ? null : items[0].seller_id,
         seller_is: sellerKey === "admin" ? "admin" : "seller",
+        transaction_id: razorpayPaymentId,
       });
 
       await order.save();

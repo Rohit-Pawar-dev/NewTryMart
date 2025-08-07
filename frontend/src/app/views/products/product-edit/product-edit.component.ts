@@ -235,7 +235,7 @@ export class ProductEditComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/products']);
+    this.router.navigate(['/admin/products']);
   }
 
 
@@ -360,7 +360,7 @@ export class ProductEditComponent implements OnInit {
       next: () => {
         this.isSubmitting = false;
         Swal.fire('Updated!', 'Product successfully updated.', 'success').then(() =>
-          this.router.navigate(['/products'])
+          this.router.navigate(['/admin/products'])
         );
       },
       error: () => {

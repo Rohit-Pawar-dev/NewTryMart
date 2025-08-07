@@ -23,7 +23,7 @@
           </button> -->
 
           <!-- Add Product -->
-          <button class="btn btn-primary primary mx-2 mt-2" routerLink="/products/add">
+          <button class="btn btn-primary primary mx-2 mt-2" routerLink="/admin/products/add">
             Add New Product
           </button>
         </div>
@@ -119,12 +119,12 @@
 
             <td>
               <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-outline-primary primaryout" [routerLink]="['/products/view', product._id]"
+                <button class="btn btn-sm btn-outline-primary primaryout" [routerLink]="['/admin/products/view', product._id]"
                   title="View">
                   <i class="far fa-eye fs-6"></i>
                 </button>
 
-                <button class="btn btn-sm btn-outline-warning" [routerLink]="['/products/edit', product._id]"
+                <button class="btn btn-sm btn-outline-warning" [routerLink]="['/admin/products/edit', product._id]"
                   title="Edit">
                   <i class="cil-pencil"></i>
                 </button>

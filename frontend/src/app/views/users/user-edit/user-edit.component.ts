@@ -93,7 +93,7 @@ export class UserEditComponent implements OnInit {
       this.userService.updateUser(this.userId!, updatedUser).subscribe({
         next: () => {
           Swal.fire('Success', 'User updated successfully!', 'success');
-          this.router.navigate(['/users']);
+          this.router.navigate(['/admin/users']);
         },
         error: (error) => {
           console.error('Error updating user:', error);

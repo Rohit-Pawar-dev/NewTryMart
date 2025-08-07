@@ -61,7 +61,7 @@ export class CategoryAddComponent {
       this.categoryService.createCategory(this.form.value).subscribe({
         next: () => {
           Swal.fire('Success', 'Category created successfully!', 'success');
-          this.router.navigate(['/categories']);
+          this.router.navigate(['/admin/categories']);
         },
         error: () => {
           Swal.fire('Error', 'Failed to create category.', 'error');

@@ -32,7 +32,6 @@ import {
     ColComponent,
     CardComponent,
     CardBodyComponent,
-    CardGroupComponent,
     InputGroupComponent,
     InputGroupTextDirective,
     FormControlDirective,

@@ -88,7 +88,7 @@ export class CategoryEditComponent implements OnInit {
                 icon: 'success',
                 confirmButtonColor: '#3085d6',
               }).then(() => {
-                this.router.navigate(['/categories']);
+                this.router.navigate(['/admin/categories']);
               });
             },
             error: () => {

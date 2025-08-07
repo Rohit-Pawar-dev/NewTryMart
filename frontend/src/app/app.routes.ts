@@ -1,26 +1,28 @@
 import { Routes } from '@angular/router';
 import { DefaultLayoutComponent } from './layout';
 import { AuthGuard } from './guards/auth.guard';
+import { SellerAuthGuard } from './guards/seller-auth.guard';
 import { AttributeComponent } from './views/attribute/attribute.component';
 import { BusinessCategoriesComponent } from './views/bussinessCategories/bussiness-Categories.component';
 import { SellerEditComponent } from './views/sellerViews/seller-edit/seller-edit.component';
 import { SellerBankInfoComponent } from './views/sellerViews/seller-bank-info/seller-bank-info.component';
+import { DashboardComponent } from './views/dashboard/dashboard.component';
+import { SellerDashboardLayoutComponent } from './layout';
 
 export const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
-  },
-
-  {
-    path: '',
+    path: 'admin',
     component: DefaultLayoutComponent,
     canActivate: [AuthGuard],
     data: {
       title: 'Home',
     },
     children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
       {
         path: 'attributes',
         component: AttributeComponent,
@@ -29,7 +31,6 @@ export const routes: Routes = [
         path: 'bussiness-categories',
         component: BusinessCategoriesComponent,
       },
-
       {
         path: 'dashboard',
         loadChildren: () =>
@@ -40,11 +41,6 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/orders/orders.module').then((m) => m.OrdersModule),
       },
-      // app-routing.module.ts
-      // { path: 'invoice/:id', component: InvoiceComponent },
-
-
-
       {
         path: 'users',
         loadChildren: () =>
@@ -86,20 +82,17 @@ export const routes: Routes = [
             (m) => m.ProductModule
           ),
       },
-
-
       {
         path: 'business-setup',
-        canActivate: [AuthGuard], // <-- also protect standalone ones
+        canActivate: [AuthGuard],
         loadComponent: () =>
-          import('././views/bussinesssetup/business-setup.component').then(
+          import('./views/bussinesssetup/business-setup.component').then(
             (m) => m.BusinessSetupComponent
           ),
         data: {
           title: 'Business Setup Page',
         },
       },
-
       {
         path: 'static-pages',
         loadChildren: () =>
@@ -125,13 +118,16 @@ export const routes: Routes = [
           import('./views/pages/routes').then((m) => m.routes),
       },
       {
-        path: 'admin-profile',
+        path: 'profile',
         loadChildren: () =>
-          import('./views/adminProfile/admin-profile.module').then(m => m.AdminProfileModule),
+          import('./views/adminProfile/admin-profile.module').then(
+            (m) => m.AdminProfileModule
+          ),
         data: {
-          title: 'Admin Profile'
-        }
-      }, {
+          title: 'Admin Profile',
+        },
+      },
+      {
         path: 'seller-login',
         loadComponent: () =>
           import('./views/sellers/seller-login/seller-login.component').then(
@@ -139,16 +135,16 @@ export const routes: Routes = [
           ),
         data: {
           title: 'Seller Login',
-        }
+        },
       },
-        {
-    path: 'seller/edit/:id',
-    component: SellerEditComponent,
-  },
-        {
-    path: 'bank-info',
-    component: SellerBankInfoComponent,
-  },
+      {
+        path: 'seller/edit/:id',
+        component: SellerEditComponent,
+      },
+      {
+        path: 'bank-info',
+        component: SellerBankInfoComponent,
+      },
       {
         path: 'seller-register',
         loadComponent: () =>
@@ -157,7 +153,7 @@ export const routes: Routes = [
           ),
         data: {
           title: 'Seller Register',
-        }
+        },
       },
       {
         path: 'transactions',
@@ -178,11 +174,28 @@ export const routes: Routes = [
         data: {
           title: 'Seller Product',
         },
-      }
-
+      },
     ],
   },
 
+
+  {
+    path: 'seller',
+    component: SellerDashboardLayoutComponent,
+    canActivate: [SellerAuthGuard],
+    data: {
+      title: 'Seller Dashboard',
+    },
+    children: [
+
+      // {
+      //   path: 'dashboard',
+      //   loadChildren: () =>
+      //     import('./views/dashboard/routes').then((m) => m.routes),
+      // },
+    ],
+
+  },
 
   // Public Pages
   {
@@ -206,7 +219,7 @@ export const routes: Routes = [
     },
   },
   {
-    path: 'login',
+    path: 'admin/login',
     loadComponent: () =>
       import('./views/pages/login/login.component').then(
         (m) => m.LoginComponent
@@ -226,7 +239,17 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'seller/login',
+    loadComponent: () =>
+      import('./seller-views/pages/login/login.component').then(
+        (m) => m.SellerLoginComponent
+      ),
+    data: {
+      title: 'Login Page',
+    },
+  },
+  {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: '/admin/dashboard',
   },
 ];

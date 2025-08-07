@@ -14,7 +14,7 @@
         />
         <button
           class="btn btn-primary primary mx-3 mt-2"
-          routerLink="/sub-categories/add"
+          routerLink="/admin/sub-categories/add"
         >
           Add New SubCategory
         </button>
@@ -64,7 +64,7 @@
               <div class="btn-group" role="group">
                 <button
                   class="btn btn-sm btn-outline-primary primaryout"
-                  [routerLink]="['/sub-categories/view', sub._id]"
+                  [routerLink]="['/admin/sub-categories/view', sub._id]"
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
                   title="View"
@@ -73,7 +73,7 @@
                 </button>
                 <button
                   class="btn btn-sm btn-outline-warning"
-                  [routerLink]="['/sub-categories/edit', sub._id]"
+                  [routerLink]="['/admin/sub-categories/edit', sub._id]"
                   data-bs-toggle="tooltip"
                   data-bs-placement="top"
                   title="Edit"

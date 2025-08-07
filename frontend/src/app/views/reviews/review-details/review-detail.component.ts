@@ -48,6 +48,6 @@ export class ReviewDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/reviews']);
+    this.router.navigate(['/admin/reviews']);
   }
 }

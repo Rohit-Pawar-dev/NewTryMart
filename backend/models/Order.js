@@ -62,6 +62,7 @@ const orderSchema = new Schema(
     coupon_amount: { type: Number, default: 0 },
     shipping_cost: { type: Number, default: 0 },
     delivery_charge: { type: Number, default: 0 },
+    transaction_id: { type: String, default: null },
   },
   { timestamps: true }
 );

@@ -103,6 +103,6 @@ export class ProductViewComponent implements OnInit {
     });
   }
   goBack(): void {
-    this.router.navigate(['/products']);
+    this.router.navigate(['/admin/products']);
   }
 }

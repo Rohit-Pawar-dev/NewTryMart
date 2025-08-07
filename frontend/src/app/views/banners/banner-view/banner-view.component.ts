@@ -20,7 +20,7 @@ export class BannerViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private bannerService: BannerService,
-    public router: Router // made public for template use
+    public router: Router 
   ) {}
 
   ngOnInit(): void {

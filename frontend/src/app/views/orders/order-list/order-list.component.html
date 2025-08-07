@@ -107,7 +107,7 @@
             </span>
           </td>
           <td class="d-flex gap-2 mt-2 bg-white">
-            <a [routerLink]="['/orders', order._id]" class="btn btn-outline-primary primaryout btn-sm" title="View">
+            <a [routerLink]="['/admin/orders', order._id]" class="btn btn-outline-primary primaryout btn-sm" title="View">
               <i class="far fa-eye fs-6"></i>
             </a>
             <!-- <button class="btn btn-outline-success btn-sm" title="Download">
@@ -115,7 +115,7 @@
             </button> -->
             <!-- Cloud download button in OrderListComponent -->
             <button class="btn btn-outline-success btn-sm" title="Download Invoice"
-              [routerLink]="['/orders/invoice', order._id]" [queryParams]="{ download: true }">
+              [routerLink]="['/admin/orders/invoice', order._id]" [queryParams]="{ download: true }">
               <i class="cil-cloud-download"></i>
             </button>
 

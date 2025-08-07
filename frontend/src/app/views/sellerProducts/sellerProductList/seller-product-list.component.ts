@@ -60,7 +60,7 @@ export class SellerProductListComponent implements OnInit {
   }
 
   editProduct(id: string): void {
-    this.router.navigate(['/products/edit', id]);
+    this.router.navigate(['/admin/products/edit', id]);
   }
 
   deleteProduct(id: string): void {

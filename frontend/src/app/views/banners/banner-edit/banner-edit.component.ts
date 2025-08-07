@@ -93,7 +93,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Failed to load banner', err);
-        Swal.fire('Error', 'Failed to load banner data.', 'error').then(() => this.router.navigate(['/banners']));
+        Swal.fire('Error', 'Failed to load banner data.', 'error').then(() => this.router.navigate(['/admin/banners']));
       },
     });
   }
@@ -247,7 +247,7 @@ export class BannerEditComponent implements OnInit, OnDestroy {
     this.bannerService.updateBanner(this.bannerId, payload).subscribe({
       next: () => {
         Swal.fire('Success', 'Banner updated successfully!', 'success').then(() =>
-          this.router.navigate(['/banners'])
+          this.router.navigate(['/admin/banners'])
         );
       },
       error: (err) => {

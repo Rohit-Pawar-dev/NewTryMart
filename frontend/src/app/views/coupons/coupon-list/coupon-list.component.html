@@ -14,7 +14,7 @@
           class="form-control w-25 border border-outline-primary mx-3 mt-2"
           placeholder="Search by title or code"
         />
-        <button class="btn btn-primary primary mx-3 mt-2" routerLink="/coupons/add">
+        <button class="btn btn-primary primary mx-3 mt-2" routerLink="/admin/coupons/add">
           Add New Coupon
         </button>
       </div>
@@ -59,13 +59,13 @@
               <div class="btn-group" role="group">
                 <button
                   class="btn btn-sm btn-outline-primary primaryout"
-                  [routerLink]="['/coupons/view', coupon._id]"
+                  [routerLink]="['/admin/coupons/view', coupon._id]"
                 >
                   <i class="far fa-eye fs-6"></i>
                 </button>
                 <button
                   class="btn btn-sm btn-outline-warning"
-                  [routerLink]="['/coupons/edit', coupon._id]"
+                  [routerLink]="['/admin/coupons/edit', coupon._id]"
                 >
                   <i class="cil-pencil"></i>
                 </button>

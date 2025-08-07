@@ -83,7 +83,7 @@ export class CouponEditComponent implements OnInit {
               text: 'The coupon has been successfully updated!',
               confirmButtonText: 'OK',
             }).then(() => {
-              this.router.navigate(['/coupons']);
+              this.router.navigate(['/admin/coupons']);
             });
           },
           error: () => {

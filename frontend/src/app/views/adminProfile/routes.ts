@@ -1,4 +1,3 @@
-// src/app/views/admin-profile/routes.ts
 import { Routes } from '@angular/router';
 import { AdminProfileComponent } from './admin-profile.component';
 

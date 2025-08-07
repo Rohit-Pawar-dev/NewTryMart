@@ -75,7 +75,7 @@ export class UserAddComponent implements OnInit {
       this.userService.createUser(newUser).subscribe({
         next: () => {
           Swal.fire('Success', 'User created successfully!', 'success');
-          this.router.navigate(['/users']);
+          this.router.navigate(['/admin/users']);
         },
         error: (error) => {
           console.error('Error creating user:', error);

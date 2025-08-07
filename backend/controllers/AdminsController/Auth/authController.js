@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
-
 // Create Admin
 const createAdmin = async (req, res) => {
   try {
@@ -35,7 +34,6 @@ const createAdmin = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
 // Login Admin
 const loginAdmin = async (req, res) => {
   try {
@@ -82,7 +80,6 @@ const loginAdmin = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
 // Get Admin by ID
 const getAdmin = async (req, res) => {
   try {
@@ -99,7 +96,6 @@ const getAdmin = async (req, res) => {
     res.status(500).json({ status: false, message: 'Server error', error });
   }
 };
-
 // Update Admin (excluding password)
 const updateAdmin = async (req, res) => {
   try {
@@ -130,7 +126,6 @@ const updateAdmin = async (req, res) => {
     res.status(500).json({ status: false, message: 'Server error', error });
   }
 };
-
 // Change Admin Password
 const changePassword = async (req, res) => {
   try {
@@ -157,7 +152,6 @@ const changePassword = async (req, res) => {
     res.status(500).json({ status: false, message: 'Server error', error });
   }
 };
-
 // Export
 module.exports = {
   createAdmin,
