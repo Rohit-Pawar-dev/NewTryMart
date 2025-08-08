@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const Seller = require('../../../models/Seller');
 
 const registerSeller = async (req, res) => {
@@ -12,18 +13,18 @@ const registerSeller = async (req, res) => {
       country,
       state,
       city,
+      logo,
+      profile_image,
       pincode,
       business_category,
       gst_number,
       gst_registration_type,
       gst_verified,
-      status
+      password,
     } = req.body;
 
-    // Handle uploaded logo
-    const logo = req.file ? req.file.path : '';
 
-    // Basic required fields check (OTP removed)
+    // Basic required fields check (password is optional)
     if (!name || !mobile || !shop_name || !business_category) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -34,7 +35,13 @@ const registerSeller = async (req, res) => {
       return res.status(409).json({ message: 'Mobile number already registered' });
     }
 
-    // Create seller document (otp will be set to default '0000' in schema)
+    // Hash the password only if it's provided
+    let hashedPassword = '';
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    // Create seller document (password only stored if provided)
     const newSeller = new Seller({
       name,
       gender,
@@ -51,12 +58,25 @@ const registerSeller = async (req, res) => {
       gst_registration_type,
       gst_verified,
       logo,
-      status
+      profile_image,
+      status: 'inactive',
+      password: hashedPassword,
     });
 
     const savedSeller = await newSeller.save();
 
-    res.status(201).json({ message: 'Seller registered successfully', seller: savedSeller });
+    res.status(201).json({
+      message: 'Seller registered successfully. Please wait for admin approval.',
+      seller: {
+        id: savedSeller._id,
+        name: savedSeller.name,
+        shop_name: savedSeller.shop_name,
+        mobile: savedSeller.mobile,
+        email: savedSeller.email,
+        status: savedSeller.status,
+        logo: savedSeller.logo,
+      },
+    });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
@@ -64,5 +84,5 @@ const registerSeller = async (req, res) => {
 };
 
 module.exports = {
-  registerSeller
+  registerSeller,
 };

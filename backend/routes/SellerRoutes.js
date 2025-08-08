@@ -11,7 +11,8 @@ const {
   registerSeller,
 } = require("../controllers/sellersController/Auth/SignupController");
 const {
-  loginSeller,
+  emailPasswordLoginSeller,
+   otpLoginSeller,
   getMySellerProfile,
   updateMySellerProfile,
 } = require("../controllers/sellersController/Auth/LoginController");
@@ -25,12 +26,6 @@ const {
 router.get("/view", auth, sellerOnly, getMySellerProfile);
 router.put("/edit", auth, sellerOnly, uploadProfile.single('profile_image'), updateMySellerProfile);
 
-//this is admin routes to manage sellers
-router.post("/", sellerController.createSeller);
-router.get("/", sellerController.getAllSellers);
-router.get("/:id", sellerController.getSellerById);
-router.put("/:id", sellerController.updateSeller);
-router.delete("/:id", sellerController.deleteSeller);
 
 // router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
 
@@ -41,12 +36,15 @@ router.post('/upload/profile', uploadProfile.single('profile_image'), sellerCont
 router.post('/upload/logo', uploadLogo.single('logo'), sellerController.uploadSellerLogo);
 // AUTH Routes
 
-// Single file upload with field name 'logo'
-router.post("/register", upload.single("logo"), registerSeller);
+
+router.post("/register", registerSeller);
 
 
+// OTP-based login (using mobile number)
+router.post('/login/otp', otpLoginSeller);
 
-router.post("/login", loginSeller);
+// Email/Password-based login
+router.post('/login/email-password', emailPasswordLoginSeller);
 
 router.post("/verify-otp", verifyOtpSeller);
 
@@ -55,7 +53,6 @@ router.get("/bank-info/details", auth, sellerOnly, bankInfoController.getBankInf
 
 // Update bank info
 router.put("/bank-info/details", auth, sellerOnly, bankInfoController.editBankInfo);
-// GET /sellers/me
 
 
 

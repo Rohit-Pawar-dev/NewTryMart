@@ -97,21 +97,6 @@ exports.deleteSeller = async (req, res) => {
   }
 };
 
-// Upload Logo
-// exports.uploadLogo = async (req, res) => {
-//   try {
-//     const sellerId = req.body.sellerId;
-//     const filePath = req.file.path;
-
-//     await Seller.findByIdAndUpdate(sellerId, {
-//       logo: filePath,
-//     });
-
-//     res.status(200).json({ message: "Logo uploaded successfully", filePath });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
 
 exports.uploadSellerProfileImage = (req, res) => {
   if (!req.file) {

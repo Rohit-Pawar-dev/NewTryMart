@@ -5,81 +5,161 @@
         <div class="card-header bg-primary text-white text-center py-3">
           <h4 class="mb-0">Seller Login</h4>
         </div>
+
+        <!-- Tabs for Switching Between Login Modes -->
         <div class="card-body p-4">
-          <form [formGroup]="loginForm" (ngSubmit)="!otpSent ? onSubmit() : onVerifyOtp()">
-            <!-- Mobile Number -->
-            <div class="mb-3">
-              <label for="mobile" class="form-label fw-semibold">Mobile Number</label>
-              <input
-                type="tel"
-                id="mobile"
-                maxlength="10"
-                class="form-control"
-                formControlName="mobile"
-                [readonly]="otpSent"
-                placeholder="Enter 10-digit mobile number"
-                [class.is-invalid]="
-                  loginForm.controls.mobile.invalid && loginForm.controls.mobile.touched
-                "
-                autocomplete="off"
-              />
-              <div class="invalid-feedback" *ngIf="loginForm.controls.mobile.errors">
-                <span *ngIf="loginForm.controls.mobile.hasError('required')">Mobile is required.</span>
-                <span *ngIf="loginForm.controls.mobile.hasError('pattern')">Enter a valid 10-digit number.</span>
-              </div>
-            </div>
+          <ul class="nav nav-tabs" id="loginTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                [class.active]="isOtpLogin"
+                (click)="toggleLoginMode(true)"
+                type="button"
+                role="tab"
+              >
+                OTP Login
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                [class.active]="!isOtpLogin"
+                (click)="toggleLoginMode(false)"
+                type="button"
+                role="tab"
+              >
+                Email/Password Login
+              </button>
+            </li>
+          </ul>
 
-            <!-- Send OTP Button -->
-            <button
-              *ngIf="!otpSent"
-              type="submit"
-              class="btn btn-primary w-100 mb-3"
-              [disabled]="loading || loginForm.controls.mobile.invalid"
-            >
-              {{ loading ? 'Sending OTP...' : 'Send OTP' }}
-            </button>
-
-            <!-- OTP Section -->
-            <div *ngIf="otpSent">
+          <form [formGroup]="isOtpLogin ? otpLoginForm : emailPasswordLoginForm" (ngSubmit)="isOtpLogin ? onSubmitOtpLogin() : onSubmitEmailPasswordLogin()">
+            <!-- OTP Login Form -->
+            <div *ngIf="isOtpLogin">
+              <!-- Mobile Number -->
               <div class="mb-3">
-                <label for="otp" class="form-label fw-semibold">Enter OTP</label>
+                <label for="mobile" class="form-label fw-semibold">Mobile Number</label>
                 <input
-                  type="text"
-                  id="otp"
-                  maxlength="4"
+                  type="tel"
+                  id="mobile"
+                  maxlength="10"
                   class="form-control"
-                  formControlName="otp"
-                  placeholder="Enter 4-digit OTP"
+                  formControlName="mobile"
+                  [readonly]="otpSent"
+                  placeholder="Enter 10-digit mobile number"
                   [class.is-invalid]="
-                    loginForm.controls.otp.invalid && loginForm.controls.otp.touched
+                    otpLoginForm.controls.mobile.invalid && otpLoginForm.controls.mobile.touched
                   "
                   autocomplete="off"
-                  [disabled]="loading"
                 />
-                <div class="invalid-feedback" *ngIf="loginForm.controls.otp.errors">
-                  <span *ngIf="loginForm.controls.otp.hasError('required')">OTP is required.</span>
-                  <span *ngIf="loginForm.controls.otp.hasError('pattern')">Enter a valid 4-digit OTP.</span>
+                <div class="invalid-feedback" *ngIf="otpLoginForm.controls.mobile.errors">
+                  <span *ngIf="otpLoginForm.controls.mobile.hasError('required')">Mobile is required.</span>
+                  <span *ngIf="otpLoginForm.controls.mobile.hasError('pattern')">Enter a valid 10-digit number.</span>
                 </div>
               </div>
 
-              <!-- Verify OTP Button -->
+              <!-- Send OTP Button -->
               <button
-                type="button"
-                class="btn btn-success w-100 mb-2"
-                [disabled]="loading || loginForm.controls.otp.invalid"
-                (click)="onVerifyOtp()"
+                *ngIf="!otpSent"
+                type="submit"
+                class="btn btn-primary w-100 mb-3"
+                [disabled]="loading || otpLoginForm.controls.mobile.invalid"
               >
-                {{ loading ? 'Verifying...' : 'Verify OTP' }}
+                {{ loading ? 'Sending OTP...' : 'Send OTP' }}
               </button>
 
-              <!-- Resend OTP Button -->
+              <!-- OTP Section -->
+              <div *ngIf="otpSent">
+                <div class="mb-3">
+                  <label for="otp" class="form-label fw-semibold">Enter OTP</label>
+                  <input
+                    type="text"
+                    id="otp"
+                    maxlength="4"
+                    class="form-control"
+                    formControlName="otp"
+                    placeholder="Enter 4-digit OTP"
+                    [class.is-invalid]="
+                      otpLoginForm.controls.otp.invalid && otpLoginForm.controls.otp.touched
+                    "
+                    autocomplete="off"
+                    [disabled]="loading"
+                  />
+                  <div class="invalid-feedback" *ngIf="otpLoginForm.controls.otp.errors">
+                    <span *ngIf="otpLoginForm.controls.otp.hasError('required')">OTP is required.</span>
+                    <span *ngIf="otpLoginForm.controls.otp.hasError('pattern')">Enter a valid 4-digit OTP.</span>
+                  </div>
+                </div>
+
+                <!-- Verify OTP Button -->
+                <button
+                  type="button"
+                  class="btn btn-success w-100 mb-2"
+                  [disabled]="loading || otpLoginForm.controls.otp.invalid"
+                  (click)="onVerifyOtp()"
+                >
+                  {{ loading ? 'Verifying...' : 'Verify OTP' }}
+                </button>
+
+                <!-- Resend OTP Button -->
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary w-100"
+                  [disabled]="loading"
+                  (click)="onResendOtp()"
+                >
+                  Resend OTP
+                </button>
+              </div>
+            </div>
+
+            <!-- Email/Password Login Form -->
+            <div *ngIf="!isOtpLogin">
+              <div class="mb-3">
+                <label for="email" class="form-label fw-semibold">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  formControlName="email"
+                  placeholder="Enter your email"
+                  autocomplete="off"
+                  [class.is-invalid]="
+                    emailPasswordLoginForm.controls.email.invalid && emailPasswordLoginForm.controls.email.touched
+                  "
+                />
+                <div class="invalid-feedback" *ngIf="emailPasswordLoginForm.controls.email.errors">
+                  <span *ngIf="emailPasswordLoginForm.controls.email.hasError('required')">Email is required.</span>
+                  <span *ngIf="emailPasswordLoginForm.controls.email.hasError('email')">Enter a valid email address.</span>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                  autocomplete="off"
+                  [class.is-invalid]="
+                    emailPasswordLoginForm.controls.password.invalid && emailPasswordLoginForm.controls.password.touched
+                  "
+                />
+                <div class="invalid-feedback" *ngIf="emailPasswordLoginForm.controls.password.errors">
+                  <span *ngIf="emailPasswordLoginForm.controls.password.hasError('required')">Password is required.</span>
+                  <span *ngIf="emailPasswordLoginForm.controls.password.hasError('minlength')">Password must be at least 6 characters.</span>
+                </div>
+              </div>
+
+              <!-- Login Button -->
               <button
-                type="button"
-                class="btn btn-outline-secondary w-100"
-                [disabled]="loading"
-                (click)="onResendOtp()"
+                type="submit"
+                class="btn btn-primary w-100 mb-3"
+                [disabled]="loading || emailPasswordLoginForm.invalid"
               >
-                Resend OTP
+                {{ loading ? 'Logging in...' : 'Login' }}
               </button>
             </div>
           </form>

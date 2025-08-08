@@ -27,7 +27,7 @@ const sellerSchema = new Schema(
     otp: {
       type: String,
       default: "0000",
-    },  
+    },
     shop_name: {
       type: String,
       required: [true, "Shop name is required"],
@@ -79,7 +79,7 @@ const sellerSchema = new Schema(
     },
     status: {
       type: String,
-      default: "inactive",
+      default: "inactive",  // You should set the default status as "inactive" to reflect the pending approval status
       enum: ["active", "inactive", "blocked"],
     },
     seller_wallet: {
@@ -87,6 +87,10 @@ const sellerSchema = new Schema(
       default: 0,
       min: 0,
     },
+    password: {
+      type: String,
+      default: "",
+    }
   },
   {
     timestamps: {

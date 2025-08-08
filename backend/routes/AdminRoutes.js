@@ -7,6 +7,7 @@ const businessSetupController = require("../controllers/AdminsController/bussine
 
 const attributeController = require("../controllers/AdminsController/attributeController");
 const { auth, adminOnly } = require("../middleware/auth");
+const sellerController = require("../controllers/AdminsController/sellerController");
 
 
 // Utilities
@@ -41,6 +42,14 @@ router.get('/business-categories', businessCategoryController.getAllCategories);
 router.post('/business-categories', businessCategoryController.createCategory);
 router.put('/business-categories/:id', businessCategoryController.updateCategory);
 router.delete('/business-categories/:id', businessCategoryController.deleteCategory);
+
+/** Seller Route to manage sellers */
+
+router.post("/seller", sellerController.createSeller);
+router.get("/seller", sellerController.getAllSellers);
+router.get("/seller/:id", sellerController.getSellerById);
+router.put("/seller/:id", sellerController.updateSeller);
+router.delete("/seller/:id", sellerController.deleteSeller);
 
 
 module.exports = router;

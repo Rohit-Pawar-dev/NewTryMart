@@ -53,7 +53,7 @@ export class SellerRegisterComponent {
     this.submitting = true;
     const formData = { ...this.registerForm.value };
 
-    this.sellerAuthService.registerSeller(formData, this.selectedLogoFile!)
+    this.sellerAuthService.registerSeller(formData,)
       .subscribe({
         next: () => {
           Swal.fire('Success', 'Seller registered successfully!', 'success');

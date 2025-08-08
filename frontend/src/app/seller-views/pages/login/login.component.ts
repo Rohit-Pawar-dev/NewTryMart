@@ -17,7 +17,8 @@ export class SellerLoginComponent {
   private sellerAuthService = inject(SellerAuthService);
   private router = inject(Router);
 
-  loginForm = this.fb.group({
+  // FormGroup for OTP login
+  otpLoginForm = this.fb.group({
     mobile: [
       '',
       [Validators.required, Validators.pattern('^[0-9]{10}$'), Validators.maxLength(10)],
@@ -28,23 +29,37 @@ export class SellerLoginComponent {
     ],
   });
 
+  // FormGroup for Email/Password login
+  emailPasswordLoginForm = this.fb.group({
+    email: [
+      '',
+      [Validators.required, Validators.email],
+    ],
+    password: [
+      '',
+      [Validators.required, Validators.minLength(6)],
+    ],
+  });
+
   loading = false;
   otpSent = false;
+  isOtpLogin = true;  // Switch between OTP login and Email/Password login
 
-  onSubmit() {
-    if (this.loginForm.controls.mobile.invalid) {
+  // Submit handler for OTP Login
+  onSubmitOtpLogin() {
+    if (this.otpLoginForm.controls.mobile.invalid) {
       Swal.fire('Error', 'Please enter a valid 10-digit mobile number.', 'error');
       return;
     }
 
     this.loading = true;
-    const mobile = this.loginForm.value.mobile!;
+    const mobile = this.otpLoginForm.value.mobile!;
 
-    this.sellerAuthService.loginSeller(mobile).subscribe({
-      next: (res) => {
+    this.sellerAuthService.otploginSeller(mobile).subscribe({
+      next: (res: any) => {
         this.loading = false;
         this.otpSent = true;
-        this.loginForm.controls.otp.enable();
+        this.otpLoginForm.controls.otp.enable();
         Swal.fire('OTP Sent', 'OTP has been sent to your mobile number.', 'success');
         console.log('OTP (for testing):', res.otp);
       },
@@ -55,39 +70,74 @@ export class SellerLoginComponent {
     });
   }
 
+  // Submit handler for OTP Verification
   onVerifyOtp() {
-    if (this.loginForm.controls.otp.invalid) {
+    if (this.otpLoginForm.controls.otp.invalid) {
       Swal.fire('Error', 'Please enter a valid 4-digit OTP.', 'error');
       return;
     }
 
-    const { mobile, otp } = this.loginForm.value;
+    const { mobile, otp } = this.otpLoginForm.value;
 
     this.loading = true;
     this.sellerAuthService.verifyOtp(mobile!, otp!).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.loading = false;
         Swal.fire('Success', res.message || 'OTP verified. Login successful!', 'success');
-        this.loginForm.reset();
-        this.loginForm.controls.otp.disable();
+        this.otpLoginForm.reset();
+        this.otpLoginForm.controls.otp.disable();
         this.otpSent = false;
         localStorage.setItem('seller_token', res.token);
         localStorage.setItem('seller_profile', JSON.stringify(res.seller));
         this.router.navigate(['/seller']);
       },
-      error: (err) => {
+      error: (err : any) => {
         this.loading = false;
         Swal.fire('Error', err?.error?.message || 'OTP verification failed.', 'error');
       },
     });
   }
 
+  // Resend OTP functionality
   onResendOtp() {
-    if (this.loginForm.controls.mobile.invalid) {
+    if (this.otpLoginForm.controls.mobile.invalid) {
       Swal.fire('Error', 'Please enter a valid 10-digit mobile number before resending OTP.', 'error');
       return;
     }
-    this.onSubmit();
+    this.onSubmitOtpLogin();
+  }
+
+  // Switch to Email/Password Login
+  onSubmitEmailPasswordLogin() {
+    if (this.emailPasswordLoginForm.invalid) {
+      Swal.fire('Error', 'Please enter a valid email and password.', 'error');
+      return;
+    }
+
+    this.loading = true;
+    const { email, password } = this.emailPasswordLoginForm.value;
+
+    this.sellerAuthService.emailPasswordLogin(email!, password!).subscribe({
+      next: (res: any) => {
+        this.loading = false;
+        Swal.fire('Success', res.message || 'Login successful!', 'success');
+        localStorage.setItem('seller_token', res.token);
+        localStorage.setItem('seller_profile', JSON.stringify(res.seller));
+        this.router.navigate(['/seller']);
+      },
+      error: (err : any) => {
+        this.loading = false;
+        Swal.fire('Error', err?.error?.message || 'Login failed.', 'error');
+      },
+    });
+  }
+
+  // Toggle between OTP login and Email/Password login
+  toggleLoginMode(isOtp: boolean) {
+    this.isOtpLogin = isOtp;
+    this.otpLoginForm.reset();
+    this.emailPasswordLoginForm.reset();
+    this.otpSent = false;
   }
 
   navigateToRegister() {

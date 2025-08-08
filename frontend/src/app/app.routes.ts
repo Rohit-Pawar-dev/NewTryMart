@@ -126,16 +126,16 @@ export const routes: Routes = [
           title: 'Admin Profile',
         },
       },
-      {
-        path: 'seller-login',
-        loadComponent: () =>
-          import('./views/sellers/seller-login/seller-login.component').then(
-            (m) => m.SellerLoginComponent
-          ),
-        data: {
-          title: 'Seller Login',
-        },
-      },
+      // {
+      //   path: 'seller-login',
+      //   loadComponent: () =>
+      //     import('./views/sellers/seller-login/seller-login.component').then(
+      //       (m) => m.SellerLoginComponent
+      //     ),
+      //   data: {
+      //     title: 'Seller Login',
+      //   },
+      // },
       {
         path: 'seller/edit/:id',
         component: SellerEditComponent,

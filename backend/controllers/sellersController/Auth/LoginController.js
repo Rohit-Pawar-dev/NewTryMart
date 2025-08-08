@@ -1,4 +1,10 @@
 const Seller = require('../../../models/Seller');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv').config();
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+
 
 // Generate 4-digit OTP with leading zeros
 function generateOTP() {
@@ -6,7 +12,8 @@ function generateOTP() {
 }
 
 // POST /sellers/login
-const loginSeller = async (req, res) => {
+
+const otpLoginSeller = async (req, res) => {
   try {
     const { mobile } = req.body;
 
@@ -26,18 +33,102 @@ const loginSeller = async (req, res) => {
       });
     }
 
+    // Generate OTP and save it to the seller document
     const otp = generateOTP();
     seller.otp = otp;
 
     await seller.save();
 
-    // TODO: send OTP via SMS here
+    // TODO: send OTP via SMS here (using an external service like Twilio)
 
     return res.status(200).json({
       status: true,
-      otp, // Remove in production
-      type: 'login',
+      otp, // Remove this in production and send via SMS
+      type: 'otp',
       message: 'OTP sent to registered mobile number',
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    return res.status(500).json({
+      status: false,
+      message: 'Internal Server Error',
+      error: error.message,
+    });
+  }
+};
+
+const emailPasswordLoginSeller = async (req, res) => {
+  try {
+    const { mobile, email, password } = req.body;
+
+    if (!mobile && !email) {
+      return res.status(400).json({
+        status: false,
+        message: 'Mobile number or email is required',
+      });
+    }
+
+    let seller;
+
+    // Check if the login is via mobile
+    if (mobile) {
+      seller = await Seller.findOne({ mobile });
+    }
+
+    // Check if the login is via email
+    if (email && !seller) {
+      seller = await Seller.findOne({ email });
+    }
+
+    if (!seller) {
+      return res.status(404).json({
+        status: false,
+        message: 'Seller not found with the provided mobile or email',
+      });
+    }
+
+    // If password is provided, validate it
+    if (password) {
+      const isPasswordValid = await bcrypt.compare(password, seller.password);
+
+      if (!isPasswordValid) {
+        return res.status(400).json({
+          status: false,
+          message: 'Invalid password',
+        });
+      }
+
+      // Generate a JWT token for the seller
+      const token = jwt.sign(
+        {
+          id: seller._id,
+          mobile: seller.mobile,
+          email: seller.email,
+          role: 'seller',
+        },
+        JWT_SECRET,  // Ensure this is defined in your environment
+        { expiresIn: '6h' } // Set token expiration (optional)
+      );
+
+      // Return the success response with the token
+      return res.status(200).json({
+        status: true,
+        message: 'Login successful',
+        type: 'password',
+        token,
+        seller: {
+          id: seller._id,
+          name: seller.name,
+          mobile: seller.mobile,
+          email: seller.email,
+          status: seller.status,
+        },
+      });
+    }
+
+    return res.status(400).json({
+      status: false,
+      message: 'Please provide a password for login',
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -97,7 +188,8 @@ const updateMySellerProfile = async (req, res) => {
 
 // Export all controller methods
 module.exports = {
-  loginSeller,
   getMySellerProfile,
   updateMySellerProfile,
+  otpLoginSeller,
+  emailPasswordLoginSeller, 
 };

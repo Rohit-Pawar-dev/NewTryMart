@@ -35,7 +35,7 @@ export interface Seller {
   providedIn: 'root',
 })
 export class SellerService {
-  private apiUrl = `${environment.apiUrl}/sellers`;
+  private apiUrl = `${environment.apiUrl}/seller`;
   
 
   constructor(private http: HttpClient) { }
