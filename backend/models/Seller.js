@@ -27,7 +27,7 @@ const sellerSchema = new Schema(
     otp: {
       type: String,
       default: "0000",
-    },
+    },  
     shop_name: {
       type: String,
       required: [true, "Shop name is required"],

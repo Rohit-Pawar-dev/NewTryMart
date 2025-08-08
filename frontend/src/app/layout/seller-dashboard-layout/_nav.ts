@@ -1,121 +1,127 @@
 import { INavData } from '@coreui/angular';
 
 export const navItems: INavData[] = [
+
   {
-    name: 'Dashboard',
-    url: '/admin/dashboard',
+    name: 'Bank Info',
+    url: '/seller/bank-info',
     icon: 'fas fa-tachometer-alt'
   },
+  // {
+  //   name: 'Dashboard',
+  //   url: '/admin/dashboard',
+  //   icon: 'fas fa-tachometer-alt'
+  // },
 
-  {
-    title: true,
-    name: 'Order Management',
-  },
-  {
-    name: 'Orders',
-    url: '/admin/orders',
-    icon: 'fas fa-shopping-cart'
-  },
+  // {
+  //   title: true,
+  //   name: 'Order Management',
+  // },
+  // {
+  //   name: 'Orders',
+  //   url: '/admin/orders',
+  //   icon: 'fas fa-shopping-cart'
+  // },
 
-  {
-    title: true,
-    name: 'Transaction Management',
-  },
-  {
-    name: 'Transactions',
-    url: '/admin/transactions',
-    icon: 'fas fa-credit-card'
-  },
-  {
-    title: true,
-    name: 'Product management',
-  },
-  {
-    name: 'Categories',
-    url: '/admin/categories',
-    icon: 'fas fa-stream'
-  },
-  {
-    name: 'SubCategories',
-    url: '/admin/sub-categories',
-    icon: 'fas fa-sitemap'
-  },
-  {
-    name: 'Attributes',
-    url: '/admin/attributes',
-    icon: 'fas fa-sliders-h'
-  },
-  {
-    name: 'Products',
-    url: '/admin/products',
-    icon: 'fas fa-box-open'
-  },
+  // {
+  //   title: true,
+  //   name: 'Transaction Management',
+  // },
+  // {
+  //   name: 'Transactions',
+  //   url: '/admin/transactions',
+  //   icon: 'fas fa-credit-card'
+  // },
+  // {
+  //   title: true,
+  //   name: 'Product management',
+  // },
+  // {
+  //   name: 'Categories',
+  //   url: '/admin/categories',
+  //   icon: 'fas fa-stream'
+  // },
+  // {
+  //   name: 'SubCategories',
+  //   url: '/admin/sub-categories',
+  //   icon: 'fas fa-sitemap'
+  // },
+  // {
+  //   name: 'Attributes',
+  //   url: '/admin/attributes',
+  //   icon: 'fas fa-sliders-h'
+  // },
+  // {
+  //   name: 'Products',
+  //   url: '/admin/products',
+  //   icon: 'fas fa-box-open'
+  // },
 
-  {
-    name: 'Seller Products',
-    url: '/admin/seller-products',
-    icon: 'fas fa-store'
-  },
-  {
-    title: true,
-    name: 'Advertisement management',
-  },
-  {
-    name: 'Banners',
-    url: '/admin/banners',
-    icon: 'fas fa-image'
-  },
-  {
-    name: 'Coupons',
-    url: '/admin/coupons',
-    icon: 'fas fa-percentage'
-  },
+  // {
+  //   name: 'Seller Products',
+  //   url: '/admin/seller-products',
+  //   icon: 'fas fa-store'
+  // },
+  // {
+  //   title: true,
+  //   name: 'Advertisement management',
+  // },
+  // {
+  //   name: 'Banners',
+  //   url: '/admin/banners',
+  //   icon: 'fas fa-image'
+  // },
+  // {
+  //   name: 'Coupons',
+  //   url: '/admin/coupons',
+  //   icon: 'fas fa-percentage'
+  // },
 
-  {
-    title: true,
-    name: 'User management',
-  },
-  {
-    name: 'Users',
-    url: '/admin/users',
-    icon: 'fas fa-users'
-  },
+  // {
+  //   title: true,
+  //   name: 'User management',
+  // },
+  // {
+  //   name: 'Users',
+  //   url: '/admin/users',
+  //   icon: 'fas fa-users'
+  // },
 
 
-  {
-    name: 'Review',
-    url: '/admin/reviews',
-    icon: 'fas fa-star'
-  },
-   {
-    title: true,
-    name: 'Seller management',
-  },
-    {
-    name: 'Sellers',
-    url: '/admin/sellers',
-    icon: 'fas fa-user-tie'
-  },
-  {
-    name: 'Bussiness Categories',
-    url: '/admin/bussiness-categories',
-    icon: 'fas fa-stream'
+  // {
+  //   name: 'Review',
+  //   url: '/admin/reviews',
+  //   icon: 'fas fa-star'
+  // },
+  //  {
+  //   title: true,
+  //   name: 'Seller management',
+  // },
+  //   {
+  //   name: 'Sellers',
+  //   url: '/admin/sellers',
+  //   icon: 'fas fa-user-tie'
+  // },
+  // {
+  //   name: 'Bussiness Categories',
+  //   url: '/admin/bussiness-categories',
+  //   icon: 'fas fa-stream'
 
-  },
-  {
-    title: true,
-    name: 'System Settings',
-  },
-  {
-    name: 'Business Setup',
-    url: '/admin/business-setup',
-    icon: 'fas fa-briefcase'
-  },
-  {
-    name: 'Static Pages',
-    url: '/admin/static-pages',
-    icon: 'fas fa-file-alt'
-  },
+  // },
+  // {
+  //   title: true,
+  //   name: 'System Settings',
+  // },
+  // {
+  //   name: 'Business Setup',
+  //   url: '/admin/business-setup',
+  //   icon: 'fas fa-briefcase'
+  // },
+  // {
+  //   name: 'Static Pages',
+  //   url: '/admin/static-pages',
+  //   icon: 'fas fa-file-alt'
+  // },
   //  {
   //   title: true,
   //   name: 'Seller Management',

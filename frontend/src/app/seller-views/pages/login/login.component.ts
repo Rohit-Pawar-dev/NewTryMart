@@ -15,11 +15,17 @@ import Swal from 'sweetalert2';
 export class SellerLoginComponent {
   private fb = inject(FormBuilder);
   private sellerAuthService = inject(SellerAuthService);
-  constructor(private router: Router) { }
+  private router = inject(Router);
 
   loginForm = this.fb.group({
-    mobile: ['', [Validators.required, Validators.pattern('^[0-9]{10}$'), Validators.maxLength(10)]],
-    otp: ['', [Validators.required, Validators.pattern('^[0-9]{4}$'), Validators.maxLength(4)]]
+    mobile: [
+      '',
+      [Validators.required, Validators.pattern('^[0-9]{10}$'), Validators.maxLength(10)],
+    ],
+    otp: [
+      { value: '', disabled: true },
+      [Validators.required, Validators.pattern('^[0-9]{4}$'), Validators.maxLength(4)],
+    ],
   });
 
   loading = false;
@@ -38,13 +44,14 @@ export class SellerLoginComponent {
       next: (res) => {
         this.loading = false;
         this.otpSent = true;
+        this.loginForm.controls.otp.enable();
         Swal.fire('OTP Sent', 'OTP has been sent to your mobile number.', 'success');
         console.log('OTP (for testing):', res.otp);
       },
       error: (err) => {
         this.loading = false;
         Swal.fire('Error', err?.error?.message || 'Login failed.', 'error');
-      }
+      },
     });
   }
 
@@ -62,6 +69,7 @@ export class SellerLoginComponent {
         this.loading = false;
         Swal.fire('Success', res.message || 'OTP verified. Login successful!', 'success');
         this.loginForm.reset();
+        this.loginForm.controls.otp.disable();
         this.otpSent = false;
         localStorage.setItem('seller_token', res.token);
         localStorage.setItem('seller_profile', JSON.stringify(res.seller));
@@ -70,11 +78,19 @@ export class SellerLoginComponent {
       error: (err) => {
         this.loading = false;
         Swal.fire('Error', err?.error?.message || 'OTP verification failed.', 'error');
-      }
+      },
     });
   }
 
   onResendOtp() {
+    if (this.loginForm.controls.mobile.invalid) {
+      Swal.fire('Error', 'Please enter a valid 10-digit mobile number before resending OTP.', 'error');
+      return;
+    }
     this.onSubmit();
+  }
+
+  navigateToRegister() {
+    this.router.navigate(['/seller/register']);
   }
 }

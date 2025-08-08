@@ -5,7 +5,6 @@ import { SellerAuthGuard } from './guards/seller-auth.guard';
 import { AttributeComponent } from './views/attribute/attribute.component';
 import { BusinessCategoriesComponent } from './views/bussinessCategories/bussiness-Categories.component';
 import { SellerEditComponent } from './views/sellerViews/seller-edit/seller-edit.component';
-import { SellerBankInfoComponent } from './views/sellerViews/seller-bank-info/seller-bank-info.component';
 import { DashboardComponent } from './views/dashboard/dashboard.component';
 import { SellerDashboardLayoutComponent } from './layout';
 
@@ -142,10 +141,6 @@ export const routes: Routes = [
         component: SellerEditComponent,
       },
       {
-        path: 'bank-info',
-        component: SellerBankInfoComponent,
-      },
-      {
         path: 'seller-register',
         loadComponent: () =>
           import('./views/sellers/seller-register/seller-register.component').then(
@@ -188,11 +183,16 @@ export const routes: Routes = [
     },
     children: [
 
-      // {
-      //   path: 'dashboard',
-      //   loadChildren: () =>
-      //     import('./views/dashboard/routes').then((m) => m.routes),
-      // },
+    {
+        path: 'bank-info',
+        loadComponent: () =>
+          import('./seller-views/bank-info/bank-info.component').then(
+            (m) => m.BankInfoComponent
+          ),
+        data: {
+          title: 'Seller Bank Info',
+        },
+      },
     ],
 
   },
@@ -246,6 +246,16 @@ export const routes: Routes = [
       ),
     data: {
       title: 'Login Page',
+    },
+  },
+   {
+    path: 'seller/register',
+    loadComponent: () =>
+      import('./seller-views/pages/register/register.component').then(
+        (m) => m.RegisterComponent
+      ),
+    data: {
+      title: 'Register Page',
     },
   },
   {

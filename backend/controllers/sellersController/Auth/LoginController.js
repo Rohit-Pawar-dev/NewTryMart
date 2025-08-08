@@ -5,6 +5,7 @@ function generateOTP() {
   return Math.floor(Math.random() * 10000).toString().padStart(4, '0');
 }
 
+// POST /sellers/login
 const loginSeller = async (req, res) => {
   try {
     const { mobile } = req.body;
@@ -12,73 +13,91 @@ const loginSeller = async (req, res) => {
     if (!mobile) {
       return res.status(400).json({
         status: false,
-        message: 'Mobile number is required'
+        message: 'Mobile number is required',
       });
     }
 
-    // Find seller by mobile
     const seller = await Seller.findOne({ mobile });
+
     if (!seller) {
       return res.status(404).json({
         status: false,
-        message: 'Seller with this mobile not registered'
+        message: 'Seller with this mobile is not registered',
       });
     }
 
-    // Generate OTP and save it
     const otp = generateOTP();
     seller.otp = otp;
+
     await seller.save();
 
     // TODO: send OTP via SMS here
 
     return res.status(200).json({
       status: true,
-      otp: otp,                 // For testing/demo; remove in production
+      otp, // Remove in production
       type: 'login',
-      message: 'OTP sent to registered mobile number'
+      message: 'OTP sent to registered mobile number',
     });
   } catch (error) {
     console.error('Login error:', error);
     return res.status(500).json({
       status: false,
       message: 'Internal Server Error',
-      error: error.message
+      error: error.message,
     });
   }
 };
 
-// Get seller by ID
-exports.getSellerById = async (req, res) => {
+// GET /sellers/me
+const getMySellerProfile = async (req, res) => {
   try {
-    const seller = await Seller.findById(req.params.id);
-    if (!seller) return res.status(404).json({status: false, message: "Seller not found" });
-    res.status(200).json({status: true, data:seller});
+    const sellerId = req.user?.id || req.seller?._id;
+
+    if (!sellerId) {
+      return res.status(401).json({ status: false, message: 'Unauthorized' });
+    }
+
+    const seller = await Seller.findById(sellerId);
+
+    if (!seller) {
+      return res.status(404).json({ status: false, message: 'Seller not found' });
+    }
+
+    return res.status(200).json({ status: true, data: seller });
   } catch (err) {
-    res.status(500).json({status: false, error: err.message });
+    return res.status(500).json({ status: false, error: err.message });
   }
 };
 
-// Update seller
-exports.updateSeller = async (req, res) => {
+// PUT /sellers/me
+const updateMySellerProfile = async (req, res) => {
   try {
+    const sellerId = req.user?.id || req.seller?._id;
+
+    if (!sellerId) {
+      return res.status(401).json({ status: false, message: 'Unauthorized' });
+    }
+
     const updatedSeller = await Seller.findByIdAndUpdate(
-      req.params.id,
+      sellerId,
       req.body,
       { new: true, runValidators: true }
     );
-    if (!updatedSeller) {
-      return res.status(404).json({ status: false, message: "Seller not found" });
-    }
-   res.status(200).json({ status: true, data: updatedSeller });
 
+    if (!updatedSeller) {
+      return res.status(404).json({ status: false, message: 'Seller not found' });
+    }
+
+    return res.status(200).json({ status: true, data: updatedSeller });
   } catch (err) {
-    res.status(400).json({ status: false, error: err.message });
+    return res.status(400).json({ status: false, error: err.message });
   }
 };
 
-
-
+// Export all controller methods
 module.exports = {
   loginSeller,
+  getMySellerProfile,
+  updateMySellerProfile,
 };

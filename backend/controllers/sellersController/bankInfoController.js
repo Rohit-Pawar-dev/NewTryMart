@@ -1,9 +1,10 @@
-const BankInfo = require('../../models/SellerBankInfo'); 
+const BankInfo = require('../../models/SellerBankInfo');
 
 // Get bank info by seller ID
 exports.getBankInfo = async (req, res) => {
   try {
-    const sellerId = req.params.sellerId;
+    const sellerId = req.user.id;
+    console.log(sellerId);
 
     const bankInfo = await BankInfo.findOne({ seller_id: sellerId });
 
@@ -19,7 +20,7 @@ exports.getBankInfo = async (req, res) => {
           ifsc_code: null,
           branch_name: null,
           upi_id: null,
-          status: 0, 
+          status: 0,
         },
       });
     }
@@ -42,11 +43,9 @@ exports.getBankInfo = async (req, res) => {
 // Edit bank info by seller ID
 exports.editBankInfo = async (req, res) => {
   try {
-    const sellerId = req.params.sellerId;
+    const sellerId = req.user.id; 
     const updateData = req.body;
-
     updateData.seller_id = sellerId;
-
     const bankInfo = await BankInfo.findOneAndUpdate(
       { seller_id: sellerId },
       updateData,

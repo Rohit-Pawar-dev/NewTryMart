@@ -1,22 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
-  selector: 'app-seller-bank-info',
-  standalone: true,
+  selector: 'app-bank-info',
   imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
-  templateUrl: './seller-bank-info.component.html',
+  standalone: true,
+  templateUrl: './bank-info.component.html',
 })
-export class SellerBankInfoComponent implements OnInit {
+export class BankInfoComponent implements OnInit {
   bankForm!: FormGroup;
-  sellerId = '68821bcd66e3734e4a9f7ea9'; // Hardcoded for now; replace as needed
+  sellerId = '68821bcd66e3734e4a9f7ea9';
   loading = false;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {}
+  constructor(private fb: FormBuilder, private http: HttpClient) { }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('seller_token');
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  }
 
   ngOnInit(): void {
     this.bankForm = this.fb.group({
@@ -34,7 +42,9 @@ export class SellerBankInfoComponent implements OnInit {
   loadBankInfo(): void {
     this.loading = true;
     this.http
-      .get<any>(`${environment.apiUrl}/sellers/bank-info/${this.sellerId}`)
+      .get<any>(`${environment.apiUrl}/sellers/bank-info/details`, {
+        headers: this.getAuthHeaders()
+      })
       .subscribe({
         next: (res) => {
           if (res?.status && res.data) {
@@ -54,7 +64,9 @@ export class SellerBankInfoComponent implements OnInit {
     if (this.bankForm.invalid) return;
 
     this.http
-      .put<any>(`${environment.apiUrl}/sellers/bank-info/${this.sellerId}`, this.bankForm.value)
+      .put<any>(`${environment.apiUrl}/sellers/bank-info/details`, this.bankForm.value, {
+        headers: this.getAuthHeaders()
+      })
       .subscribe({
         next: (res) => {
           if (res?.status) {
