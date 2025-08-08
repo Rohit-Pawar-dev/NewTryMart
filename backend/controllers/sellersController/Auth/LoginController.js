@@ -57,6 +57,91 @@ const otpLoginSeller = async (req, res) => {
   }
 };
 
+// const emailPasswordLoginSeller = async (req, res) => {
+//   try {
+//     const { mobile, email, password } = req.body;
+
+//     if (!mobile && !email) {
+//       return res.status(400).json({
+//         status: false,
+//         message: 'Mobile number or email is required',
+//       });
+//     }
+
+//     let seller;
+
+//     // Check if the login is via mobile
+//     if (mobile) {
+//       seller = await Seller.findOne({ mobile });
+//     }
+
+//     // Check if the login is via email
+//     if (email && !seller) {
+//       seller = await Seller.findOne({ email });
+//     }
+
+//     if (!seller) {
+//       return res.status(404).json({
+//         status: false,
+//         message: 'Seller not found with the provided mobile or email',
+//       });
+//     }
+
+//     // If password is provided, validate it
+//     if (password) {
+//       const isPasswordValid = await bcrypt.compare(password, seller.password);
+
+//       if (!isPasswordValid) {
+//         return res.status(400).json({
+//           status: false,
+//           message: 'Invalid password',
+//         });
+//       }
+
+//       // Generate a JWT token for the seller
+//       const token = jwt.sign(
+//         {
+//           id: seller._id,
+//           mobile: seller.mobile,
+//           email: seller.email,
+//           role: 'seller',
+//         },
+//         JWT_SECRET,  // Ensure this is defined in your environment
+//         { expiresIn: '6h' } // Set token expiration (optional)
+//       );
+
+//       // Return the success response with the token
+//       return res.status(200).json({
+//         status: true,
+//         message: 'Login successful',
+//         type: 'password',
+//         token,
+//         seller: {
+//           id: seller._id,
+//           name: seller.name,
+//           mobile: seller.mobile,
+//           email: seller.email,
+//           status: seller.status,
+//         },
+//       });
+//     }
+
+//     return res.status(400).json({
+//       status: false,
+//       message: 'Please provide a password for login',
+//     });
+//   } catch (error) {
+//     console.error('Login error:', error);
+//     return res.status(500).json({
+//       status: false,
+//       message: 'Internal Server Error',
+//       error: error.message,
+//     });
+//   }
+// };
+
+// GET /sellers/me
+
 const emailPasswordLoginSeller = async (req, res) => {
   try {
     const { mobile, email, password } = req.body;
@@ -75,7 +160,7 @@ const emailPasswordLoginSeller = async (req, res) => {
       seller = await Seller.findOne({ mobile });
     }
 
-    // Check if the login is via email
+    // Check if the login is via email (only if not found by mobile)
     if (email && !seller) {
       seller = await Seller.findOne({ email });
     }
@@ -85,6 +170,28 @@ const emailPasswordLoginSeller = async (req, res) => {
         status: false,
         message: 'Seller not found with the provided mobile or email',
       });
+    }
+
+    // Check the seller's status like in verifyOtpSeller
+    switch (seller.status) {
+      case "inactive":
+        return res.status(403).json({
+          status: false,
+          message: "Your account is under review. Please wait for admin approval.",
+        });
+      case "blocked":
+        return res.status(403).json({
+          status: false,
+          message: "Your account has been blocked. Please contact support.",
+        });
+      case "active":
+        // proceed further below
+        break;
+      default:
+        return res.status(500).json({
+          status: false,
+          message: "Unexpected account status. Please contact support.",
+        });
     }
 
     // If password is provided, validate it
@@ -106,8 +213,8 @@ const emailPasswordLoginSeller = async (req, res) => {
           email: seller.email,
           role: 'seller',
         },
-        JWT_SECRET,  // Ensure this is defined in your environment
-        { expiresIn: '6h' } // Set token expiration (optional)
+        JWT_SECRET,
+        { expiresIn: '6h' }
       );
 
       // Return the success response with the token
@@ -140,7 +247,6 @@ const emailPasswordLoginSeller = async (req, res) => {
   }
 };
 
-// GET /sellers/me
 const getMySellerProfile = async (req, res) => {
   try {
     const sellerId = req.user?.id || req.seller?._id;
@@ -191,5 +297,5 @@ module.exports = {
   getMySellerProfile,
   updateMySellerProfile,
   otpLoginSeller,
-  emailPasswordLoginSeller, 
+  emailPasswordLoginSeller,
 };

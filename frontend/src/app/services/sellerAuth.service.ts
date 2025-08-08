@@ -16,14 +16,14 @@ export class SellerAuthService {
   /**
    * Register a new seller with form data including image upload
    */
-registerSeller(sellerData: any): Observable<any> {
-  // Just send JSON object directly
-  return this.http.post(`${this.apiUrl}/register`, sellerData);
-}
+  registerSeller(sellerData: any): Observable<any> {
+    // Just send JSON object directly
+    return this.http.post(`${this.apiUrl}/register`, sellerData);
+  }
 
-getBusinessCategories() {
-  return this.http.get<{ status: boolean; data: any[] }>(`${environment.apiUrl}/business-categories`);
-}
+  getBusinessCategories() {
+    return this.http.get<{ status: boolean; data: any[] }>(`${environment.apiUrl}/business-categories`);
+  }
 
 
   /**
