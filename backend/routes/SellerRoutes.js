@@ -12,19 +12,33 @@ const {
 } = require("../controllers/sellersController/Auth/SignupController");
 const {
   emailPasswordLoginSeller,
-   otpLoginSeller,
+  otpLoginSeller,
   getMySellerProfile,
+  changeSellerPassword,
   updateMySellerProfile,
 } = require("../controllers/sellersController/Auth/LoginController");
 const {
   verifyOtpSeller,
 } = require("../controllers/sellersController/Auth/VerifyController");
-// Routes
+const getProducts = require("../controllers/sellersController/sellerProductController");
+const sellerOrderController = require ("../controllers/sellersController/sellerOrders");
 
-
-
+//seller side apis 
 router.get("/view", auth, sellerOnly, getMySellerProfile);
-router.put("/edit", auth, sellerOnly, uploadProfile.single('profile_image'), updateMySellerProfile);
+router.put("/edit", auth, sellerOnly, updateMySellerProfile);
+router.post('/change-password', auth, sellerOnly, changeSellerPassword);
+// Get products by seller
+router.get('/products', auth, sellerOnly, getProducts.getProductsBySeller);
+
+// Get all orders for the authenticated seller with pagination and filters
+router.get("/orders",auth, sellerOnly, sellerOrderController.getSellerOrders);
+
+// Get a particular order by ID for the seller
+router.get("/orders/:id",auth, sellerOnly, sellerOrderController.getSellerOrderById);
+
+// Get transactions related to the authenticated seller
+router.get("/transactions", auth, sellerOnly, sellerOrderController.getSellerTransactions);
+
 
 
 // router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);

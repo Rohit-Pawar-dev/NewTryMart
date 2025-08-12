@@ -42,7 +42,7 @@ export class ProductAddComponent implements OnInit {
   categories: Category[] = [];
   subcategories: SubCategory[] = [];
 
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  // private uploadUrl = `${environment.apiUrl}/upload-media`;
 
   constructor(
     private fb: FormBuilder,
@@ -324,21 +324,6 @@ export class ProductAddComponent implements OnInit {
       .replace(/[^a-z0-9\-]/g, '');
   }
 
-  // async uploadFile(file: File): Promise<string> {
-  //   const formData = new FormData();
-  //   formData.append('type', 'product');
-  //   formData.append('file', file);
-
-  //   const res = await firstValueFrom(
-  //     this.http.post<{ file: string }>(this.uploadUrl, formData)
-  //   );
-  //   if (!res || !res.file) {
-  //     throw new Error('Upload failed: No file returned');
-  //   }
-
-  //   return res.file.replace(/\\/g, '/');
-  // }
-
   async uploadFile(file: File, type: 'thumbnail' | 'image' | 'variant'): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
@@ -360,10 +345,8 @@ export class ProductAddComponent implements OnInit {
       throw new Error('Upload failed: No path returned');
     }
 
-    return res.path.replace(/\\/g, '/'); // normalize slashes for consistency
+    return res.path.replace(/\\/g, '/');
   }
-
-
 
   async submit(): Promise<void> {
     if (this.isSubmitting) {

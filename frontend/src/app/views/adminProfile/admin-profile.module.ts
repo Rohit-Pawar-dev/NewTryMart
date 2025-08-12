@@ -23,8 +23,7 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
-
-    AdminProfileComponent // standalone component
+    AdminProfileComponent
   ]
 })
-export class AdminProfileModule {}
+export class AdminProfileModule { }

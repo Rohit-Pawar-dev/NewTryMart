@@ -11,9 +11,6 @@ import { ProductEditComponent } from './product-edit/product-edit.component'; //
 
 @NgModule({
   declarations: [
-    // ProductListComponent,
-    // ProductAddComponent
-    // DO NOT put ProductEditComponent here because it's standalone
   ],
   imports: [
     CommonModule,
@@ -22,7 +19,7 @@ import { ProductEditComponent } from './product-edit/product-edit.component'; //
     ReactiveFormsModule,
     RouterModule,
     RouterModule.forChild(routes),
-    ProductEditComponent, 
+    ProductEditComponent,
   ],
 })
-export class ProductModule {}
+export class ProductModule { }

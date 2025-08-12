@@ -54,14 +54,14 @@
   <c-dropdown [popperOptions]="{ placement: 'bottom-start' }" variant="nav-item">
     <button [caret]="false" cDropdownToggle class="py-0 pe-0" aria-label="Open user menu">
       <span class="avatar">
-        <c-avatar shape="rounded-1" [size]="'md'" [src]="admin?.image || './assets/images/avatars/default.jpg'"
+        <c-avatar shape="rounded-1" [size]="'md'" [src]="seller?.profile_image || './assets/images/avatars/default.jpg'"
           status="success" textColor="primary" alt="User avatar" class="avatar-img" />
       </span>
     </button>
 
     <ul cDropdownMenu class="pt-0 w-auto">
       <li>
-        <a cDropdownItem routerLink="/admin/profile">
+        <a cDropdownItem routerLink="/seller/profile">
           <svg cIcon class="me-2" name="cilUser"></svg>
           Profile
         </a>

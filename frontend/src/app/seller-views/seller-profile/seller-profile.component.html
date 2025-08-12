@@ -1,1 +1,168 @@
-<p>seller-profile works!</p>
+<div class="container mt-4">
+  <!-- Seller Profile Card -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Seller Profile</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="sellerForm" (ngSubmit)="saveProfile()">
+        <div class="row g-3">
+          <!-- Personal Info -->
+          <div class="col-12">
+            <h6 class="border-bottom pb-2">Personal Information</h6>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" formControlName="name" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Gender</label>
+            <input type="text" class="form-control" formControlName="gender" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Mobile</label>
+            <input type="text" class="form-control" formControlName="mobile" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" formControlName="email" />
+          </div>
+
+          <!-- Shop Info -->
+          <div class="col-12 mt-3">
+            <h6 class="border-bottom pb-2">Shop Information</h6>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Shop Name</label>
+            <input type="text" class="form-control" formControlName="shop_name" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Address</label>
+            <input type="text" class="form-control" formControlName="address" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Country</label>
+            <input type="text" class="form-control" formControlName="country" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">State</label>
+            <input type="text" class="form-control" formControlName="state" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">City</label>
+            <input type="text" class="form-control" formControlName="city" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Pincode</label>
+            <input type="text" class="form-control" formControlName="pincode" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">GST Number</label>
+            <input type="text" class="form-control" formControlName="gst_number" />
+          </div>
+
+          <!-- Uploads -->
+          <div class="col-12 mt-3">
+            <h6 class="border-bottom pb-2">Uploads</h6>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Profile Image</label>
+            <div *ngIf="profileImagePreview" class="mb-2 text-center">
+              <img [src]="profileImagePreview" class="img-thumbnail" style="max-height: 100px;" />
+            </div>
+            <input type="file" class="form-control" (change)="onProfileImageSelected($event)" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Shop Logo</label>
+            <div *ngIf="logoPreview" class="mb-2 text-center">
+              <img [src]="logoPreview" class="img-thumbnail" style="max-height: 100px;" />
+            </div>
+            <input type="file" class="form-control" (change)="onLogoSelected($event)" />
+          </div>
+
+          <!-- Non-editable -->
+          <div class="col-md-6">
+            <label class="form-label">Business Category</label>
+            <div>
+              <span class="badge bg-info text-dark">
+                {{ sellerForm.getRawValue().business_category }}
+              </span>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Status</label>
+            <div>
+              <span class="badge" [ngClass]="{
+        'bg-success': sellerForm.getRawValue().status === 'Active',
+        'bg-danger': sellerForm.getRawValue().status === 'Inactive',
+        'bg-secondary': sellerForm.getRawValue().status !== 'Active' && sellerForm.getRawValue().status !== 'Inactive'
+      }">
+                {{ sellerForm.getRawValue().status }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="col-12 text-end mt-3">
+            <button type="submit" class="btn btn-primary px-4" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Update Profile</span>
+              <span *ngIf="isSubmitting">
+                <span class="spinner-border spinner-border-sm me-1"></span> Updating...
+              </span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password Card -->
+  <div class="card shadow-sm mt-4">
+    <div class="card-header bg-warning">
+      <h5 class="mb-0">Change Password</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Old Password</label>
+            <input type="password" class="form-control" formControlName="oldPassword" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">New Password</label>
+            <input type="password" class="form-control" formControlName="newPassword" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" formControlName="confirmPassword" />
+          </div>
+        </div>
+        <div class="text-end mt-3">
+          <button type="submit" class="btn btn-warning px-4">Change Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTpl>
+  <div class="text-center p-5">
+    <div class="spinner-border text-primary"></div>
+    <p class="mt-2">Loading profile...</p>
+  </div>
+</ng-template>

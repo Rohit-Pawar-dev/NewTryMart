@@ -249,7 +249,7 @@ const emailPasswordLoginSeller = async (req, res) => {
 
 const getMySellerProfile = async (req, res) => {
   try {
-    const sellerId = req.user?.id || req.seller?._id;
+    const sellerId = req.user?.id || req.seller?.id;
 
     if (!sellerId) {
       return res.status(401).json({ status: false, message: 'Unauthorized' });
@@ -292,10 +292,37 @@ const updateMySellerProfile = async (req, res) => {
   }
 };
 
+const changeSellerPassword = async (req, res) => {
+  try {
+    const sellerId = req.user.id; // 👈 ID from auth middleware
+    const { oldPassword, newPassword } = req.body;
+
+    const seller = await Seller.findById(sellerId);
+    if (!seller) {
+      return res.status(404).json({ status: false, message: 'Seller not found' });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, seller.password);
+    if (!isMatch) {
+      return res.status(400).json({ status: false, message: 'Old password is incorrect' });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    seller.password = hashedNewPassword;
+    await seller.save();
+
+    res.status(200).json({ status: true, message: 'Password changed successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: false, message: 'Server error', error: error.message });
+  }
+};
+
 // Export all controller methods
 module.exports = {
   getMySellerProfile,
   updateMySellerProfile,
   otpLoginSeller,
   emailPasswordLoginSeller,
+  changeSellerPassword,
 };

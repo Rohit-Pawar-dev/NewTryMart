@@ -7,13 +7,24 @@ export const AuthInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn
 ): Observable<HttpEvent<any>> => {
   const token = localStorage.getItem('token');
+  const sellerToken = localStorage.getItem('seller_token');
 
-  if (token) {
-    const authReq = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${token}`)
-    });
-    return next(authReq);
+  let authReq = req;
+
+  // Check if the request is for the seller API
+  if (req.url.includes('/api/sellers')) {
+    if (sellerToken) {
+      authReq = req.clone({
+        headers: req.headers.set('Authorization', `Bearer ${sellerToken}`)
+      });
+    }
+  } else {
+    if (token) {
+      authReq = req.clone({
+        headers: req.headers.set('Authorization', `Bearer ${token}`)
+      });
+    }
   }
 
-  return next(req);
+  return next(authReq);
 };

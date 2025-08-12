@@ -122,7 +122,6 @@ export class SellerProductListComponent implements OnInit {
       });
   }
 
-  // --- Pagination Logic ---
   get currentPage(): number {
     return Math.floor(this.offset / this.limit) + 1;
   }
@@ -153,7 +152,7 @@ export class SellerProductListComponent implements OnInit {
     }
   }
 
-  
+
   toggleOffer(product: Product): void {
     const updatedValue = !product.is_offers;
     this.productService.updateProduct(product._id!, { is_offers: updatedValue }).subscribe({
@@ -181,6 +180,4 @@ export class SellerProductListComponent implements OnInit {
       }
     });
   }
-
-
 }

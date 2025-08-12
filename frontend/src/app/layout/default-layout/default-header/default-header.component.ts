@@ -26,17 +26,17 @@ import {
 import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
-    selector: 'app-default-header',
-    templateUrl: './default-header.component.html',
-  imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NgTemplateOutlet, BreadcrumbRouterComponent, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownItemDirective, DropdownDividerDirective]
+  selector: 'app-default-header',
+  templateUrl: './default-header.component.html',
+  imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NgTemplateOutlet, BreadcrumbRouterComponent, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownItemDirective, DropdownDividerDirective, RouterLink]
 })
 export class DefaultHeaderComponent extends HeaderComponent {
-adminId: string = '';
-admin: any = null;
-error: string | null = null;
-isLoading = false;
+  adminId: string = '';
+  admin: any = null;
+  error: string | null = null;
+  isLoading = false;
 
-  constructor( private router: Router, private adminService: AdminProfileService) {
+  constructor(private router: Router, private adminService: AdminProfileService) {
     super();
   }
 
@@ -60,54 +60,54 @@ isLoading = false;
     return this.colorModes.find(mode => mode.name === currentMode)?.icon ?? 'cilSun';
   });
 
-ngOnInit(): void {
-  const storedProfile = localStorage.getItem('profile');
-  try {
-    if (storedProfile) {
-      const parsedProfile = JSON.parse(storedProfile);
-      this.adminId = parsedProfile?.id || parsedProfile?._id || '';
-    }
-  } catch (e) {
-    console.error('Invalid profile JSON in localStorage');
-    this.error = 'Invalid admin profile stored.';
-    return;
-  }
-
-  if (!this.adminId) {
-    this.error = 'Admin ID not found in local storage.';
-    return;
-  }
-
-  this.fetchAdmin();
-}
-
-fetchAdmin() {
-  this.isLoading = true;
-  this.adminService.getAdminById(this.adminId).subscribe({
-    next: (res) => {
-      const adminData = res?.data || res?.admin;
-
-      if (res?.status && adminData) {
-        this.admin = adminData;
-
-        // Fix image path if needed
-        if (this.admin.image && !this.admin.image.startsWith('http')) {
-          const baseUrl = environment.apiUrl.replace('/api', '');
-          this.admin.image = `${baseUrl}${this.admin.image}`;
-        }
-      } else {
-        this.error = 'Unexpected API response';
+  ngOnInit(): void {
+    const storedProfile = localStorage.getItem('profile');
+    try {
+      if (storedProfile) {
+        const parsedProfile = JSON.parse(storedProfile);
+        this.adminId = parsedProfile?.id || parsedProfile?._id || '';
       }
-
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error('Fetch Error:', err);
-      this.error = 'Failed to fetch profile';
-      this.isLoading = false;
+    } catch (e) {
+      console.error('Invalid profile JSON in localStorage');
+      this.error = 'Invalid admin profile stored.';
+      return;
     }
-  });
-}
+
+    if (!this.adminId) {
+      this.error = 'Admin ID not found in local storage.';
+      return;
+    }
+
+    this.fetchAdmin();
+  }
+
+  fetchAdmin() {
+    this.isLoading = true;
+    this.adminService.getAdminById(this.adminId).subscribe({
+      next: (res) => {
+        const adminData = res?.data || res?.admin;
+
+        if (res?.status && adminData) {
+          this.admin = adminData;
+
+          // Fix image path if needed
+          if (this.admin.image && !this.admin.image.startsWith('http')) {
+            const baseUrl = environment.apiUrl.replace('/api', '');
+            this.admin.image = `${baseUrl}${this.admin.image}`;
+          }
+        } else {
+          this.error = 'Unexpected API response';
+        }
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch Error:', err);
+        this.error = 'Failed to fetch profile';
+        this.isLoading = false;
+      }
+    });
+  }
   sidebarId = input('sidebar1');
 
   public newMessages = [

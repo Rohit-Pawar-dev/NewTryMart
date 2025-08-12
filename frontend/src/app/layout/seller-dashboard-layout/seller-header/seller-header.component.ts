@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AdminProfileService } from '../../../services/adminProfile.service';
+import { SellerAuthService } from '../../../services/sellerAuth.service';
 import { environment } from '../../../../environments/environment';
 import {
   AvatarComponent,
@@ -31,19 +31,19 @@ import { IconDirective } from '@coreui/icons-angular';
   styleUrl: './seller-header.component.scss'
 })
 export class SellerHeaderComponent extends HeaderComponent {
-  adminId: string = '';
-  admin: any = null;
+  seller: any = null;
   error: string | null = null;
   isLoading = false;
-
-  constructor(private router: Router, private adminService: AdminProfileService) {
+  mediaUrl = environment.mediaUrl
+    ;
+  constructor(private router: Router, private sellerService: SellerAuthService) {
     super();
   }
 
   logout() {
     localStorage.removeItem('seller_token');
-    localStorage.removeItem('seller_profile'); 
-    this.router.navigate(['/seller/login']); 
+    localStorage.removeItem('seller_profile');
+    this.router.navigate(['/seller/login']);
   }
 
   readonly #colorModeService = inject(ColorModeService);
@@ -61,40 +61,19 @@ export class SellerHeaderComponent extends HeaderComponent {
   });
 
   ngOnInit(): void {
-    const storedProfile = localStorage.getItem('profile');
-    try {
-      if (storedProfile) {
-        const parsedProfile = JSON.parse(storedProfile);
-        this.adminId = parsedProfile?.id || parsedProfile?._id || '';
-      }
-    } catch (e) {
-      console.error('Invalid profile JSON in localStorage');
-      this.error = 'Invalid admin profile stored.';
-      return;
-    }
-
-    if (!this.adminId) {
-      this.error = 'Admin ID not found in local storage.';
-      return;
-    }
-
-    this.fetchAdmin();
+    this.fetchSeller();
   }
 
-  fetchAdmin() {
+  fetchSeller() {
     this.isLoading = true;
-    this.adminService.getAdminById(this.adminId).subscribe({
+    this.sellerService.getSellerProfile().subscribe({
       next: (res) => {
-        const adminData = res?.data || res?.admin;
+        const sellerData = res?.data;
 
-        if (res?.status && adminData) {
-          this.admin = adminData;
+        if (res?.status && sellerData) {
+          this.seller = sellerData;
 
-          // Fix image path if needed
-          if (this.admin.image && !this.admin.image.startsWith('http')) {
-            const baseUrl = environment.apiUrl.replace('/api', '');
-            this.admin.image = `${baseUrl}${this.admin.image}`;
-          }
+          this.seller.profile_image = `${this.mediaUrl}${this.seller.profile_image}`;
         } else {
           this.error = 'Unexpected API response';
         }

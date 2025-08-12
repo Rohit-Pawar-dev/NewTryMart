@@ -4,7 +4,7 @@ const BankInfo = require('../../models/SellerBankInfo');
 exports.getBankInfo = async (req, res) => {
   try {
     const sellerId = req.user.id;
-    console.log(sellerId);
+    // console.log(sellerId);
 
     const bankInfo = await BankInfo.findOne({ seller_id: sellerId });
 

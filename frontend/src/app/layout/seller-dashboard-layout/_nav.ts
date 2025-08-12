@@ -3,9 +3,47 @@ import { INavData } from '@coreui/angular';
 export const navItems: INavData[] = [
 
   {
+    name: 'Dashboard',
+    url: '/admin/dashboard',
+    icon: 'fas fa-tachometer-alt'
+  },
+  {
+    title: true,
+    name: 'Bank Management',
+  },
+  {
     name: 'Bank Info',
     url: '/seller/bank-info',
     icon: 'fas fa-tachometer-alt'
+  },
+  {
+    title: true,
+    name: 'Product Management',
+  },
+  {
+    name: 'Products',
+    url: '/seller/products',
+    icon: 'fas fa-box-open'
+  },
+  {
+    title: true,
+    name: 'Orders Management',
+  },
+  {
+    name: 'Orders',
+    url: '/seller/orders',
+    icon: 'fas fa-shopping-cart'
+  },
+
+
+  {
+    title: true,
+    name: 'Transaction Management',
+  },
+  {
+    name: 'Transactions',
+    url: '/seller/transactions',
+    icon: 'fas fa-box-open'
   },
   // {
   //   name: 'Dashboard',

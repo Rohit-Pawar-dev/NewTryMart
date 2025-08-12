@@ -183,7 +183,7 @@ export const routes: Routes = [
     },
     children: [
 
-    {
+      {
         path: 'bank-info',
         loadComponent: () =>
           import('./seller-views/bank-info/bank-info.component').then(
@@ -191,6 +191,46 @@ export const routes: Routes = [
           ),
         data: {
           title: 'Seller Bank Info',
+        },
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./seller-views/seller-profile/seller-profile.component').then(
+            (m) => m.SellerProfileComponent
+          ),
+        data: {
+          title: 'Seller Profile',
+        },
+      },
+           {
+        path: 'products',
+        loadChildren: () =>
+          import('./seller-views/seller-product/product.module').then(
+            (m) => m.ProductModule
+          ),
+        data: {
+          title: 'Product List',
+        },
+      },
+         {
+        path: 'orders',
+        loadChildren: () =>
+          import('./seller-views/orders/orders.module').then(
+            (m) => m.OrdersModule
+          ),
+        data: {
+          title: 'Orders List',
+        },
+      },
+      {
+        path: 'transactions',
+        loadComponent: () =>
+          import('./seller-views/orders/transaction-list/transaction-list.component').then(
+            (m) => m.TransactionComponent
+          ),
+        data: {
+          title: 'Transactions',
         },
       },
     ],
@@ -248,7 +288,7 @@ export const routes: Routes = [
       title: 'Login Page',
     },
   },
-   {
+  {
     path: 'seller/register',
     loadComponent: () =>
       import('./seller-views/pages/register/register.component').then(

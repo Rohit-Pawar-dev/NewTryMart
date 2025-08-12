@@ -47,7 +47,7 @@ router.post("/upload-media", upload.single("file"), async (req, res) => {
   }
 });
 
-router.get("/dashboard", async (req, res) => {
+router.get("/dashboard",  async (req, res) => {
   try {
     // Calculate today's time range
     const startOfDay = new Date();

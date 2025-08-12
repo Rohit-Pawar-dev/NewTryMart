@@ -1,0 +1,27 @@
+.invoice-box {
+  padding: 20px;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+
+  table {
+    width: 100%;
+    margin-top: 15px;
+    border-collapse: collapse;
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    img {
+      max-height: 50px;
+    }
+  }
+
+  h2, h3, h4 {
+    margin-top: 20px;
+  }
+}
