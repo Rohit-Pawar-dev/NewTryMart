@@ -87,6 +87,54 @@
             </div>
           </div>
 
+          <!-- Address -->
+          <div class="col-md-6">
+            <label for="address" class="form-label fw-semibold">Address <span class="text-danger">*</span></label>
+            <input
+              id="address"
+              formControlName="address"
+              type="text"
+              class="form-control rounded-3"
+              [class.is-invalid]="registerForm.get('address')?.invalid && registerForm.get('address')?.touched"
+              placeholder="Enter address"
+            />
+            <div class="invalid-feedback">
+              Address is required.
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="col-md-6">
+            <label for="city" class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+            <input
+              id="city"
+              formControlName="city"
+              type="text"
+              class="form-control rounded-3"
+              [class.is-invalid]="registerForm.get('city')?.invalid && registerForm.get('city')?.touched"
+              placeholder="Enter city"
+            />
+            <div class="invalid-feedback">
+              City is required.
+            </div>
+          </div>
+
+          <!-- Pincode -->
+          <div class="col-md-6">
+            <label for="pincode" class="form-label fw-semibold">Pincode <span class="text-danger">*</span></label>
+            <input
+              id="pincode"
+              formControlName="pincode"
+              type="text"
+              class="form-control rounded-3"
+              [class.is-invalid]="registerForm.get('pincode')?.invalid && registerForm.get('pincode')?.touched"
+              placeholder="6-digit pincode"
+            />
+            <div class="invalid-feedback">
+              Valid pincode is required.
+            </div>
+          </div>
+
           <!-- Business Category -->
           <div class="col-md-6">
             <label for="business_category" class="form-label fw-semibold">Business Category <span class="text-danger">*</span></label>
@@ -102,6 +150,36 @@
             <div class="invalid-feedback">
               Please select a business category.
             </div>
+          </div>
+
+          <!-- Logo Upload (Mandatory) -->
+          <div class="col-md-6">
+            <label for="logo" class="form-label fw-semibold">Shop Logo <span class="text-danger">*</span></label>
+            <div *ngIf="logoPreview" class="mb-2 text-center">
+              <img [src]="logoPreview" class="img-thumbnail" style="max-height: 100px;" />
+            </div>
+            <input
+              id="logo"
+              type="file"
+              class="form-control rounded-3"
+              (change)="onLogoSelected($event)"
+              accept="image/*"
+            />
+          </div>
+
+          <!-- Profile Image Upload (Optional) -->
+          <div class="col-md-6">
+            <label for="profile_image" class="form-label fw-semibold">Profile Image (Optional)</label>
+            <div *ngIf="profileImagePreview" class="mb-2 text-center">
+              <img [src]="profileImagePreview" class="img-thumbnail" style="max-height: 100px;" />
+            </div>
+            <input
+              id="profile_image"
+              type="file"
+              class="form-control rounded-3"
+              (change)="onProfileImageSelected($event)"
+              accept="image/*"
+            />
           </div>
 
           <!-- Password -->

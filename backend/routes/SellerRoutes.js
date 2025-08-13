@@ -7,6 +7,7 @@ const uploadLogo = getCustomMulter('sellers/logo');
 const { auth, sellerOnly } = require("../middleware/auth");
 const sellerController = require("../controllers/AdminsController/sellerController");
 const bankInfoController = require("../controllers/sellersController/bankInfoController");
+const sellerDashboardController = require("../controllers/sellersController/sellerDashboard");
 const {
   registerSeller,
 } = require("../controllers/sellersController/Auth/SignupController");
@@ -39,7 +40,7 @@ router.get("/orders/:id",auth, sellerOnly, sellerOrderController.getSellerOrderB
 // Get transactions related to the authenticated seller
 router.get("/transactions", auth, sellerOnly, sellerOrderController.getSellerTransactions);
 
-
+router.get("/dashboard", auth, sellerOnly, sellerDashboardController.sellerDashboard);
 
 // router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
 
@@ -68,8 +69,10 @@ router.get("/bank-info/details", auth, sellerOnly, bankInfoController.getBankInf
 // Update bank info
 router.put("/bank-info/details", auth, sellerOnly, bankInfoController.editBankInfo);
 
+//withdrawal request 
+router.post("/withdrawal-request", auth, sellerOnly, bankInfoController.createRequest);
+router.get("/withdrawal-requests", auth, sellerOnly, bankInfoController.listSellerRequests);
 
-
-
+router.get("/wallet", auth, sellerOnly, bankInfoController.getWalletBalance);
 
 module.exports = router;

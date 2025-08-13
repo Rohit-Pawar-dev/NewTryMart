@@ -50,12 +50,23 @@ export class OrderListComponent implements OnInit, OnChanges {
     this.fetchOrders();
   }
 
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (changes['status'] && !changes['status'].firstChange) {
+  //     this.currentPage = 1;
+  //     this.fetchOrders();
+  //   }
+  // }
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['status'] && !changes['status'].firstChange) {
+  if (changes['status']) {
+    // Update the model (this.status already updated by Angular)
+    // Just fetch orders when status changes and it's not the first change
+    if (!changes['status'].firstChange) {
       this.currentPage = 1;
       this.fetchOrders();
     }
   }
+}
+
 
   fetchOrders(): void {
     this.isLoading = true;
@@ -96,15 +107,26 @@ export class OrderListComponent implements OnInit, OnChanges {
     this.fetchOrders();
   }
 
-  onStatusChange(): void {
-    this.currentPage = 1;
-    this.fetchOrders();
+  // onStatusChange(): void {
+  //   this.currentPage = 1;
+  //   this.fetchOrders();
 
-    this.router.navigate([], {
-      queryParams: { status: this.status },
-      queryParamsHandling: 'merge',
-    });
-  }
+  //   this.router.navigate([], {
+  //     queryParams: { status: this.status },
+  //     queryParamsHandling: 'merge',
+  //   });
+  // }
+  onStatusChange(newStatus: string): void {
+  this.status = newStatus;
+  this.currentPage = 1;
+  this.fetchOrders();
+
+  this.router.navigate([], {
+    queryParams: { status: this.status },
+    queryParamsHandling: 'merge',
+  });
+}
+
 
   onStartDateChange(event: Event): void {
     this.startDate = (event.target as HTMLInputElement).value || undefined;

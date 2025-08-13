@@ -1,5 +1,5 @@
 <div class="container mt-4">
-  <h4 class="fw-bold mb-4">🧾 All Orders</h4>
+  <h4 class="fw-bold mb-4">All Orders</h4>
 
   <!-- Filter Panel -->
   <div class="card shadow-sm p-4 mb-4">
@@ -7,10 +7,15 @@
       <!-- Status Filter -->
       <div class="col-md-3">
         <label class="form-label">Filter by Status</label>
-        <select class="form-select" [(ngModel)]="status" (change)="onStatusChange()">
+        <!-- <select class="form-select" [(ngModel)]="status" (change)="onStatusChange()">
+          <option value="all">All</option>
+          <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+        </select> -->
+        <select class="form-select" [ngModel]="status" (ngModelChange)="onStatusChange($event)">
           <option value="all">All</option>
           <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
         </select>
+
       </div>
 
       <!-- Start Date -->
@@ -107,7 +112,8 @@
             </span>
           </td>
           <td class="d-flex gap-2 mt-2 bg-white">
-            <a [routerLink]="['/seller/orders', order._id]" class="btn btn-outline-primary primaryout btn-sm" title="View">
+            <a [routerLink]="['/seller/orders', order._id]" class="btn btn-outline-primary primaryout btn-sm"
+              title="View">
               <i class="far fa-eye fs-6"></i>
             </a>
             <!-- <button class="btn btn-outline-success btn-sm" title="Download">

@@ -1,0 +1,21 @@
+<div class="card shadow-sm p-4" *ngIf="!loading && request">
+  <h4>Withdrawal Request Details</h4>
+  <hr />
+  <p><strong>Seller Name:</strong> {{ request.seller_id?.name || 'N/A' }}</p>
+  <p><strong>Seller Email:</strong> {{ request.seller_id?.email || 'N/A' }}</p>
+  <p><strong>Amount:</strong> ₹{{ request.amount }}</p>
+  <p><strong>Status:</strong> {{ request.status }}</p>
+  <p><strong>Requested At:</strong> {{ request.requested_at | date:'medium' }}</p>
+  <p *ngIf="request.processed_at"><strong>Processed At:</strong> {{ request.processed_at | date:'medium' }}</p>
+  <p *ngIf="request.admin_note"><strong>Admin Note:</strong> {{ request.admin_note }}</p>
+</div>
+
+<div *ngIf="loading" class="text-center mt-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && !request" class="alert alert-warning mt-4">
+  Request not found.
+</div>

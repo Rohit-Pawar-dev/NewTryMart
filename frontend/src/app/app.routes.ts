@@ -126,6 +126,15 @@ export const routes: Routes = [
           title: 'Admin Profile',
         },
       },
+      {
+        path: 'withdrawal-request',
+        loadChildren: () =>
+          import('./views/sellerWithdrawal/withdrawal.module').then(m => m.WithdrawalModule),
+        // Optional:
+        // canActivate: [AuthGuard],
+        // data: { title: 'Withdrawal Request' }
+      },
+
       // {
       //   path: 'seller-login',
       //   loadComponent: () =>
@@ -170,6 +179,7 @@ export const routes: Routes = [
           title: 'Seller Product',
         },
       },
+
     ],
   },
 
@@ -182,6 +192,11 @@ export const routes: Routes = [
       title: 'Seller Dashboard',
     },
     children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./seller-views/dashboard/routes').then((m) => m.routes),
+      },
 
       {
         path: 'bank-info',
@@ -203,7 +218,12 @@ export const routes: Routes = [
           title: 'Seller Profile',
         },
       },
-           {
+      {
+        path: 'dashboard',
+        loadChildren: () =>
+          import('./seller-views/dashboard/routes').then((m) => m.routes),
+      },
+      {
         path: 'products',
         loadChildren: () =>
           import('./seller-views/seller-product/product.module').then(
@@ -213,7 +233,7 @@ export const routes: Routes = [
           title: 'Product List',
         },
       },
-         {
+      {
         path: 'orders',
         loadChildren: () =>
           import('./seller-views/orders/orders.module').then(
@@ -231,6 +251,16 @@ export const routes: Routes = [
           ),
         data: {
           title: 'Transactions',
+        },
+      },
+      {
+        path: 'withdrawal-requests',
+        loadComponent: () =>
+          import('./seller-views/withdrawal/withdrawal-requests/withdrawal-requests.component').then(
+            (m) => m.WithdrawalRequestsComponent
+          ),
+        data: {
+          title: 'Withdrawal Requests',
         },
       },
     ],

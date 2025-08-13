@@ -1,20 +1,18 @@
-// dashboard.component.ts
 import { DOCUMENT, NgStyle } from '@angular/common';
 import {
   Component, DestroyRef, OnInit, Renderer2, ViewChild, ElementRef,
-  inject, signal, WritableSignal, effect, AfterViewInit, ChangeDetectorRef,
+  inject, signal, WritableSignal, effect, AfterViewInit, ChangeDetectorRef
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { Input } from '@angular/core';
 
 import {
   AvatarComponent, ButtonDirective, ButtonGroupComponent, CardBodyComponent,
   CardComponent, CardFooterComponent, CardHeaderComponent, ColComponent,
   FormCheckLabelDirective, GutterDirective, ProgressBarDirective,
-  ProgressComponent, RowComponent, TableDirective, TextColorDirective,
+  ProgressComponent, RowComponent, TableDirective, TextColorDirective
 } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { IconDirective } from '@coreui/icons-angular';
@@ -22,14 +20,15 @@ import { IconDirective } from '@coreui/icons-angular';
 import { WidgetsBrandComponent } from '../widgets/widgets-brand/widgets-brand.component';
 import { WidgetsDropdownComponent } from '../widgets/widgets-dropdown/widgets-dropdown.component';
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
-// import { OrderListComponent } from '../orders/order-list/order-list.component';
+import { OrderListComponent } from '../../seller-views/orders/order-list/order-list.component';
 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
   standalone: true,
   imports: [
-   WidgetsDropdownComponent, TextColorDirective,
+    OrderListComponent,
+    WidgetsDropdownComponent, TextColorDirective,
     CardComponent, CardBodyComponent, RowComponent, ColComponent,
     ButtonDirective, IconDirective, ReactiveFormsModule, ButtonGroupComponent,
     FormCheckLabelDirective, ChartjsComponent, NgStyle, CardFooterComponent,
@@ -50,10 +49,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
-  // Dashboard counts
   dashboardCounts = {
+    totalEarnings: null,
     userCount: null,
     sellerCount: null,
     allOrderCount: null,
@@ -66,11 +65,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     cancelledOrderCount: null,
     returnOrderCount: null,
     outOfDeliveryCount: null,
-    walletBalance:null,
-    totalcommission:null ,
-    totalDeliveryCharges:null,
-
-
+    walletBalance: null,
+    totalcommission: null,
+    totalDeliveryCharges: null,
   };
 
   selectedStatus: string = 'all';
@@ -78,7 +75,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     trafficRadio: new FormControl('Month'),
   });
 
-  // Chart
   mainChart: IChartProps = { type: 'line' };
   mainChartRef: WritableSignal<any> = signal(undefined);
 
@@ -92,6 +88,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.initCharts();
     this.handleColorSchemeChange();
     this.fetchDashboardData();
+
     this.route.queryParamMap.subscribe((params) => {
       const statusParam = params.get('status');
       this.selectedStatus = statusParam ?? 'all';
@@ -139,14 +136,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   fetchDashboardData(): void {
-    const url = `${environment.apiUrl}/dashboard`;
+    const url = `${environment.apiUrl}/sellers/dashboard`;
     this.http.get<any>(url).subscribe({
       next: (res) => {
         const data = res?.data ?? {};
         const orders = data.orders ?? {};
         this.dashboardCounts = {
-          userCount: data.users?.total ?? 0,
-          sellerCount: data.sellers?.total ?? 0,
+          totalEarnings: data.earnings ?? 0,
+          userCount: null,
+          sellerCount: null,
           allOrderCount: orders.total ?? 0,
           allProductCount: data.products?.total ?? 0,
           pendingOrderCount: orders.pending ?? 0,
@@ -157,9 +155,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           cancelledOrderCount: orders.cancelled ?? 0,
           returnOrderCount: orders.returned ?? 0,
           outOfDeliveryCount: orders.outForDelivery ?? 0,
-          walletBalance: orders.admin_wallet_balance ?? 0,
-          totalcommission : orders.seller_commission_collected ?? 0,
-          totalDeliveryCharges: orders.delivery_charges_collected??0,
+          walletBalance: null,
+          totalcommission: null,
+          totalDeliveryCharges: null
         };
       },
       error: (err) => {

@@ -87,14 +87,22 @@ export const navItems: INavData[] = [
     url: '/admin/reviews',
     icon: 'fas fa-star'
   },
-   {
+  {
     title: true,
     name: 'Seller management',
   },
-    {
+  {
     name: 'Sellers',
     url: '/admin/sellers',
     icon: 'fas fa-user-tie'
+  },
+
+
+  {
+    name: 'Withdrawal Requests',
+    url: '/admin/withdrawal-request',
+    icon: 'fas fa-stream'
+
   },
   {
     name: 'Bussiness Categories',

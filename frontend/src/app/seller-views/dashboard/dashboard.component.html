@@ -1,25 +1,17 @@
-
 <app-widgets-dropdown
-  [userCount]="dashboardCounts.userCount"
-  [sellerCount]="dashboardCounts.sellerCount"
-  [allOrderCount]="dashboardCounts.allOrderCount"
   [allProductCount]="dashboardCounts.allProductCount"
+  [totalEarnings]="dashboardCounts.totalEarnings"
+  [allOrderCount]="dashboardCounts.allOrderCount"
   [pendingOrderCount]="dashboardCounts.pendingOrderCount"
   [confirmedOrderCount]="dashboardCounts.confirmedOrderCount"
-  [packagingOrderCount]="dashboardCounts.packagingOrderCount"
   [shippedOrderCount]="dashboardCounts.shippedOrderCount"
   [deliveredOrderCount]="dashboardCounts.deliveredOrderCount"
   [cancelledOrderCount]="dashboardCounts.cancelledOrderCount"
   [returnOrderCount]="dashboardCounts.returnOrderCount"
   [outOfDeliveryCount]="dashboardCounts.outOfDeliveryCount"
-  [totalDeliveryCharges]=" dashboardCounts.totalDeliveryCharges"
-  [totalcommission]=" dashboardCounts.totalcommission"
-  [walletBalance] = "dashboardCounts.walletBalance"
   (statusSelected)="onStatusFilter($event)">
 </app-widgets-dropdown>
 
-<!-- Orders Section -->
-<!-- <section class="order-list-wrapper" #orderListSection>
+<section class="order-list-wrapper" #orderListSection>
   <app-order-list [status]="selectedStatus"></app-order-list>
-</section> -->
-
+</section>

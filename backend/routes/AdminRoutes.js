@@ -8,7 +8,7 @@ const businessSetupController = require("../controllers/AdminsController/bussine
 const attributeController = require("../controllers/AdminsController/attributeController");
 const { auth, adminOnly } = require("../middleware/auth");
 const sellerController = require("../controllers/AdminsController/sellerController");
-
+const withdrawalController = require ("../controllers/AdminsController/withdrawalController")
 
 // Utilities
 const getCustomMulter = require("../utils/customMulter");
@@ -29,6 +29,12 @@ router.post("/admin/setting/business-setup", businessSetupController.createBusin
 router.put("/admin/setting/business-setup",auth , adminOnly, businessSetupController.updateBusinessSetup);
 router.post("/upload-logo", uploadLogo.single("logo"), businessSetupController.uploadLogo);
 
+/** --------------- Withdrawal  Routes --------------- **/
+
+router.put("/withdrawal-requests/:id",auth,adminOnly, withdrawalController.updateRequestStatus);
+router.get("/withdrawal-requests" ,auth, adminOnly,withdrawalController.listAllRequests);
+router.get("/withdrawal-requests/:id" ,auth, adminOnly,withdrawalController.getRequestById);
+
 
 /** ----------------- Attribute Routes ------------------- **/
 
@@ -36,7 +42,7 @@ router.post("/attributes/add", attributeController.createAttribute);
 router.get("/attributes/view", attributeController.getAllAttributes);
 router.get("/attributes/view-by-type", attributeController.getAttributesByType); 
 router.delete("/attributes/delete/:id", attributeController.deleteAttribute);
-
+   
 
 router.get('/business-categories', businessCategoryController.getAllCategories);
 router.post('/business-categories', businessCategoryController.createCategory);
@@ -50,6 +56,7 @@ router.get("/seller", sellerController.getAllSellers);
 router.get("/seller/:id", sellerController.getSellerById);
 router.put("/seller/:id", sellerController.updateSeller);
 router.delete("/seller/:id", sellerController.deleteSeller);
+
 
 
 module.exports = router;

@@ -4,7 +4,7 @@ export const navItems: INavData[] = [
 
   {
     name: 'Dashboard',
-    url: '/admin/dashboard',
+    url: '/seller/dashboard',
     icon: 'fas fa-tachometer-alt'
   },
   {
@@ -41,10 +41,15 @@ export const navItems: INavData[] = [
     name: 'Transaction Management',
   },
   {
-    name: 'Transactions',
-    url: '/seller/transactions',
+    name: 'Withdrawal Requests',
+    url: '/seller/withdrawal-requests',
     icon: 'fas fa-box-open'
-  },
+  }
+  // {
+  //   name: 'Transactions',
+  //   url: '/seller/transactions',
+  //   icon: 'fas fa-box-open'
+  // },
   // {
   //   name: 'Dashboard',
   //   url: '/admin/dashboard',

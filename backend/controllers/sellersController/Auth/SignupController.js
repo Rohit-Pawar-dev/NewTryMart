@@ -23,25 +23,32 @@ const registerSeller = async (req, res) => {
       password,
     } = req.body;
 
-
     // Basic required fields check (password is optional)
     if (!name || !mobile || !shop_name || !business_category) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Check for existing mobile
-    const existingSeller = await Seller.findOne({ mobile });
+    // Check for existing mobile or email
+    const existingSeller = await Seller.findOne({
+      $or: [{ mobile }, { email }],
+    });
+
     if (existingSeller) {
-      return res.status(409).json({ message: 'Mobile number already registered' });
+      if (existingSeller.mobile === mobile) {
+        return res.status(409).json({ message: 'Mobile number already registered' });
+      }
+      if (existingSeller.email && existingSeller.email === email) {
+        return res.status(409).json({ message: 'Email already registered' });
+      }
     }
 
-    // Hash the password only if it's provided
+    // Hash the password only if provided
     let hashedPassword = '';
     if (password) {
       hashedPassword = await bcrypt.hash(password, 10);
     }
 
-    // Create seller document (password only stored if provided)
+    // Create seller document
     const newSeller = new Seller({
       name,
       gender,
@@ -60,7 +67,7 @@ const registerSeller = async (req, res) => {
       logo,
       profile_image,
       status: 'inactive',
-      password: hashedPassword,
+      password: hashedPassword || undefined, // Store only if provided
     });
 
     const savedSeller = await newSeller.save();

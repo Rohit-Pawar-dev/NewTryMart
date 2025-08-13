@@ -1,183 +1,116 @@
-<!-- Row for 3 Big Stats -->
 <c-row class="g-4">
-  <c-col sm="12" md="4" xl="4">
+  <c-col sm="12" md="4">
     <a [routerLink]="['/seller/products']" style="text-decoration: none">
-      <div class="dashboard-stat border-primary d-flex justify-content-between">
-        <div class="das-side">
-          <div class="dashboard-title">Users</div>
-          <div class="dashboard-value">{{ userCount !== null ? userCount : '...' }}</div>
-        </div>
-        <div class="dashboard-icon text-primary"><i class="cil-user"></i></div>
-      </div>
-    </a>
-  </c-col>
-
-  <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/seller']" style="text-decoration: none">
-      <div class="dashboard-stat border-secondary d-flex justify-content-between">
-        <div class="das-side">
-          <div class="dashboard-title">Sellers</div>
-          <div class="dashboard-value">{{ sellerCount !== null ? sellerCount : '...' }}</div>
-        </div>
-        <div class="dashboard-icon text-info"><i class="cil-people"></i></div>
-      </div>
-    </a>
-  </c-col>
-
-  <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/seller']" style="text-decoration: none">
       <div class="dashboard-stat border-success d-flex justify-content-between">
         <div class="das-side">
-          <div class="dashboard-title">Products</div>
-          <div class="dashboard-value">{{ allProductCount !== null ? allProductCount : '...' }}</div>
+          <div class="dashboard-title">Total Products</div>
+          <div class="dashboard-value">{{ allProductCount ?? '...' }}</div>
         </div>
-        <div class="dashboard-icon text-success"><i class="cil-cart"></i></div>
+        <div class="dashboard-icon text-success">
+          <i class="cil-cart"></i>
+        </div>
+      </div>
+    </a>
+  </c-col>
+
+  <c-col sm="12" md="4">
+    <a [routerLink]="['/seller']" style="text-decoration: none">
+      <div class="dashboard-stat border-primary d-flex justify-content-between">
+        <div class="das-side">
+          <div class="dashboard-title">Total Earnings</div>
+          <div class="dashboard-value">₹{{ totalEarnings ?? '...' }}</div>
+        </div>
+        <div class="dashboard-icon text-primary">
+          <i class="cil-wallet"></i>
+        </div>
+      </div>
+    </a>
+  </c-col>
+
+  <c-col sm="12" md="4">
+    <a [routerLink]="['/seller/orders']" style="text-decoration: none">
+      <div class="dashboard-stat border-info d-flex justify-content-between">
+        <div class="das-side">
+          <div class="dashboard-title">Total Orders</div>
+          <div class="dashboard-value">{{ allOrderCount ?? '...' }}</div>
+        </div>
+        <div class="dashboard-icon text-info">
+          <i class="cil-list"></i>
+        </div>
       </div>
     </a>
   </c-col>
 </c-row>
 
-<c-row class="g-4 mt-2">
-  <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/seller']" style="text-decoration: none">
-      <div class="dashboard-stat border-primary d-flex justify-content-between">
-        <div class="das-side">
-          <div class="dashboard-title">Wallet Balance</div>
-          <div class="dashboard-value">{{ walletBalance !== null ? walletBalance : '...' }}</div>
-        </div>
-        <div class="dashboard-icon text-primary"><i class="cil-wallet"></i></div>
-      </div>
-    </a>
-  </c-col>
 
-  <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/seller']" style="text-decoration: none">
-      <div class="dashboard-stat border-secondary d-flex justify-content-between">
-        <div class="das-side">
-          <div class="dashboard-title">Total Commission</div>
-          <div class="dashboard-value">{{ totalcommission !== null ? totalcommission : '...' }}</div>
-        </div>
-        <div class="dashboard-icon text-info"><i class="cil-chart-line"></i></div>
-      </div>
-    </a>
-  </c-col>
-
-  <c-col sm="12" md="4" xl="4">
-    <a [routerLink]="['/seller']" style="text-decoration: none">
-      <div class="dashboard-stat border-success d-flex justify-content-between">
-        <div class="das-side">
-          <div class="dashboard-title">Delivery Charges Earn</div>
-          <div class="dashboard-value">{{ totalDeliveryCharges !== null ? totalDeliveryCharges : '...' }}</div>
-        </div>
-        <div class="dashboard-icon text-success"><i class="cil-car-alt"></i></div>
-      </div>
-    </a>
-  </c-col>
-</c-row>
-
-<!-- Row for 8 Smaller Stats -->
 <c-row class="g-3 mt-3">
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-success" (click)="onStatusClick('all')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('all')" aria-label="Filter Total Orders">
-      <div class="d-flex align-items-center gap-2">
-        <i class="cil-list text-success fs-5"></i>
-        <span class="status-title">Total Orders</span>
-      </div>
-      <span class="status-count text-success">
-        {{ allOrderCount !== null ? allOrderCount.toString() : '...' }}
-      </span>
-    </div>
-  </c-col>
-
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-primary" (click)="onStatusClick('Pending')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('Pending')" aria-label="Filter Pending Orders">
+  <c-col sm="6" md="3">
+    <div class="status-card border border-primary" (click)="onStatusClick('pending')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-task text-primary fs-5"></i>
         <span class="status-title">Pending</span>
       </div>
-      <span class="status-count text-primary">
-        {{ pendingOrderCount !== null ? pendingOrderCount.toString() : '...' }}
-      </span>
+      <span class="status-count text-primary">{{ pendingOrderCount ?? '...' }}</span>
     </div>
   </c-col>
 
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-success" (click)="onStatusClick('Confirmed')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('Confirmed')" aria-label="Filter Confirmed Orders">
+  <c-col sm="6" md="3">
+    <div class="status-card border border-success" (click)="onStatusClick('confirmed')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-check-circle text-success fs-5"></i>
         <span class="status-title">Confirmed</span>
       </div>
-      <span class="status-count text-success">
-        {{ confirmedOrderCount !== null ? confirmedOrderCount.toString() : '...' }}
-      </span>
+      <span class="status-count text-success">{{ confirmedOrderCount ?? '...' }}</span>
     </div>
   </c-col>
 
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-primary" (click)="onStatusClick('Shipped')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('Shipped')" aria-label="Filter Shipped Orders">
+  <c-col sm="6" md="3">
+    <div class="status-card border border-info" (click)="onStatusClick('shipped')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-cloud-download text-info fs-5"></i>
         <span class="status-title">Shipped</span>
       </div>
-      <span class="status-count text-info">
-        {{ shippedOrderCount !== null ? shippedOrderCount.toString() : '...' }}
-      </span>
+      <span class="status-count text-info">{{ shippedOrderCount ?? '...' }}</span>
     </div>
   </c-col>
 
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-warning" (click)="onStatusClick('outOfDelivery')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('outOfDelivery')" aria-label="Filter Out of Delivery">
+  <c-col sm="6" md="3">
+    <div class="status-card border border-warning" (click)="onStatusClick('outForDelivery')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-truck text-warning fs-5"></i>
         <span class="status-title">Out for Delivery</span>
       </div>
-      <span class="status-count text-warning">
-        {{ outOfDeliveryCount !== null ? outOfDeliveryCount.toString() : '...' }}
-      </span>
+      <span class="status-count text-warning">{{ outOfDeliveryCount ?? '...' }}</span>
     </div>
   </c-col>
 
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-primary" (click)="onStatusClick('Delivered')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('Delivered')" aria-label="Filter Delivered Orders">
+  <c-col sm="6" md="3">
+    <div class="status-card border border-primary" (click)="onStatusClick('delivered')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-envelope-open text-primary fs-5"></i>
         <span class="status-title">Delivered</span>
       </div>
-      <span class="status-count text-primary">
-        {{ deliveredOrderCount !== null ? deliveredOrderCount.toString() : '...' }}
-      </span>
+      <span class="status-count text-primary">{{ deliveredOrderCount ?? '...' }}</span>
     </div>
   </c-col>
 
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-danger" (click)="onStatusClick('Cancelled')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('Cancelled')" aria-label="Filter Cancelled Orders">
+  <c-col sm="6" md="3">
+    <div class="status-card border border-danger" (click)="onStatusClick('cancelled')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-ban text-danger fs-5"></i>
         <span class="status-title">Cancelled</span>
       </div>
-      <span class="status-count text-danger">
-        {{ cancelledOrderCount !== null ? cancelledOrderCount.toString() : '...' }}
-      </span>
+      <span class="status-count text-danger">{{ cancelledOrderCount ?? '...' }}</span>
     </div>
   </c-col>
 
-  <c-col sm="6" md="3" xl="3">
-    <div class="status-card border border-info" (click)="onStatusClick('Returned')" tabindex="0" role="button"
-      (keydown.enter)="onStatusClick('Returned')" aria-label="Filter Returned Orders">
+  <c-col sm="6" md="3">
+    <div class="status-card border border-dark" (click)="onStatusClick('returned')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-loop-circular text-dark fs-5"></i>
         <span class="status-title">Returned</span>
       </div>
-      <span class="status-count text-dark">
-        {{ returnOrderCount !== null ? returnOrderCount.toString() : '...' }}
-      </span>
+      <span class="status-count text-dark">{{ returnOrderCount ?? '...' }}</span>
     </div>
   </c-col>
 </c-row>
