@@ -455,7 +455,7 @@ export class ProductAddComponent implements OnInit {
               'Product Created',
               'The product has been successfully created.',
               'success'
-            ).then(() => this.router.navigate(['/admin/products']));
+            ).then(() => this.router.navigate(['/seller/products']));
           },
           error: (err) => {
             console.error('Product creation error:', err);

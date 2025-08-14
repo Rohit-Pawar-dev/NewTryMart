@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-=======
-2025-08-07T11:53:03.940Z [info]: Retrieving Sellers. Search: ""
-2025-08-07T12:46:27.947Z [info]: Retrieving Sellers. Search: ""
-2025-08-07T12:46:54.456Z [info]: Retrieving Sellers. Search: ""
-2025-08-07T13:59:31.922Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T04:57:07.966Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T04:57:09.419Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T04:57:23.589Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T04:59:59.270Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T05:00:28.817Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T05:12:27.279Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T05:12:36.844Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T05:12:47.316Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T07:16:33.040Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T08:20:37.342Z [info]: Retrieving Users List 
-2025-08-08T08:20:45.287Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T08:20:59.369Z [info]: Retrieving Users List 
-2025-08-08T08:21:44.349Z [info]: Retrieving Sellers. Search: ""
-2025-08-08T08:21:53.095Z [info]: Retrieving Sellers. Search: ""
->>>>>>> anurag-backend
 2025-08-08T08:28:04.823Z [info]: Retrieving Sellers. Search: ""
 2025-08-12T05:02:46.738Z [info]: Retrieving Users List 
 2025-08-12T05:03:24.544Z [info]: Retrieving Users List 
@@ -55,3 +34,17 @@
 2025-08-13T10:13:08.087Z [info]: Retrieving Sellers. Search: ""
 2025-08-13T10:14:36.337Z [info]: Retrieving Sellers. Search: ""
 2025-08-13T10:55:25.678Z [info]: Retrieving Users List 
+2025-08-14T04:54:31.342Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T04:56:20.309Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T04:56:28.387Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T04:56:30.329Z [error]: Error retrieving sellers: Operation `sellers.countDocuments()` buffering timed out after 10000ms
+2025-08-14T04:56:38.399Z [error]: Error retrieving sellers: Operation `sellers.countDocuments()` buffering timed out after 10000ms
+2025-08-14T04:56:40.413Z [info]: connect ETIMEDOUT 68.178.169.235:27017
+2025-08-14T04:56:50.360Z [error]: Error retrieving orders Operation `users.find()` buffering timed out after 10000ms
+2025-08-14T04:57:16.596Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T04:57:22.083Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T04:58:49.347Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T08:14:37.145Z [info]: Retrieving Users List 
+2025-08-14T08:14:55.221Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T09:58:14.972Z [info]: Retrieving Sellers. Search: ""
+2025-08-14T10:18:02.629Z [info]: Retrieving Sellers. Search: ""
