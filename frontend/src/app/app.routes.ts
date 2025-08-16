@@ -169,15 +169,22 @@ export const routes: Routes = [
           title: 'Transactions',
         },
       },
-      {
+      // {
+      //   path: 'seller-products',
+      //   loadComponent: () =>
+      //     import('./views/sellerProducts/sellerProductList/seller-product-list.component').then(
+      //       (m) => m.SellerProductListComponent
+      //     ),
+      //   data: {
+      //     title: 'Seller Product',
+      //   },
+      // },
+        {
         path: 'seller-products',
-        loadComponent: () =>
-          import('./views/sellerProducts/sellerProductList/seller-product-list.component').then(
-            (m) => m.SellerProductListComponent
+        loadChildren: () =>
+          import('./views/sellerProducts/sellerProduct.module').then(
+            (m) => m.SellerProductModule
           ),
-        data: {
-          title: 'Seller Product',
-        },
       },
 
     ],

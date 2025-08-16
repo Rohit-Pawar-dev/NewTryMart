@@ -19,7 +19,7 @@ export class OrderViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private orderService: OrderService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.orderId = this.route.snapshot.paramMap.get('id') || '';
@@ -27,7 +27,7 @@ export class OrderViewComponent implements OnInit {
       this.loadOrder();
     }
   }
-
+  
   loadOrder(): void {
     this.isLoading = true;
     this.orderService.getOrderById(this.orderId).subscribe({
@@ -41,18 +41,14 @@ export class OrderViewComponent implements OnInit {
       },
     });
   }
-
-  // Helper to check if the shipping address is an object
   isAddressObject(addr: any): addr is Address {
     return addr && typeof addr === 'object' && 'address' in addr;
   }
 }
 
-// Address type interface
 interface Address {
   name: string;
   // phone?: string;   
- 
   mobile: string;
   city: string;
   pincode: string;

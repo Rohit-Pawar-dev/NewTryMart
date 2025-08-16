@@ -128,17 +128,19 @@
         <h6 class="fw-bold mb-3">Order & Shipping Info</h6>
 
         <!-- Order Status -->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Order Status</label>
-          <select class="form-select" [(ngModel)]="order.status">
-            <option>Pending</option>
-            <option>Processing</option>
-            <option>Shipped</option>
-            <option>Delivered</option>
-            <option>Returned</option>
-            <option>Cancelled</option>
+        <div class="mb-3" *ngIf="order">
+          <label class="form-label fw-semibold" for="orderStatus">Order Status</label>
+          <select class="form-select" id="orderStatus" [(ngModel)]="order.status" name="orderStatus">
+            <option [ngValue]="'Pending'">Pending</option>
+            <option [ngValue]="'Processing'">Processing</option>
+            <option [ngValue]="'Shipped'">Shipped</option>
+            <option [ngValue]="'Delivered'">Delivered</option>
+            <option [ngValue]="'Returned'">Returned</option>
+            <option [ngValue]="'Cancelled'">Cancelled</option>
+            <option [ngValue]="'Confirmed'">Confirmed</option> <!-- Include this if used -->
           </select>
         </div>
+
 
         <!-- Payment Status -->
         <div class="mb-3">
@@ -163,13 +165,8 @@
       <div class="border rounded p-3 mt-3 bg-white shadow">
         <h6 class="fw-bold mb-3">Customer information</h6>
         <div class="d-flex align-items-center gap-2 mb-2">
-          <img
-            [src]="order.customer_id?.profilePicture || '/assets/img/default-user.png'"
-            class="rounded-circle"
-            width="48"
-            height="48"
-            alt="profile"
-          />
+          <img [src]="order.customer_id?.profilePicture || '/assets/img/default-user.png'" class="rounded-circle"
+            width="48" height="48" alt="profile" />
           <div>
             <div class="fw-semibold text-capitalize">
               {{ order.customer_id?.name || "N/A" }}
@@ -184,7 +181,8 @@
       </div>
 
       <!-- Shipping Address -->
-      <div class="border rounded p-3 mt-3 bg-white shadow mb-2" *ngIf="order.shipping_address && isAddressObject(order.shipping_address); else noAddress">
+      <div class="border rounded p-3 mt-3 bg-white shadow mb-2"
+        *ngIf="order.shipping_address && isAddressObject(order.shipping_address); else noAddress">
         <h6 class="fw-bold mb-3">Shipping Address</h6>
 
         <div class="mb-1"><strong>Name:</strong> {{ order.shipping_address.name || "N/A" }}</div>

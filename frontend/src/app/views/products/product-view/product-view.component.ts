@@ -29,23 +29,6 @@ export class ProductViewComponent implements OnInit {
       this.getProductDetails(productId);
     }
   }
-
-  // getProductDetails(id: string): void {
-  //   this.productService.getProductById(id).subscribe({
-  //     next: (res) => {
-  //       this.product = res;
-
-  //       // Check if category_id is actually an object and extract name
-  //       const cat = (res as any).category_id;
-  //       if (cat && typeof cat === 'object' && 'name' in cat) {
-  //         this.categoryName = cat.name;
-  //       }
-  //     },
-  //     error: (err) => {
-  //       console.error('Failed to load product:', err);
-  //     },
-  //   });
-  // }
   private isAbsoluteUrl(url: string): boolean {
     return /^https?:\/\//i.test(url);
   }

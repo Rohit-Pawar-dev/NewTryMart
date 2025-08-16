@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -21,6 +22,7 @@ export class SellerProductListComponent implements OnInit {
   limit = 10;
   offset = 0;
   total = 0;
+  mediaUrl = environment.mediaUrl;
 
   constructor(private productService: ProductService, private router: Router) { }
 
@@ -40,7 +42,34 @@ export class SellerProductListComponent implements OnInit {
 
     this.productService.getAllProducts(queryParams).subscribe({
       next: (res) => {
-        this.products = Array.isArray(res) ? res : res.data || [];
+        // this.products = Array.isArray(res) ? res : res.data || [];
+        const prependBase = (path: string) =>
+          path && !/^https?:\/\//i.test(path) ? this.mediaUrl + path : path;
+
+        this.products = (res.data || []).map((product: any) => {
+          return {
+            ...product,
+            thumbnail: prependBase(product.thumbnail),
+            images: (product.images || []).map(prependBase),
+            category_id: product.category_id
+              ? {
+                ...product.category_id,
+                image: prependBase(product.category_id.image),
+              }
+              : null,
+            sub_category_id: product.sub_category_id
+              ? {
+                ...product.sub_category_id,
+                image: prependBase(product.sub_category_id.image),
+              }
+              : null,
+            variation_options: (product.variation_options || []).map((opt: any) => ({
+              ...opt,
+              images: (opt.images || []).map(prependBase),
+            })),
+          };
+        });
+
         this.total = res.total || 0;
         this.limit = res.limit || this.limit;
         this.offset = res.offset || this.offset;
@@ -55,7 +84,7 @@ export class SellerProductListComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    this.offset = 0; // Reset to first page on search
+    this.offset = 0;
     this.loadProducts();
   }
 
@@ -121,29 +150,24 @@ export class SellerProductListComponent implements OnInit {
         },
       });
   }
-
   get currentPage(): number {
     return Math.floor(this.offset / this.limit) + 1;
   }
-
   get totalPages(): number {
     return Math.ceil(this.total / this.limit);
   }
-
   nextPage(): void {
     if (this.offset + this.limit < this.total) {
       this.offset += this.limit;
       this.loadProducts();
     }
   }
-
   prevPage(): void {
     if (this.offset >= this.limit) {
       this.offset -= this.limit;
       this.loadProducts();
     }
   }
-
   goToPage(page: number): void {
     const newOffset = (page - 1) * this.limit;
     if (newOffset >= 0 && newOffset < this.total) {
@@ -151,8 +175,6 @@ export class SellerProductListComponent implements OnInit {
       this.loadProducts();
     }
   }
-
-
   toggleOffer(product: Product): void {
     const updatedValue = !product.is_offers;
     this.productService.updateProduct(product._id!, { is_offers: updatedValue }).subscribe({
@@ -166,7 +188,6 @@ export class SellerProductListComponent implements OnInit {
       }
     });
   }
-
   toggleTrending(product: Product): void {
     const updatedValue = !product.is_trending;
     this.productService.updateProduct(product._id!, { is_trending: updatedValue }).subscribe({

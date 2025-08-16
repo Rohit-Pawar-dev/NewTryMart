@@ -80,7 +80,6 @@ export interface Transaction {
     createdAt: string;
 }
 
-// ✅ Order Interface
 export interface Order {
     _id?: string;
     order_id?: number;
@@ -121,16 +120,9 @@ export interface Order {
     providedIn: 'root'
 })
 
-
-
 export class SellerOrderService {
-    private baseUrl = `${environment.apiUrl}/sellers`; // Adjust if your API prefix is different
-
+    private baseUrl = `${environment.apiUrl}/sellers`;
     constructor(private http: HttpClient) { }
-
-    /**
-     * Get seller orders with optional filters
-     */
     getSellerOrders(params: {
         search?: string;
         limit?: number;
@@ -151,37 +143,29 @@ export class SellerOrderService {
         return this.http.get(`${this.baseUrl}/orders`, { params: httpParams });
     }
 
-    /**
-     * Get a specific seller order by ID
-     */
+
     getSellerOrderById(orderId: string): Observable<any> {
         return this.http.get(`${this.baseUrl}/orders/${orderId}`);
     }
 
-    /**
-     * Get seller transactions
-     */
-    /**
- * Get seller transactions with optional filters
- */
-getSellerTransactions(params: {
-    search?: string;
-    limit?: number;
-    offset?: number;
-    status?: string;      // payment status
-    startDate?: string;
-    endDate?: string;
-} = {}): Observable<any> {
-    let httpParams = new HttpParams();
 
-    if (params.search) httpParams = httpParams.set('search', params.search);
-    if (params.limit) httpParams = httpParams.set('limit', params.limit.toString());
-    if (params.offset) httpParams = httpParams.set('offset', params.offset.toString());
-    if (params.status) httpParams = httpParams.set('status', params.status);
-    if (params.startDate) httpParams = httpParams.set('startDate', params.startDate);
-    if (params.endDate) httpParams = httpParams.set('endDate', params.endDate);
+    getSellerTransactions(params: {
+        search?: string;
+        limit?: number;
+        offset?: number;
+        status?: string;
+        startDate?: string;
+        endDate?: string;
+    } = {}): Observable<any> {
+        let httpParams = new HttpParams();
 
-    return this.http.get(`${this.baseUrl}/transactions`, { params: httpParams });
-}
+        if (params.search) httpParams = httpParams.set('search', params.search);
+        if (params.limit) httpParams = httpParams.set('limit', params.limit.toString());
+        if (params.offset) httpParams = httpParams.set('offset', params.offset.toString());
+        if (params.status) httpParams = httpParams.set('status', params.status);
+        if (params.startDate) httpParams = httpParams.set('startDate', params.startDate);
+        if (params.endDate) httpParams = httpParams.set('endDate', params.endDate);
 
+        return this.http.get(`${this.baseUrl}/transactions`, { params: httpParams });
+    }
 }

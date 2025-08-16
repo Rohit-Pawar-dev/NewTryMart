@@ -3,8 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-// ✅ Interfaces
-
 export interface Address {
   _id?: string;
   name: string;
@@ -81,7 +79,6 @@ export interface Transaction {
   createdAt: string;
 }
 
-// ✅ Order Interface
 export interface Order {
   _id?: string;
   order_id?: number;
@@ -119,7 +116,6 @@ export interface Order {
   };
 }
 
-// ✅ Injectable Service
 @Injectable({
   providedIn: 'root',
 })
@@ -129,9 +125,6 @@ export class OrderService {
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * ✅ Get all orders with optional filters, pagination, and date range.
-   */
   getAllOrders(
     search: string = '',
     limit: number = 10,
@@ -175,9 +168,6 @@ export class OrderService {
     }>(this.apiUrl, { params });
   }
 
-  /**
-   * ✅ Get order details by ID.
-   */
   getOrderById(id: string): Observable<{
     status: boolean;
     message: string;
@@ -190,9 +180,6 @@ export class OrderService {
     }>(`${this.apiUrl}/${id}`);
   }
 
-  /**
-   * ✅ Get all transactions with optional filters (search, status, date, pagination).
-   */
   getTransactions(
     search: string = '',
     limit: number = 10,
@@ -234,5 +221,4 @@ export class OrderService {
       totalPages: number;
     }>(this.transactionUrl, { params });
   }
-
 }

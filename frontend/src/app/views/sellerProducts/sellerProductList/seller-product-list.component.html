@@ -61,15 +61,13 @@
                 {{ product.is_trending ? 'Yes' : 'No' }}
               </span>
             </td>
-
-
             <td>
               <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-outline-primary primaryout" [routerLink]="['/products/view', product._id]"
+                <button class="btn btn-sm btn-outline-primary primaryout" [routerLink]="['/admin/seller-products/view', product._id]"
                   title="View">
                   <i class="far fa-eye fs-6"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-warning" [routerLink]="['/products/edit', product._id]"
+                <button class="btn btn-sm btn-outline-warning" [routerLink]="['/admin/seller-products/edit', product._id]"
                   title="Edit">
                   <i class="cil-pencil"></i>
                 </button>
