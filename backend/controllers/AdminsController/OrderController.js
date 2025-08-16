@@ -227,8 +227,49 @@ const getTransactions = async (req, res) => {
     });
   }
 };
+const changePaymentStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params; // orderId from URL
+    const { payment_status } = req.body; // new payment_status from request body
+
+    // Validate input
+    if (!["Unpaid", "Paid", "Refunded"].includes(payment_status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment status value",
+      });
+    }
+
+    // Find and update order
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { payment_status },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Payment status updated to ${payment_status}`,
+      order,
+    });
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
 module.exports = {
   getOrders,
   getOrderById,
   getTransactions,
+  changePaymentStatus,
 };

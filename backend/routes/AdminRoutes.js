@@ -49,7 +49,7 @@ router.post('/business-categories', businessCategoryController.createCategory);
 router.put('/business-categories/:id', businessCategoryController.updateCategory);
 router.delete('/business-categories/:id', businessCategoryController.deleteCategory);
 
-/** Seller Route to manage sellers */
+/** ------------------ Seller Route to manage sellers ------------------ */
 
 router.post("/seller", sellerController.createSeller);
 router.get("/seller", sellerController.getAllSellers);
