@@ -130,23 +130,29 @@
         <!-- Order Status -->
         <div class="mb-3" *ngIf="order">
           <label class="form-label fw-semibold" for="orderStatus">Order Status</label>
-          <select class="form-select" id="orderStatus" [(ngModel)]="order.status" name="orderStatus">
-            <option [ngValue]="'Pending'">Pending</option>
-            <option [ngValue]="'Processing'">Processing</option>
-            <option [ngValue]="'Shipped'">Shipped</option>
-            <option [ngValue]="'Delivered'">Delivered</option>
-            <option [ngValue]="'Returned'">Returned</option>
-            <option [ngValue]="'Cancelled'">Cancelled</option>
-            <option [ngValue]="'Confirmed'">Confirmed</option> <!-- Include this if used -->
-          </select>
+         <select
+  class="form-select"
+  [ngModel]="order.status"
+  (ngModelChange)="updateOrderStatus($event)"
+>
+  <option value="Pending">Pending</option>
+  <option value="Confirmed">Confirmed</option>
+  <option value="Processing">Processing</option>
+  <option value="Shipped">Shipped</option>
+  <option value="Delivered">Delivered</option>
+  <option value="Returned">Returned</option>
+  <option value="Cancelled">Cancelled</option>
+</select>
         </div>
 
+
         <!-- Payment Status -->
-        <div class="mb-3">
+         <div class="mb-3">
           <label class="form-label fw-semibold">Payment Status</label>
-          <select class="form-select" [(ngModel)]="order.payment_status">
-            <option>Paid</option>
-            <option>Unpaid</option>
+          <select class="form-select" [(ngModel)]="order.payment_status" (change)="updatePaymentStatus()">
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            <!-- <option value="Refunded">Refunded</option> -->
           </select>
         </div>
 

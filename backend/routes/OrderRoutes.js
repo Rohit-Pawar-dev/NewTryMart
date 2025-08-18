@@ -1,18 +1,17 @@
 const express = require("express");
 const router = express.Router();
+const { auth, adminOnly } = require("../middleware/auth");
+
 const {
   getOrders,
   getOrderById,
-} = require("../controllers/AdminsController/OrderController");
-const {
-  placeOrder,
-} = require("../controllers/usersController/OrderController");
-
-const {
   getTransactions,
+  changePaymentStatus,
+  changeOrderStatus,
 } = require("../controllers/AdminsController/OrderController");
-// const authenticateUser = require("../middlewares/authenticateUser");
-
+const {
+  placeOrder
+} = require("../controllers/usersController/OrderController");
 // frontend routes
 router.post("/place", placeOrder);
 
@@ -20,7 +19,7 @@ router.post("/place", placeOrder);
 router.get("/", getOrders);
 router.get("/transactions", getTransactions);
 router.get("/:id", getOrderById);
-
-
+router.post("/:orderId/paymentStatus", auth, adminOnly, changePaymentStatus);
+router.post("/:orderId/status", auth, adminOnly, changeOrderStatus);
 
 module.exports = router;

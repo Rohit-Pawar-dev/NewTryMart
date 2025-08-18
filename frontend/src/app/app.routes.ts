@@ -134,6 +134,12 @@ export const routes: Routes = [
         // canActivate: [AuthGuard],
         // data: { title: 'Withdrawal Request' }
       },
+      {
+        path: 'return-requests',
+        loadChildren: () =>
+          import('./views/return-request/returnrequest.module').then(m => m.ReturnRequestModule),
+      },
+
 
       // {
       //   path: 'seller-login',
@@ -179,7 +185,7 @@ export const routes: Routes = [
       //     title: 'Seller Product',
       //   },
       // },
-        {
+      {
         path: 'seller-products',
         loadChildren: () =>
           import('./views/sellerProducts/sellerProduct.module').then(

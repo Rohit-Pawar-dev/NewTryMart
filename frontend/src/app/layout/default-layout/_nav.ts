@@ -80,6 +80,11 @@ export const navItems: INavData[] = [
     url: '/admin/users',
     icon: 'fas fa-users'
   },
+  {
+    name: 'Return Requests',
+    url: '/admin/return-requests',
+    icon: 'fas fa-sitemap'
+  },
 
 
   {

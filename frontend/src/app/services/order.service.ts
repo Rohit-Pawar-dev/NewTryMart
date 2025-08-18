@@ -51,7 +51,7 @@ export interface OrderItem {
   thumbnail: string;
   tax: number;
   discount: number;
-   discount_type: 'flat' | 'percentage';
+  discount_type: 'flat' | 'percentage';
   order_id: string;
 }
 
@@ -62,8 +62,8 @@ export interface TransactionOrder {
   shipping_address: Address;
   total_price: number;
   order_items: OrderItem[];
-  status: string;
-  payment_status: string;
+  status: OrderStatus;
+  payment_status: 'Unpaid' | 'Paid' | 'Refunded';
   payment_method: string;
   createdAt: string;
 }
@@ -78,6 +78,15 @@ export interface Transaction {
   amount: number;
   createdAt: string;
 }
+
+export type OrderStatus =
+  | 'Pending'
+  | 'Confirmed'
+  | 'Processing'
+  | 'Shipped'
+  | 'Delivered'
+  | 'Returned'
+  | 'Cancelled';
 
 export interface Order {
   _id?: string;
@@ -101,12 +110,14 @@ export interface Order {
   shipping_cost?: number;
   coupon_amount?: number;
   customer_order_count?: number;
-  status?: string;
-  payment_status?: string;
+  /** ✅ required because backend always provides it */
+  status: OrderStatus;
+  /** ✅ required because backend always provides it */
+  payment_status: 'Unpaid' | 'Paid' | 'Refunded';
   payment_method?: string;
   createdAt?: string;
   updatedAt?: string;
-    breakdown: {
+  breakdown: {
     subtotal: number;
     totalDiscount: number;
     totalTax: number;
@@ -123,7 +134,7 @@ export class OrderService {
   private apiUrl = `${environment.apiUrl}/orders`;
   private transactionUrl = `${environment.apiUrl}/orders/transactions`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getAllOrders(
     search: string = '',
@@ -220,5 +231,25 @@ export class OrderService {
       offset: number;
       totalPages: number;
     }>(this.transactionUrl, { params });
+  }
+
+  changePaymentStatus(
+    orderId: string,
+    payment_status: 'Unpaid' | 'Paid' | 'Refunded'
+  ): Observable<{ status: boolean; message: string; order: Order }> {
+    return this.http.post<{ status: boolean; message: string; order: Order }>(
+      `${this.apiUrl}/${orderId}/paymentStatus`,
+      { payment_status }
+    );
+  }
+
+  changeOrderStatus(
+    orderId: string,
+    order_status: OrderStatus
+  ): Observable<{ status: boolean; message: string; order: Order }> {
+    return this.http.post<{ status: boolean; message: string; order: Order }>(
+      `${this.apiUrl}/${orderId}/status`,
+      { order_status }
+    );
   }
 }

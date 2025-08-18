@@ -27,7 +27,7 @@ router.put("/:id", productController.updateProduct);
 router.delete("/:id", productController.deleteProduct);
 router.post("/status-update", productController.status_update);
 
-// ✅ New Route: Change Request Status
+// New Route: Change Request Status
 router.patch(
   "/change-request-status/:id",
   productController.changeProductRequestStatus
