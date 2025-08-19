@@ -214,7 +214,7 @@ const emailPasswordLoginSeller = async (req, res) => {
           role: 'seller',
         },
         JWT_SECRET,
-        { expiresIn: '6h' }
+        { expiresIn: '1h' }
       );
 
       // Return the success response with the token

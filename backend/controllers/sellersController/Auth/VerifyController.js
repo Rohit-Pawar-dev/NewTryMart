@@ -48,7 +48,7 @@ const verifyOtpSeller = async (req, res) => {
             role: 'seller',
           },
           JWT_SECRET,
-          { expiresIn: '6h' }
+          { expiresIn: '1h' }
         );
         return res.status(200).json({
           status: true,

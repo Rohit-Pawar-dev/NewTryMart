@@ -21,13 +21,11 @@ export class ProductListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
   mediaUrl = environment.mediaUrl;
-
   // Pagination
   currentPage = 1;
   pageSize = 10;
   totalPages = 0;
   totalItems = 0;
-
   constructor(private sellerAuthService: SellerAuthService, private productService: ProductService, private router: Router) { }
 
   ngOnInit(): void {
@@ -82,15 +80,12 @@ export class ProductListComponent implements OnInit {
         Swal.fire('Error', 'Failed to load products', 'error');
       },
     });
-
-
   }
 
   onSearchChange(): void {
     this.currentPage = 1;
     this.loadProducts();
   }
-
   editProduct(id: string): void {
     this.router.navigate(['/seller/products/edit', id]);
   }
@@ -120,19 +115,29 @@ export class ProductListComponent implements OnInit {
       }
     });
   }
-
   toggleStatus(product: Product): void {
     const newStatus = product.status === 1 ? 0 : 1;
-    this.productService.updateProduct(product._id!, { status: newStatus }).subscribe({
-      next: () => {
-        product.status = newStatus;
-        Swal.fire('Updated', 'Status changed', 'success');
-      },
-      error: (err) => {
-        console.error('Status Update Error:', err);
-        Swal.fire('Error', 'Failed to update product status', 'error');
-      },
-    });
+
+    this.productService
+      .updateProductStatus({ id: product._id!, status: newStatus })
+      .subscribe({
+        next: (res) => {
+          if (res.success === 1) {
+            product.status = newStatus;
+            Swal.fire('Updated', `Status changed`, 'success');
+          } else {
+            Swal.fire(
+              'Blocked',
+              'Product cannot be activated until approved by admin.',
+              'warning'
+            );
+          }
+        },
+        error: (err) => {
+          console.error('Status Update Error:', err);
+          Swal.fire('Error', 'Failed to update product status', 'error');
+        },
+      });
   }
 
   toggleOffer(product: Product): void {

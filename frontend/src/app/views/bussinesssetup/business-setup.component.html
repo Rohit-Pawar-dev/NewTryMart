@@ -59,12 +59,12 @@
           <div class="mt-2">
             <!-- Live preview if new file selected -->
             <img *ngIf="previewLogoUrl; else existingLogo" [src]="previewLogoUrl" alt="New Logo Preview" width="100"
-              class="img-thumbnail" />
+              class="" style="background: linear-gradient(to bottom, #0C8CE9, #3468A7);"/>
 
             <!-- Fallback to current logo -->
             <ng-template #existingLogo>
               <img *ngIf="business.websiteLogo" [src]="getFullLogoUrl()" alt="Current Logo" width="100"
-                class="img-thumbnail" />
+                class="img-thumbnail"  style="background: linear-gradient(to bottom, #0C8CE9, #3468A7);"/>
             </ng-template>
           </div>
         </div>

@@ -32,7 +32,6 @@ const orderSchema = new Schema(
     },
     order_id: { type: Number, required: true, unique: true },
     total_price: { type: Number, required: true },
-
     status: {
       type: String,
       enum: [
@@ -41,18 +40,16 @@ const orderSchema = new Schema(
         "Processing",
         "Shipped",
         "Delivered",
-        "Cancelled",
         "Returned",
+        "Cancelled"
       ],
       default: "Pending",
     },
-
     payment_status: {
       type: String,
       enum: ["Unpaid", "Paid", "Refunded"],
       default: "Unpaid",
     },
-
     payment_method: {
       type: String,
       // enum: ["COD", "Online"],

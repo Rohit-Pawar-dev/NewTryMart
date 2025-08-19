@@ -47,7 +47,7 @@ router.post("/upload-media", upload.single("file"), async (req, res) => {
   }
 });
 
-router.get("/dashboard",  async (req, res) => {
+router.get("/dashboard", async (req, res) => {
   try {
     // Calculate today's time range
     const startOfDay = new Date();
@@ -105,10 +105,23 @@ router.get("/dashboard",  async (req, res) => {
         Product.countDocuments({ status: 0 }),
       ]
     );
-
     const deliveryStats = await Order.aggregate([
+      { $match: { payment_status: "Paid" } },
       { $group: { _id: null, totalDeliveryCharges: { $sum: "$delivery_charge" } } },
     ]);
+
+    //  const deliveryStats = await Order.aggregate([
+    //   { 
+    //     $match: { 
+    //       payment_method: { $ne: "COD" }, 
+    //       status: "Delivered",
+    //       payment_status: "Paid"
+    //     } 
+    //   },
+    //   { $group: { _id: null, totalDeliveryCharges: { $sum: "$delivery_charge" } } },
+    // ]);
+
+
     const totalDeliveryCharges = deliveryStats[0]?.totalDeliveryCharges || 0;
 
     const admin = await Admin.findOne().select("admin_wallet seller_commission");
@@ -126,7 +139,7 @@ router.get("/dashboard",  async (req, res) => {
       },
       orders: {
         total: totalOrders,
-        ...orderStatusSummary, // dynamically spread in all status counts
+        ...orderStatusSummary, 
         delivery_charges_collected: totalDeliveryCharges,
         seller_commission_collected: admin?.seller_commission || 0,
         admin_wallet_balance: admin?.admin_wallet || 0,
@@ -152,7 +165,5 @@ router.get("/dashboard",  async (req, res) => {
     });
   }
 });
-
-module.exports = router;
 
 module.exports = router;

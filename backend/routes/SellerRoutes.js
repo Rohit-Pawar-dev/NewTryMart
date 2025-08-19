@@ -40,6 +40,9 @@ router.get("/orders/:id",auth, sellerOnly, sellerOrderController.getSellerOrderB
 // Get transactions related to the authenticated seller
 router.get("/transactions", auth, sellerOnly, sellerOrderController.getSellerTransactions);
 
+router.post("/:orderId/paymentStatus", auth, sellerOnly, sellerOrderController.changePaymentStatus);
+router.post("/:orderId/status", auth, sellerOnly, sellerOrderController.changeOrderStatus);
+
 router.get("/dashboard", auth, sellerOnly, sellerDashboardController.sellerDashboard);
 
 // router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
@@ -50,7 +53,6 @@ router.post('/upload/profile', uploadProfile.single('profile_image'), sellerCont
 // Upload logo
 router.post('/upload/logo', uploadLogo.single('logo'), sellerController.uploadSellerLogo);
 // AUTH Routes
-
 
 router.post("/register", registerSeller);
 
@@ -72,7 +74,6 @@ router.put("/bank-info/details", auth, sellerOnly, bankInfoController.editBankIn
 //withdrawal request 
 router.post("/withdrawal-request", auth, sellerOnly, bankInfoController.createRequest);
 router.get("/withdrawal-requests", auth, sellerOnly, bankInfoController.listSellerRequests);
-
 router.get("/wallet", auth, sellerOnly, bankInfoController.getWalletBalance);
 
 module.exports = router;

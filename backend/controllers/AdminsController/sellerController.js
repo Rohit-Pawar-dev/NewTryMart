@@ -44,7 +44,7 @@ exports.getAllSellers = async (req, res) => {
     const total = await Seller.countDocuments(filter);
 
     const sellers = await Seller.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ created_at: -1 })
       .skip(offset)
       .limit(limit);
 
@@ -96,7 +96,6 @@ exports.deleteSeller = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
 
 exports.uploadSellerProfileImage = (req, res) => {
   if (!req.file) {

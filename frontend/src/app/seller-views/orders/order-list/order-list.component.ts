@@ -33,13 +33,14 @@ export class OrderListComponent implements OnInit, OnChanges {
     'Delivered',
     'Cancelled',
     'Returned',
+    'OutForDelivery'
   ];
 
   constructor(
     private sellerOrderService: SellerOrderService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const initialStatus = this.route.snapshot.queryParamMap.get('status');
@@ -57,15 +58,15 @@ export class OrderListComponent implements OnInit, OnChanges {
   //   }
   // }
   ngOnChanges(changes: SimpleChanges): void {
-  if (changes['status']) {
-    // Update the model (this.status already updated by Angular)
-    // Just fetch orders when status changes and it's not the first change
-    if (!changes['status'].firstChange) {
-      this.currentPage = 1;
-      this.fetchOrders();
+    if (changes['status']) {
+      // Update the model (this.status already updated by Angular)
+      // Just fetch orders when status changes and it's not the first change
+      if (!changes['status'].firstChange) {
+        this.currentPage = 1;
+        this.fetchOrders();
+      }
     }
   }
-}
 
 
   fetchOrders(): void {
@@ -117,15 +118,15 @@ export class OrderListComponent implements OnInit, OnChanges {
   //   });
   // }
   onStatusChange(newStatus: string): void {
-  this.status = newStatus;
-  this.currentPage = 1;
-  this.fetchOrders();
+    this.status = newStatus;
+    this.currentPage = 1;
+    this.fetchOrders();
 
-  this.router.navigate([], {
-    queryParams: { status: this.status },
-    queryParamsHandling: 'merge',
-  });
-}
+    this.router.navigate([], {
+      queryParams: { status: this.status },
+      queryParamsHandling: 'merge',
+    });
+  }
 
 
   onStartDateChange(event: Event): void {

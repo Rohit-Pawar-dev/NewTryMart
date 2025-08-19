@@ -3,8 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-// ✅ Interfaces
-
 export interface Address {
   _id?: string;
   name: string;
@@ -53,7 +51,7 @@ export interface OrderItem {
   thumbnail: string;
   tax: number;
   discount: number;
-   discount_type: 'flat' | 'percentage';
+  discount_type: 'flat' | 'percentage';
   order_id: string;
 }
 
@@ -64,8 +62,8 @@ export interface TransactionOrder {
   shipping_address: Address;
   total_price: number;
   order_items: OrderItem[];
-  status: string;
-  payment_status: string;
+  status: OrderStatus;
+  payment_status: 'Unpaid' | 'Paid' | 'Refunded';
   payment_method: string;
   createdAt: string;
 }
@@ -81,7 +79,15 @@ export interface Transaction {
   createdAt: string;
 }
 
-// ✅ Order Interface
+export type OrderStatus =
+  | 'Pending'
+  | 'Confirmed'
+  | 'Processing'
+  | 'Shipped'
+  | 'Delivered'
+  | 'Returned'
+  | 'Cancelled';
+
 export interface Order {
   _id?: string;
   order_id?: number;
@@ -104,12 +110,14 @@ export interface Order {
   shipping_cost?: number;
   coupon_amount?: number;
   customer_order_count?: number;
-  status?: string;
-  payment_status?: string;
+  /** ✅ required because backend always provides it */
+  status: OrderStatus;
+  /** ✅ required because backend always provides it */
+  payment_status: 'Unpaid' | 'Paid' | 'Refunded';
   payment_method?: string;
   createdAt?: string;
   updatedAt?: string;
-    breakdown: {
+  breakdown: {
     subtotal: number;
     totalDiscount: number;
     totalTax: number;
@@ -119,7 +127,6 @@ export interface Order {
   };
 }
 
-// ✅ Injectable Service
 @Injectable({
   providedIn: 'root',
 })
@@ -127,11 +134,8 @@ export class OrderService {
   private apiUrl = `${environment.apiUrl}/orders`;
   private transactionUrl = `${environment.apiUrl}/orders/transactions`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  /**
-   * ✅ Get all orders with optional filters, pagination, and date range.
-   */
   getAllOrders(
     search: string = '',
     limit: number = 10,
@@ -175,9 +179,6 @@ export class OrderService {
     }>(this.apiUrl, { params });
   }
 
-  /**
-   * ✅ Get order details by ID.
-   */
   getOrderById(id: string): Observable<{
     status: boolean;
     message: string;
@@ -190,9 +191,6 @@ export class OrderService {
     }>(`${this.apiUrl}/${id}`);
   }
 
-  /**
-   * ✅ Get all transactions with optional filters (search, status, date, pagination).
-   */
   getTransactions(
     search: string = '',
     limit: number = 10,
@@ -235,4 +233,23 @@ export class OrderService {
     }>(this.transactionUrl, { params });
   }
 
+  changePaymentStatus(
+    orderId: string,
+    payment_status: 'Unpaid' | 'Paid' | 'Refunded'
+  ): Observable<{ status: boolean; message: string; order: Order }> {
+    return this.http.post<{ status: boolean; message: string; order: Order }>(
+      `${this.apiUrl}/${orderId}/paymentStatus`,
+      { payment_status }
+    );
+  }
+
+  changeOrderStatus(
+    orderId: string,
+    order_status: OrderStatus
+  ): Observable<{ status: boolean; message: string; order: Order }> {
+    return this.http.post<{ status: boolean; message: string; order: Order }>(
+      `${this.apiUrl}/${orderId}/status`,
+      { order_status }
+    );
+  }
 }

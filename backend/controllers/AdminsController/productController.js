@@ -360,44 +360,83 @@ exports.deleteProduct = async (req, res) => {
 };
 
 // Change request status (0: pending, 1: approved, 2: denied)
+// exports.changeProductRequestStatus = async (req, res) => {
+//   try {
+//     const productId = req.params.id;
+//     const { request_status } = req.body;
+
+//     // Validate request_status value
+//     if (![0, 1, 2].includes(request_status)) {
+//       return res.status(400).json({ error: "Invalid request status value." });
+//     }
+
+//     // Find product by ID
+//     const product = await Product.findById(productId);
+//     if (!product) {
+//       return res.status(404).json({ error: "Product not found" });
+//     }
+
+//     // Update request_status
+//     product.request_status = request_status;
+
+//     // Update product active status based on request_status
+//     if (request_status === 1) {
+//       // Approved: activate product
+//       product.status = 1;
+//     } else if (request_status === 2) {
+//       // Denied: deactivate product
+//       product.status = 0;
+//     } else if (request_status === 0) {
+//       // Pending: optionally deactivate product or keep current
+//       // Here I choose to deactivate product for safety
+//       product.status = 0;
+//     }
+
+//     // Save updated product
+//     await product.save();
+
+//     return res.json({
+//       message: "Request status updated successfully",
+//       product,
+//     });
+//   } catch (err) {
+//     console.error("Error updating request status:", err);
+//     return res.status(500).json({ error: "Server error occurred" });
+//   }
+// };
 exports.changeProductRequestStatus = async (req, res) => {
   try {
     const productId = req.params.id;
-    const { request_status } = req.body;
+    let { request_status } = req.body;
+
+    // Ensure request_status is a number
+    request_status = Number(request_status);
 
     // Validate request_status value
     if (![0, 1, 2].includes(request_status)) {
-      return res.status(400).json({ error: "Invalid request status value." });
+      return res.status(400).json({ error: "Invalid request status value. Allowed: 0, 1, 2" });
     }
 
-    // Find product by ID
-    const product = await Product.findById(productId);
-    if (!product) {
+    // Determine product status based on request_status
+    let productStatus = 0; // default to inactive
+    if (request_status === 1) {
+      productStatus = 1; // approved -> active
+    }
+
+    // Update product in one query
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      { request_status, status: productStatus },
+      { new: true } // return updated product
+    );
+
+    if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // Update request_status
-    product.request_status = request_status;
-
-    // Update product active status based on request_status
-    if (request_status === 1) {
-      // Approved: activate product
-      product.status = 1;
-    } else if (request_status === 2) {
-      // Denied: deactivate product
-      product.status = 0;
-    } else if (request_status === 0) {
-      // Pending: optionally deactivate product or keep current
-      // Here I choose to deactivate product for safety
-      product.status = 0;
-    }
-
-    // Save updated product
-    await product.save();
-
     return res.json({
       message: "Request status updated successfully",
-      product,
+      product: updatedProduct,
     });
   } catch (err) {
     console.error("Error updating request status:", err);

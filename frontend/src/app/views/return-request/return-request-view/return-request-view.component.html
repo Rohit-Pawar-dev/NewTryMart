@@ -1,0 +1,43 @@
+<div *ngIf="!loading && request as r; else loadingTemplate">
+  <h2>Return Request Details</h2>
+
+  <div class="card p-3">
+    <p><strong>User:</strong> {{ r.user_id?.name || '-' }} ({{ r.user_id?.mobile || '-' }})</p>
+    <p><strong>Seller:</strong> {{ r.seller_id?.shop_name || '-' }} ({{ r.seller_id?.mobile || '-' }})</p>
+    <p><strong>Order:</strong> Order #{{ r.order_id?.order_id || '-' }} - ₹{{ r.order_id?.total_price || '-' }}</p>
+    <p><strong>Reason:</strong> {{ r.reason || '-' }}</p>
+    <p><strong>Description:</strong> {{ r.description || '-' }}</p>
+    <p><strong>Status:</strong> 
+      <!-- <span [ngClass]="{
+        'text-warning': r.status === 'Pending',
+        'text-primary': r.status === 'Processing' || r.status === 'Confirmed',
+        'text-success': r.status === 'Approved' || r.status === 'Delivered',
+        'text-danger': r.status === 'Denied' || r.status === 'Cancelled' || r.status === 'Returned'
+      }">{{ r.status }}</span> -->
+      <span class="text-muted">{{ r.status }}</span>
+    </p>
+
+    <p *ngIf="r.admin_response"><strong>Admin Response:</strong> {{ r.admin_response }}</p>
+
+    <!-- Proof Images -->
+    <div *ngIf="r.proof_images?.length" class="mt-3">
+      <h5>Proof Images:</h5>
+      <div class="d-flex flex-wrap gap-2">
+        <img *ngFor="let img of r.proof_images" [src]="img" class="border p-1" style="width:150px; height:auto;" />
+      </div>
+    </div>
+
+    <!-- Admin Response Input -->
+    <div *ngIf="r.status === 'Pending'" class="mt-3">
+      <label for="adminResponse" class="form-label">Admin Response</label>
+      <textarea id="adminResponse" class="form-control mb-2" rows="3" [(ngModel)]="adminResponse"></textarea>
+
+      <button class="btn btn-success me-2" (click)="updateStatus('Approved')">Approve</button>
+      <button class="btn btn-danger" (click)="updateStatus('Denied')">Deny</button>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="alert alert-info">Loading return request...</div>
+</ng-template>

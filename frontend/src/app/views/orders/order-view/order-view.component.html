@@ -128,48 +128,54 @@
         <h6 class="fw-bold mb-3">Order & Shipping Info</h6>
 
         <!-- Order Status -->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Order Status</label>
-          <select class="form-select" [(ngModel)]="order.status">
-            <option>Pending</option>
-            <option>Processing</option>
-            <option>Shipped</option>
-            <option>Delivered</option>
-            <option>Returned</option>
-            <option>Cancelled</option>
-          </select>
-        </div>
+     <div class="mb-3">
+  <label class="form-label fw-semibold">Order Status</label>
+ <select
+  class="form-select"
+  [ngModel]="order.status"
+  (ngModelChange)="updateOrderStatus($event)"
+>
+  <option value="Pending">Pending</option>
+  <option value="Confirmed">Confirmed</option>
+  <option value="Processing">Processing</option>
+  <option value="Shipped">Shipped</option>
+  <option value="Delivered">Delivered</option>
+  <option value="Returned">Returned</option>
+  <option value="Cancelled">Cancelled</option>
+</select>
+
+</div>
+
+
+
 
         <!-- Payment Status -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Payment Status</label>
-          <select class="form-select" [(ngModel)]="order.payment_status">
-            <option>Paid</option>
-            <option>Unpaid</option>
+          <select class="form-select" [(ngModel)]="order.payment_status" (change)="updatePaymentStatus()">
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            <!-- <option value="Refunded">Refunded</option> -->
           </select>
         </div>
 
+
         <!-- Shipping Type -->
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label class="form-label fw-semibold">Shipping Type (Order Wise)</label>
           <p class="text-muted small">Shipping Method (NORMAL SHIPPING)</p>
           <select class="form-select">
             <option>Choose Delivery Type</option>
-          </select>
-        </div>
+          </select>   
+        </div> -->
       </div>
 
       <!-- Customer Info -->
       <div class="border rounded p-3 mt-3 bg-white shadow">
         <h6 class="fw-bold mb-3">Customer information</h6>
         <div class="d-flex align-items-center gap-2 mb-2">
-          <img
-            [src]="order.customer_id?.profilePicture || '/assets/img/default-user.png'"
-            class="rounded-circle"
-            width="48"
-            height="48"
-            alt="profile"
-          />
+          <img [src]="order.customer_id?.profilePicture || '/assets/img/default-user.png'" class="rounded-circle"
+            width="48" height="48" alt="profile" />
           <div>
             <div class="fw-semibold text-capitalize">
               {{ order.customer_id?.name || "N/A" }}
@@ -184,7 +190,8 @@
       </div>
 
       <!-- Shipping Address -->
-      <div class="border rounded p-3 mt-3 bg-white shadow mb-2" *ngIf="order.shipping_address && isAddressObject(order.shipping_address); else noAddress">
+      <div class="border rounded p-3 mt-3 bg-white shadow mb-2"
+        *ngIf="order.shipping_address && isAddressObject(order.shipping_address); else noAddress">
         <h6 class="fw-bold mb-3">Shipping Address</h6>
 
         <div class="mb-1"><strong>Name:</strong> {{ order.shipping_address.name || "N/A" }}</div>

@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const deliveryManController = require("../controllers/deliveryManController/deliveryMan");
-const upload = require("../utils/multer"); // your multer config
-
+const upload = require("../utils/multer");
 // Multer middleware for handling multiple file fields
 const cpUpload = upload.fields([
   { name: "image", maxCount: 1 },

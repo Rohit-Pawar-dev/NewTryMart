@@ -17,9 +17,11 @@ const {
 } = require("../controllers/usersController/OrderController");
 const wishlistController = require("../controllers/usersController/wishlistController");
 const getCustomMulter = require('./../utils/customMulter');
-const uploadSubCategory = getCustomMulter('user');
+const uploadUserProfile = getCustomMulter('user');
 const walletController = require("../controllers/usersController/walletController");
 const optionalAuth = require("../middleware/optionalAuth");
+const returnRequestController = require("../controllers/usersController/ReturnRequestController");
+const uploadReturn = getCustomMulter('return_requests');
 
 // product routes
 router.get("/products/offers_for_you", optionalAuth, productController.offersForYou);
@@ -53,7 +55,7 @@ router.post(
   upload.single("profile"),
   userController.uploadProfilePicture
 );
-router.post('/upload-profilePicture', uploadSubCategory.single('profilePicture'), userController.uploadProfileImage);
+router.post('/upload-profilePicture', uploadUserProfile.single('profilePicture'), userController.uploadProfileImage);
 router.post("/update-profile", auth, userController.updateProfile);
 router.get("/profile", auth, userController.getProfile);
 router.post("/place-order-online", auth, placeOrderOnline);
@@ -82,5 +84,14 @@ router.get("/wallet/transactions", auth, walletController.getWalletTransactions)
 //Get delivery Charges
 router.get("/business-setup/deliveryCharges", bussinessController.deliveryCharges);
 router.get("/business-setup/seller-commission", bussinessController.getSellerCommoision);
+
+// Create a return request
+router.post("/return-requests", auth, returnRequestController.createReturnRequest);
+
+// Get return request by order ID
+router.get("/return-requests/:order_id", auth, returnRequestController.getReturnRequestByOrder);
+
+// Upload a single proof image
+router.post("/return-requests/upload", auth, uploadReturn.single('image'), returnRequestController.uploadReturnImage);
 
 module.exports = router;

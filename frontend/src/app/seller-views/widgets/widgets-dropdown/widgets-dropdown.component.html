@@ -44,8 +44,17 @@
 
 
 <c-row class="g-3 mt-3">
+    <c-col sm="6" md="3">
+    <div class="status-card border border-primary" (click)="onStatusClick('all')">
+      <div class="d-flex align-items-center gap-2">
+        <i class="cil-task text-primary fs-5"></i>
+        <span class="status-title">All</span>
+      </div>
+      <span class="status-count text-primary">{{ allOrderCount ?? '...' }}</span>
+    </div>
+  </c-col>
   <c-col sm="6" md="3">
-    <div class="status-card border border-primary" (click)="onStatusClick('pending')">
+    <div class="status-card border border-primary" (click)="onStatusClick('Pending')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-task text-primary fs-5"></i>
         <span class="status-title">Pending</span>
@@ -55,7 +64,7 @@
   </c-col>
 
   <c-col sm="6" md="3">
-    <div class="status-card border border-success" (click)="onStatusClick('confirmed')">
+    <div class="status-card border border-success" (click)="onStatusClick('Confirmed')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-check-circle text-success fs-5"></i>
         <span class="status-title">Confirmed</span>
@@ -65,7 +74,7 @@
   </c-col>
 
   <c-col sm="6" md="3">
-    <div class="status-card border border-info" (click)="onStatusClick('shipped')">
+    <div class="status-card border border-info" (click)="onStatusClick('Shipped')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-cloud-download text-info fs-5"></i>
         <span class="status-title">Shipped</span>
@@ -74,18 +83,10 @@
     </div>
   </c-col>
 
-  <c-col sm="6" md="3">
-    <div class="status-card border border-warning" (click)="onStatusClick('outForDelivery')">
-      <div class="d-flex align-items-center gap-2">
-        <i class="cil-truck text-warning fs-5"></i>
-        <span class="status-title">Out for Delivery</span>
-      </div>
-      <span class="status-count text-warning">{{ outOfDeliveryCount ?? '...' }}</span>
-    </div>
-  </c-col>
+
 
   <c-col sm="6" md="3">
-    <div class="status-card border border-primary" (click)="onStatusClick('delivered')">
+    <div class="status-card border border-primary" (click)="onStatusClick('Delivered')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-envelope-open text-primary fs-5"></i>
         <span class="status-title">Delivered</span>
@@ -95,7 +96,7 @@
   </c-col>
 
   <c-col sm="6" md="3">
-    <div class="status-card border border-danger" (click)="onStatusClick('cancelled')">
+    <div class="status-card border border-danger" (click)="onStatusClick('Cancelled')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-ban text-danger fs-5"></i>
         <span class="status-title">Cancelled</span>
@@ -105,12 +106,21 @@
   </c-col>
 
   <c-col sm="6" md="3">
-    <div class="status-card border border-dark" (click)="onStatusClick('returned')">
+    <div class="status-card border border-dark" (click)="onStatusClick('Returned')">
       <div class="d-flex align-items-center gap-2">
         <i class="cil-loop-circular text-dark fs-5"></i>
         <span class="status-title">Returned</span>
       </div>
       <span class="status-count text-dark">{{ returnOrderCount ?? '...' }}</span>
+    </div>
+  </c-col>
+  <c-col sm="6" md="3">
+    <div class="status-card border border-warning" (click)="onStatusClick('OutForDelivery')">
+      <div class="d-flex align-items-center gap-2">
+        <i class="cil-truck text-warning fs-5"></i>
+        <span class="status-title">Out for Delivery</span>
+      </div>
+      <span class="status-count text-warning">{{ outOfDeliveryCount ?? '...' }}</span>
     </div>
   </c-col>
 </c-row>
