@@ -11,7 +11,7 @@ export interface ReturnRequest {
     reason: string;
     description?: string;
     proof_images?: string[];
-    status: 'Pending' | 'Approved' | 'Denied';
+    status: 'Pending' | 'Approved' | 'Denied' | 'Returned';
     admin_response?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -57,7 +57,7 @@ export class ReturnRequestService {
 
     changeStatus(
         id: string,
-        status: 'Approved' | 'Denied',
+        status: 'Approved' | 'Denied' | 'Returned',
         admin_response?: string
     ): Observable<any> {
         return this.http.put(`${this.apiUrl}/${id}`, {

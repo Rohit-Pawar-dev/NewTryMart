@@ -26,6 +26,11 @@ export const navItems: INavData[] = [
     url: '/admin/transactions',
     icon: 'fas fa-credit-card'
   },
+    {
+    name: 'Wallet Transaction ',
+    url: '/admin/wallet-transactions',
+    icon: 'fas fa-credit-card'
+  },
   {
     title: true,
     name: 'Product management',

@@ -8,12 +8,6 @@
     <p><strong>Reason:</strong> {{ r.reason || '-' }}</p>
     <p><strong>Description:</strong> {{ r.description || '-' }}</p>
     <p><strong>Status:</strong> 
-      <!-- <span [ngClass]="{
-        'text-warning': r.status === 'Pending',
-        'text-primary': r.status === 'Processing' || r.status === 'Confirmed',
-        'text-success': r.status === 'Approved' || r.status === 'Delivered',
-        'text-danger': r.status === 'Denied' || r.status === 'Cancelled' || r.status === 'Returned'
-      }">{{ r.status }}</span> -->
       <span class="text-muted">{{ r.status }}</span>
     </p>
 
@@ -27,13 +21,16 @@
       </div>
     </div>
 
-    <!-- Admin Response Input -->
-    <div *ngIf="r.status === 'Pending'" class="mt-3">
+    <!-- Admin Response Input + Action Buttons -->
+    <div *ngIf="r.status !== 'Returned'" class="mt-4">
       <label for="adminResponse" class="form-label">Admin Response</label>
-      <textarea id="adminResponse" class="form-control mb-2" rows="3" [(ngModel)]="adminResponse"></textarea>
+      <textarea id="adminResponse" class="form-control mb-2" rows="3" [(ngModel)]="adminResponse" [disabled]="saving"></textarea>
 
-      <button class="btn btn-success me-2" (click)="updateStatus('Approved')">Approve</button>
-      <button class="btn btn-danger" (click)="updateStatus('Denied')">Deny</button>
+      <div class="mt-2">
+        <button class="btn btn-success me-2" (click)="updateStatus('Approved')" [disabled]="saving">Approve</button>
+        <button class="btn btn-danger me-2" (click)="updateStatus('Denied')" [disabled]="saving">Deny</button>
+        <button class="btn btn-secondary" (click)="updateStatus('Returned')" [disabled]="saving">Mark as Returned</button>
+      </div>
     </div>
   </div>
 </div>

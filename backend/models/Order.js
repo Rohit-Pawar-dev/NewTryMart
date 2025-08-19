@@ -55,6 +55,7 @@ const orderSchema = new Schema(
       // enum: ["COD", "Online"],
       default: "COD",
     },
+    admin_commission: { type: Number, default: 0 },
     coupon_code: { type: String, default: null },
     coupon_amount: { type: Number, default: 0 },
     shipping_cost: { type: Number, default: 0 },

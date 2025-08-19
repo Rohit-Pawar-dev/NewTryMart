@@ -34,11 +34,16 @@ export const navItems: INavData[] = [
     url: '/seller/orders',
     icon: 'fas fa-shopping-cart'
   },
-
+ 
 
   {
     title: true,
     name: 'Transaction Management',
+  },
+   {
+    name: 'Wallet Transactions',
+    url: '/seller/wallet-transactions',
+    icon: 'fas fa-shopping-cart'
   },
   {
     name: 'Withdrawal Requests',

@@ -175,6 +175,16 @@ export const routes: Routes = [
           title: 'Transactions',
         },
       },
+      {
+        path: 'wallet-transactions',
+        loadComponent: () =>
+          import('./views/wallet-transactions/wallet-transactions.component').then(
+            (m) => m.WalletTransactionsComponent
+          ),
+        data: {
+          title: 'Wallet Transactions',
+        },
+      },
       // {
       //   path: 'seller-products',
       //   loadComponent: () =>
@@ -244,6 +254,16 @@ export const routes: Routes = [
           ),
         data: {
           title: 'Product List',
+        },
+      },
+      {
+        path: 'wallet-transactions',
+        loadComponent: () =>
+          import('./seller-views/wallet-transactions/wallet-transactions.component').then(
+            (m) => m.WalletTransactionsComponent
+          ),
+        data: {
+          title: 'Wallet Transactions',
         },
       },
       {

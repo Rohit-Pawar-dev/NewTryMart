@@ -19,7 +19,7 @@ async function getOrders(req, res) {
     const limit = parseInt(req.query.limit) || 10;
     const offset = parseInt(req.query.offset) || 0;
     const status = req.query.order_status;
-    const startDate = req.query.startDate; // Expecting ISO string or YYYY-MM-DD
+    const startDate = req.query.startDate;
     const endDate = req.query.endDate;
 
     // Build user search filter
@@ -103,15 +103,16 @@ const getOrderById = async (req, res) => {
     if (!order) {
       return res.status(404).json({ status: false, message: "Order not found" });
     }
-
-    // Convert to plain object
     order = order.toObject();
-
-    // Count customer's total orders
-    const orderCount = await Order.countDocuments({
-      customer_id: order.customer_id._id,
-    });
-    order.customer_order_count = orderCount;
+    // console.log(order);
+    if (order.customer_id && order.customer_id._id) {
+      const orderCount = await Order.countDocuments({
+        customer_id: order.customer_id._id,
+      });
+      order.customer_order_count = orderCount;
+    } else {
+      order.customer_order_count = 0;
+    }
 
     // Use stored values for accurate breakdown
     let subtotal = 0;
@@ -148,7 +149,6 @@ const getOrderById = async (req, res) => {
     return res.status(500).json({ status: false, message: "Server error" });
   }
 };
-
 
 const getTransactions = async (req, res) => {
   try {
@@ -410,8 +410,6 @@ const changeOrderStatus = async (req, res) => {
     });
   }
 };
-
-
 module.exports = {
   getOrders,
   getOrderById,

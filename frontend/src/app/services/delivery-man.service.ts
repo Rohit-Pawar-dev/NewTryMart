@@ -26,7 +26,7 @@ export interface DeliveryMan {
 export class DeliveryManService {
   private apiUrl = `${environment.apiUrl}/delivery-men`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getDeliveryMen(
     search: string = '',
