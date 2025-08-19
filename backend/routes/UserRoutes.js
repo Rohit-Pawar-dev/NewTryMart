@@ -88,6 +88,9 @@ router.get("/business-setup/seller-commission", bussinessController.getSellerCom
 // Create a return request
 router.post("/return-requests", auth, returnRequestController.createReturnRequest);
 
+// Cancel order
+router.put("/cancel/:orderId", auth, returnRequestController.cancelOrder);
+
 // Get return request by order ID
 router.get("/return-requests/:order_id", auth, returnRequestController.getReturnRequestByOrder);
 

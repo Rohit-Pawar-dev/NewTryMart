@@ -19,7 +19,7 @@ const returnRequestSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['Pending', 'Approved', 'Denied'],
+            enum: ['Pending', 'Approved', 'Denied', 'Returned'],
             default: 'Pending',
         },
         reason: {

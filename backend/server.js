@@ -52,7 +52,6 @@ app.use("/api", addressRoutes);
 // AUTHENTICATION  ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api", accountRoutes);
-
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // COUPON ROUTES

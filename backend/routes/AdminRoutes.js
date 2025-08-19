@@ -10,6 +10,7 @@ const { auth, adminOnly } = require("../middleware/auth");
 const sellerController = require("../controllers/AdminsController/sellerController");
 const withdrawalController = require ("../controllers/AdminsController/withdrawalController")
 const adminReturnController = require('../controllers/AdminsController/ReturnRequestController');
+const walletTransaction = require("../controllers/AdminsController/walletTransactionController");
 
 // Utilities
 const getCustomMulter = require("../utils/customMulter");
@@ -61,5 +62,9 @@ router.delete("/seller/:id", sellerController.deleteSeller);
 router.get("/return-requests", adminReturnController.getAllReturnRequests);
 router.get("/return-requests/:id", adminReturnController.getReturnRequestById);
 router.put("/return-requests/:id", adminReturnController.changeReturnRequestStatus);
+
+/**----------------wallet trasaction ------------------- */
+
+router.get("/wallet/transactions", auth, adminOnly, walletTransaction.getAdminWalletTransactions);
 
 module.exports = router;

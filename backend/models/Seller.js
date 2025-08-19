@@ -79,13 +79,12 @@ const sellerSchema = new Schema(
     },
     status: {
       type: String,
-      default: "inactive",  // You should set the default status as "inactive" to reflect the pending approval status
+      default: "inactive",
       enum: ["active", "inactive", "blocked"],
     },
     seller_wallet: {
       type: Number,
       default: 0,
-      min: 0,
     },
     password: {
       type: String,

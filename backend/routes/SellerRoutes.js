@@ -8,6 +8,7 @@ const { auth, sellerOnly } = require("../middleware/auth");
 const sellerController = require("../controllers/AdminsController/sellerController");
 const bankInfoController = require("../controllers/sellersController/bankInfoController");
 const sellerDashboardController = require("../controllers/sellersController/sellerDashboard");
+const walletTransactionController = require("../controllers/sellersController/walletTransactionController");
 const {
   registerSeller,
 } = require("../controllers/sellersController/Auth/SignupController");
@@ -75,5 +76,8 @@ router.put("/bank-info/details", auth, sellerOnly, bankInfoController.editBankIn
 router.post("/withdrawal-request", auth, sellerOnly, bankInfoController.createRequest);
 router.get("/withdrawal-requests", auth, sellerOnly, bankInfoController.listSellerRequests);
 router.get("/wallet", auth, sellerOnly, bankInfoController.getWalletBalance);
+
+// Get seller wallet transactions
+router.get("/wallet/transactions", auth, sellerOnly, walletTransactionController.getSellerWalletTransactions);
 
 module.exports = router;

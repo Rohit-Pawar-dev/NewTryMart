@@ -54,19 +54,19 @@ const productSchema = new Schema(
     is_trending: { type: Boolean, default: false },
 
     variants: [variantSchema],
-    variation_options: [
-      {
-        variant_values: {
-          type: Map,
-          of: String,
-          required: true,
-        },
-        price: { type: Number, required: true },
-        stock: { type: Number, default: 0 },
-        images: [String],
-        sku: { type: String },
-      },
-    ],
+    // variation_options: [
+    //   {
+    //     variant_values: {
+    //       type: Map,
+    //       of: String,
+    //       required: true,
+    //     },
+    //     price: { type: Number, required: true },
+    //     stock: { type: Number, default: 0 },
+    //     images: [String],
+    //     sku: { type: String },
+    //   },
+    // ],
   },
   {
     timestamps: {
