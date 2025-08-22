@@ -65,7 +65,7 @@ exports.createReturnRequest = async (req, res) => {
 
 exports.getReturnRequestByOrder = async (req, res) => {
   try {
-    const user_id = req.user.id; // authenticated user
+    const user_id = req.user.id; r
     const { order_id } = req.params;
 
     if (!order_id) {
@@ -100,7 +100,6 @@ exports.uploadReturnImage = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  // Return relative path for frontend to use
   const filePath = path.join('uploads', 'return_requests', req.file.filename).replace(/\\/g, '/');
   res.status(201).json({ path: filePath });
 };
@@ -119,14 +118,14 @@ exports.cancelOrder = async (req, res) => {
       return res.status(400).json({ status: false, message: "Order already cancelled" });
     }
 
-    // If unpaid → just cancel
+
     if (order.payment_status === "Unpaid") {
       order.status = "Cancelled";
       await order.save();
       return res.json({ status: true, message: "Order cancelled successfully (Unpaid)" });
     }
 
-    // If paid → refund logic
+
     if (order.payment_status === "Paid") {
       const user = await User.findById(userId);
       const admin = await Admin.findOne();
@@ -139,7 +138,6 @@ exports.cancelOrder = async (req, res) => {
       if (order.seller_is === "seller") {
         const sellerShare = order.total_price - (order.admin_commission + order.delivery_charge);
 
-        // Deduct commission from admin
         admin.admin_wallet -= (order.admin_commission + order.delivery_charge);
         await new WalletTransaction({
           admin: admin._id,
@@ -149,7 +147,7 @@ exports.cancelOrder = async (req, res) => {
           description: `Commission reversal for cancelled order #${order.order_id} with delivery charge`,
         }).save();
 
-        // Deduct seller share
+
         const seller = await Seller.findById(order.seller_id);
         seller.seller_wallet -= sellerShare;
         await new WalletTransaction({
@@ -161,7 +159,7 @@ exports.cancelOrder = async (req, res) => {
         }).save();
         await seller.save();
 
-        // Refund to user
+
         user.wallet_amount += refundAmount;
         await new WalletTransaction({
           user: user._id,
@@ -171,7 +169,7 @@ exports.cancelOrder = async (req, res) => {
           description: `Refund for cancelled order #${order.order_id}`,
         }).save();
       } else {
-        // Admin sold product
+
         admin.admin_wallet -= refundAmount;
         await new WalletTransaction({
           admin: admin._id,
@@ -181,7 +179,6 @@ exports.cancelOrder = async (req, res) => {
           description: `Refund for cancelled order #${order.order_id}`,
         }).save();
 
-        // Refund to user
         user.wallet_amount += refundAmount;
         await new WalletTransaction({
           user: user._id,
@@ -192,11 +189,11 @@ exports.cancelOrder = async (req, res) => {
         }).save();
       }
 
-      // Save changes
+
       await user.save();
       await admin.save();
 
-      // Update order
+
       order.status = "Cancelled";
       order.payment_status = "Refunded";
       await order.save();
@@ -212,7 +209,7 @@ exports.cancelOrder = async (req, res) => {
   }
 };
 
-// exports.cancelOrder = async (req, res) => {
+// exports.cancelOrder = async (req, res) => {  
 //   try {
 //     const userId = req.user.id;
 //     const { orderId } = req.params;

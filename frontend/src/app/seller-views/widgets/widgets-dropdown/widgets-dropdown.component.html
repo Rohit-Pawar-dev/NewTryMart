@@ -1,13 +1,14 @@
-<c-row class="g-4">
+<c-row class="g-4 ">
   <c-col sm="12" md="4">
     <a [routerLink]="['/seller/products']" style="text-decoration: none">
-      <div class="dashboard-stat border-success d-flex justify-content-between">
+      <div class="dashboard-stat border-success d-flex justify-content-between ">
         <div class="das-side">
           <div class="dashboard-title">Total Products</div>
           <div class="dashboard-value">{{ allProductCount ?? '...' }}</div>
         </div>
-        <div class="dashboard-icon text-success">
-          <i class="cil-cart"></i>
+        <div class="dashboard-icon text-success mb-0 d-flex justify-content-between align-items-center">
+          <!-- <i class="cil-cart"></i> -->
+          <img src="assets/seller-icons/cart.png" width="35" class="m-0" alt="" srcset="">
         </div>
       </div>
     </a>
@@ -15,18 +16,19 @@
 
   <c-col sm="12" md="4">
     <a [routerLink]="['/seller']" style="text-decoration: none">
-      <div class="dashboard-stat border-primary d-flex justify-content-between">
+      <div class="dashboard-stat border-primary d-flex justify-content-between ">
         <div class="das-side">
           <div class="dashboard-title">Total Earnings</div>
           <div class="dashboard-value">₹{{ totalEarnings ?? '...' }}</div>
         </div>
-        <div class="dashboard-icon text-primary">
-          <i class="cil-wallet"></i>
+        <div class="dashboard-icon text-primary mb-0  d-flex justify-content-between align-items-center">
+          <img src="assets/seller-icons/wallet.png" width="35" class="m-0" alt="" srcset="">
+          <!-- <i class="cil-wallet"></i> -->
         </div>
       </div>
     </a>
   </c-col>
-
+  
   <c-col sm="12" md="4">
     <a [routerLink]="['/seller/orders']" style="text-decoration: none">
       <div class="dashboard-stat border-info d-flex justify-content-between">
@@ -34,8 +36,9 @@
           <div class="dashboard-title">Total Orders</div>
           <div class="dashboard-value">{{ allOrderCount ?? '...' }}</div>
         </div>
-        <div class="dashboard-icon text-info">
-          <i class="cil-list"></i>
+        <div class="dashboard-icon text-info mb-0  d-flex justify-content-between align-items-center">
+          <img src="assets/seller-icons/order.png" width="35" class="m-0" alt="" srcset="">
+          <!-- <i class="cil-list"></i> -->
         </div>
       </div>
     </a>

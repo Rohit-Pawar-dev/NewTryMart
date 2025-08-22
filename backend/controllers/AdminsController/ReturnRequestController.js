@@ -18,11 +18,10 @@ exports.getAllReturnRequests = async (req, res) => {
     const parsedLimit = Math.max(1, parseInt(limit));
     const parsedOffset = Math.max(0, parseInt(offset));
 
-    // Base filter
+  
     const filter = {};
     if (status) filter.status = status;
 
-    // Fetch all requests with base filter
     let requests = await ReturnRequest.find(filter)
       .populate({
         path: "user_id",
@@ -37,9 +36,9 @@ exports.getAllReturnRequests = async (req, res) => {
         select: "order_id total_price status payment_status",
       })
       .sort({ createdAt: -1 })
-      .lean(); // Use lean() for faster queries
+      .lean();
 
-    // Apply search across multiple fields
+ 
     if (search) {
       const regex = new RegExp(search, "i");
       requests = requests.filter(
@@ -117,7 +116,7 @@ exports.changeReturnRequestStatus = async (req, res) => {
       });
     }
 
-    // Prevent update if already Returned
+
     if (request.status === "Returned") {
       return res.status(400).json({
         status: false,
@@ -130,17 +129,12 @@ exports.changeReturnRequestStatus = async (req, res) => {
       return res.status(404).json({ status: false, message: "Associated order not found" });
     }
 
-    // Update request info
+  
     request.status = status;
     request.admin_response = admin_response?.trim() || null;
     request.updated_by = req?.admin?._id || null;
     await request.save();
 
-    /**
-     * ✅ SEPARATE LOGIC
-     * Approved → only update request, no refund
-     * Returned → process refund
-     */
     if (status === "Returned") {
       const user = await User.findById(order.customer_id);
       const admin = await Admin.findOne();
@@ -151,7 +145,7 @@ exports.changeReturnRequestStatus = async (req, res) => {
       const refundAmount = order.total_price;
 
       if (order.seller_is === "seller") {
-        // Seller product refund
+      
         const sellerShare = refundAmount - (order.admin_commission + order.delivery_charge);
 
         const seller = await Seller.findById(order.seller_id);
@@ -159,16 +153,16 @@ exports.changeReturnRequestStatus = async (req, res) => {
           return res.status(404).json({ status: false, message: "Seller not found" });
         }
 
-        // Deduct seller share
+      
         seller.seller_wallet -= sellerShare;
 
-        // Deduct admin commission
+     
         admin.admin_wallet -= (order.admin_commission + order.delivery_charge);
 
-        // Refund user full amount
+      
         user.wallet_amount += refundAmount;
 
-        // Log transactions
+       
         await new WalletTransaction({
           user: user._id,
           type: "credit",
@@ -196,7 +190,6 @@ exports.changeReturnRequestStatus = async (req, res) => {
         await seller.save();
 
       } else {
-        // Admin product refund
         admin.admin_wallet -= refundAmount;
         user.wallet_amount += refundAmount;
 
@@ -220,7 +213,6 @@ exports.changeReturnRequestStatus = async (req, res) => {
       await user.save();
       await admin.save();
 
-      // Update order
       order.status = "Returned";
       order.payment_status = "Refunded";
       await order.save();
@@ -230,7 +222,7 @@ exports.changeReturnRequestStatus = async (req, res) => {
       await Order.findByIdAndUpdate(order._id, { status: "Delivered" });
     }
 
-    // If Approved: just mark Approved, no refund
+
     if (status === "Approved") {
       await Order.findByIdAndUpdate(order._id, { status: "Delivered" });
     }
