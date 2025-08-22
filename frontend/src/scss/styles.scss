@@ -30,19 +30,19 @@
   color: white;
 }
 .sidebar-nav .nav-title {
-  color: #fff ;
+  color: #fff;
 }
 .sidebar-nav .nav-link .nav-icon,
 .sidebar-nav .nav-link i {
   color: white;
 }
-.sidebar-nav .nav-link:hover{
-    background-color:#0C8CE9;
+.sidebar-nav .nav-link:hover {
+  background-color: #0c8ce9;
 }
 
 .sidebar-nav .nav-link.active {
-  background-color:#3468A7;
-  color: #fff ;
+  background-color: #3468a7;
+  color: #fff;
 }
 
 .static_pages-container {
@@ -104,8 +104,6 @@
   transition: background-color 0.3s ease;
   cursor: pointer;
 }
-
-
 .static_pages-loading {
   padding: 1rem;
   color: #6b7280;
@@ -127,7 +125,6 @@
   border: 1px solid #d5d5d5;
   border-radius: 5px;
 }
-
 
 //widgets
 
@@ -174,135 +171,130 @@
   border: 1px solid #d0e7ff !important;
 }
 
-.sd-btn{
-background-color: #1d4ed8;
-color:white;
+.sd-btn {
+  background-color: #1d4ed8;
+  color: white;
 }
 
-.pagination-ul{
-  border: 1px solid #d0e7ff ;
-
+.pagination-ul {
+  border: 1px solid #d0e7ff;
 }
-
 
 // all components view
-.image-view{
-   display: inline-block;
+.image-view {
+  display: inline-block;
   width: 300px;
-  height: 200px; 
+  height: 200px;
   border-radius: 8px;
 }
 
-.image-view img{
-    width: 100%;
+.image-view img {
+  width: 100%;
   height: 100%;
-  object-fit: contain; 
+  object-fit: contain;
   display: block;
 }
 
 // all component table-img
-.table-img{
- display: inline-block;
+.table-img {
+  display: inline-block;
   width: 100px;
-  height: 50px; 
+  height: 50px;
   border-radius: 8px;
 }
 
-.table-img img{
-    width: 100%;
+.table-img img {
+  width: 100%;
   height: 100%;
-  object-fit: contain; 
+  object-fit: contain;
   display: block;
 }
 
-//gallery -img 
-.gallery{
- display: inline-block;
+//gallery -img
+.gallery {
+  display: inline-block;
   width: 100px;
-  height: 80px; 
+  height: 80px;
   border-radius: 8px;
 }
 
-.gallery img{
-    width: 100%;
+.gallery img {
+  width: 100%;
   height: 100%;
-  object-fit: contain; 
+  object-fit: contain;
   display: block;
 }
 
 //view-component-rendering-images
 
-.multiple-img{
+.multiple-img {
   width: 50px;
-  height: 50px; 
+  height: 50px;
   border-radius: 8px;
 }
 
-.multiple-img img{
-    width: 100%;
+.multiple-img img {
+  width: 100%;
   height: 100%;
-  object-fit: contain; 
+  object-fit: contain;
 }
-
 
 //user
-.img-user{
-  height:50px;
-  width:50px;
-   display: inline-block;
+.img-user {
+  height: 50px;
+  width: 50px;
+  display: inline-block;
 }
 
-.img-user img{
- width: 100%;
+.img-user img {
+  width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover;
   display: block;
-  border-radius:50%;
+  border-radius: 50%;
 }
 
 //user-profile
 
-.profile-img{
-  height:200px;
-  width:200px;
-   display: inline-block;
+.profile-img {
+  height: 200px;
+  width: 200px;
+  display: inline-block;
 }
 
-.profile-img img{
-    width: 100%;
+.profile-img img {
+  width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover;
   display: block;
-  border-radius:50%;
+  border-radius: 50%;
 }
-
 
 //seller
-.seller-shop{
+.seller-shop {
   width: 100px;
-  height: 50px; 
+  height: 50px;
   border-radius: 8px;
 }
 
-.seller-shop img{
-    width: 100%;
+.seller-shop img {
+  width: 100%;
   height: 100%;
-  object-fit: contain; 
+  object-fit: contain;
 }
 .seller
 //header-avatar
-.avatar{
-  height:70px;
-  width:70px;
+.avatar {
+  height: 70px;
+  width: 70px;
 }
 
-.avatar-img{
- border-radius: 50%;
-width:100%;
-height:100%;
-object-fit: cover;
+.avatar-img {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-
 
 //image close-button
 .close-button {
@@ -318,16 +310,146 @@ object-fit: cover;
 }
 
 .close-button:hover {
-  background:black;
-  color:white;
+  background: black;
+  color: white;
 }
 
-.primary{
-    background: linear-gradient(to bottom, #0C8CE9, #3468A7);
-    color:white;
+.primary {
+  background: linear-gradient(to bottom, #0c8ce9, #3468a7);
+  color: white;
+}
+.seller-login-container {
+  border: 0.5px solid #0c8ce9;
+}
+.primaryout:hover {
+  background: linear-gradient(to bottom, #0c8ce9, #3468a7);
+  color: white;
+}
+//seller login-page
+.seller-nav-tabs {
+  gap: 15px;
+  border: none;
+  margin-bottom: 20px;
+}
+.nav-link.active {
+  background-color: #0c8ce9 !important;
+  color: white !important;
+}
+.nav-link:hover {
+  color: black;
+}
+.seller-nav-link {
+  border: 1px solid #0c8ce9 !important;
+  color: black;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 400;
+}
+@media screen and (max-width: 430px) {
+  .seller-nav-link{
+    font-size: 14px;
+  }
+  .login-vector-img {
+    width: 220px;
+    height: auto;
+  }
+  .login-tabs {
+    box-shadow: none !important;
+  }
+  .overlay-container {
+    background-color: white !important;
+  }
+  .card-radius{
+    border-radius: none;
+  }
+}
+.seller-login-btn,
+.seller-register-btn {
+  background-color: #0c8ce9;
+  color: white;
+  border: none;
+  transition: all 0.5s ease;
+  font-weight: 500;
+}
+.seller-login-btn:hover {
+  color: #0c8ce9;
+  background-color: white;
+  border: 0.5px solid #0c8ce9;
+}
+.primaryTitleColor {
+  color: #0c8ce9;
+}
+.primaryTitleColor:hover {
+  color: #0c8ce9;
+}
+.primaryBgColor {
+  background-color: #0c8ce9 !important;
+}
+.btn:disabled {
+  background-color: #0c8ce9;
+}
+.login-wrapper {
+  min-height: 520px;
+}
+.error-msg {
+  margin-top: 0;
+}
+.form-control:focus {
+  box-shadow: 0 0 0 0.15rem #0c8ce954;
+  margin-top: 2.5px;
+}
+.form-control.is-invalid:focus {
+  box-shadow: 0 0 0 0.15rem rgba(var(--cui-danger-rgb), 0.25);
+  margin-top: 2.5px;
+}
+.gradient-btn , .gradient-textbg{
+  background: linear-gradient(to bottom, #0c8ce9, #3468a7) !important;
 }
 
-.primaryout:hover{
-      background: linear-gradient(to bottom, #0C8CE9, #3468A7);
-    color:white;
+
+//seller-register
+.seller-register-btn:hover {
+  background-color: #066fb9f5;
 }
+
+//seller-ordertable
+
+.order-tablehead th , .transaction-tablehead th , .product-tablehead th, .invoice-tablehead th {
+ background: linear-gradient(to bottom, #0c8ce9, #3468a7);
+ color: white;
+}
+@media screen and (max-width: 430px){
+.add-product-btn , .seller-title-font{
+  font-size: 14px;
+}
+}
+
+//seller product 
+.seller-product-card{
+  border-radius: 16px;
+}
+@media screen and (max-width: 430px){
+.seller-product-card{
+  border-radius:  0 !important;
+}
+}
+
+// seller profile
+.dropdown-item:active{
+   background: linear-gradient(to bottom, #0c8ce9, #3468a7);
+}
+// .change-pass-btn{
+//   background-color: #FC4D5C;
+//   color: white;
+// }
+.seller-title-font{
+  font-size: 16px;
+}
+
+//seller edit-product
+@media screen and (max-width: 430px){
+.edit-prod-btn{
+font-size: 13px;
+}
+}
+

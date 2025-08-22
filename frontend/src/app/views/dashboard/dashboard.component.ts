@@ -8,7 +8,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { Input } from '@angular/core';
+// import { Input } from '@angular/core';
 
 import {
   AvatarComponent, ButtonDirective, ButtonGroupComponent, CardBodyComponent,

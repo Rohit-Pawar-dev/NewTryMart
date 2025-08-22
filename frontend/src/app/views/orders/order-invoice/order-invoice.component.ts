@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { OrderService, Order, Address, OrderItem } from '../../../services/order.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'app-order-invoice',
@@ -18,6 +19,7 @@ export class OrderInvoiceComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   autoDownload = false;
+  mediaUrl = environment.mediaUrl;
 
   constructor(
     private route: ActivatedRoute,

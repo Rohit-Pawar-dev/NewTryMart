@@ -14,12 +14,10 @@ exports.getAdminWalletTransactions = async (req, res) => {
     const parsedLimit = parseInt(limit);
     const parsedOffset = parseInt(offset);
 
-    // Fetch total count
+ 
     const total = await WalletTransaction.countDocuments(filter);
-
-    // Fetch paginated results
     const transactions = await WalletTransaction.find(filter)
-      .populate("admin", "name email") // Optional: adjust fields
+      .populate("admin", "name email")
       .sort({ createdAt: -1 })
       .skip(parsedOffset)
       .limit(parsedLimit);

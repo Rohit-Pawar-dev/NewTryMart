@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrderService, Order, OrderStatus } from '../../../services/order.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-order-view',
@@ -17,7 +18,7 @@ export class OrderViewComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
   previousStatus: string = '';
-
+ mediaUrl = environment.mediaUrl;
   constructor(
     private route: ActivatedRoute,
     private orderService: OrderService

@@ -1,17 +1,35 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-5 col-lg-4">
-      <div class="card shadow-sm border-0 rounded">
-        <div class="card-header bg-primary text-white text-center py-3">
-          <h4 class="mb-0">Seller Login</h4>
+ <!-- <img src="https://img.freepik.com/free-photo/cropped-image-woman-inputting-card-information-key-phone-laptop-while-shopping-online_1423-68.jpg?t=st=1755694176~exp=1755697776~hmac=d21720115996cbab8a8422c863832ede222441c27406d7e095cb8b30d5f86db3&w=1060" class="login-overlay position-absolute" alt="" > -->
+<div
+  class="container overlay-container min-vh-100 d-flex flex-column justify-content-start justify-content-center position-relative"
+>
+  <div class="row  justify-content-center login-wrapper  ">
+    <div class="col-md-6 col-lg-4 shadow-lg p-0  bg-white d-flex justify-content-center align-items-center login-tabs">
+     <div class="p-sm-4 p-3 login-vector-img">
+       <img
+        class="w-100 h-100"
+        src="assets/images/login-vector.png"
+        alt=""
+        srcset=""
+      />
+     </div>
+    </div>
+    <div class="col-md-6 col-lg-4 p-0 pt-4 bg-white shadow-lg d-flex flex-column align-items-center justify-content-start login-tabs ">
+      <img class="w-50 pb-2 " src="assets/images/login-etrymartlogo.png" alt="" srcset="">
+      <div class="card  border-0 ">
+        <div class="text-left ps-4 ">
+          <h4 class="mb-0 text-center primaryTitleColor">Seller Login</h4>
         </div>
 
         <!-- Tabs for Switching Between Login Modes -->
-        <div class="card-body p-4">
-          <ul class="nav nav-tabs" id="loginTabs" role="tablist">
+        <div class="card-body py-4">
+          <ul
+            class="nav nav-tabs seller-nav-tabs"
+            id="loginTabs"
+            role="tablist"
+          >
             <li class="nav-item" role="presentation">
               <button
-                class="nav-link"
+                class="nav-link seller-nav-link "
                 [class.active]="isOtpLogin"
                 (click)="toggleLoginMode(true)"
                 type="button"
@@ -22,7 +40,7 @@
             </li>
             <li class="nav-item" role="presentation">
               <button
-                class="nav-link"
+                class="nav-link seller-nav-link"
                 [class.active]="!isOtpLogin"
                 (click)="toggleLoginMode(false)"
                 type="button"
@@ -33,12 +51,19 @@
             </li>
           </ul>
 
-          <form [formGroup]="isOtpLogin ? otpLoginForm : emailPasswordLoginForm" (ngSubmit)="isOtpLogin ? onSubmitOtpLogin() : onSubmitEmailPasswordLogin()">
+          <form
+            [formGroup]="isOtpLogin ? otpLoginForm : emailPasswordLoginForm"
+            (ngSubmit)="
+              isOtpLogin ? onSubmitOtpLogin() : onSubmitEmailPasswordLogin()
+            "
+          >
             <!-- OTP Login Form -->
             <div *ngIf="isOtpLogin">
               <!-- Mobile Number -->
-              <div class="mb-3">
-                <label for="mobile" class="form-label fw-semibold">Mobile Number</label>
+              <div class="mb-2">
+                <label for="mobile" class="form-label fw-semibold"
+                  >Mobile Number</label
+                >
                 <input
                   type="tel"
                   id="mobile"
@@ -48,13 +73,22 @@
                   [readonly]="otpSent"
                   placeholder="Enter 10-digit mobile number"
                   [class.is-invalid]="
-                    otpLoginForm.controls.mobile.invalid && otpLoginForm.controls.mobile.touched
+                    otpLoginForm.controls.mobile.invalid &&
+                    otpLoginForm.controls.mobile.touched
                   "
                   autocomplete="off"
                 />
-                <div class="invalid-feedback" *ngIf="otpLoginForm.controls.mobile.errors">
-                  <span *ngIf="otpLoginForm.controls.mobile.hasError('required')">Mobile is required.</span>
-                  <span *ngIf="otpLoginForm.controls.mobile.hasError('pattern')">Enter a valid 10-digit number.</span>
+                <div
+                  class="invalid-feedback"
+                  *ngIf="otpLoginForm.controls.mobile.errors"
+                >
+                  <span class="error-msg"
+                    *ngIf="otpLoginForm.controls.mobile.hasError('required')"
+                    >Mobile is required.</span
+                  >
+                  <span class="error-msg" *ngIf="otpLoginForm.controls.mobile.hasError('pattern')"
+                    >Enter a valid 10-digit number.</span
+                  >
                 </div>
               </div>
 
@@ -62,16 +96,18 @@
               <button
                 *ngIf="!otpSent"
                 type="submit"
-                class="btn btn-primary w-100 mb-3"
+                class="btn btn-primary seller-login-btn w-100 mb-3"
                 [disabled]="loading || otpLoginForm.controls.mobile.invalid"
               >
-                {{ loading ? 'Sending OTP...' : 'Send OTP' }}
+                {{ loading ? "Sending OTP..." : "Send OTP" }}
               </button>
 
               <!-- OTP Section -->
               <div *ngIf="otpSent">
                 <div class="mb-3">
-                  <label for="otp" class="form-label fw-semibold">Enter OTP</label>
+                  <label for="otp" class="form-label fw-semibold"
+                    >Enter OTP</label
+                  >
                   <input
                     type="text"
                     id="otp"
@@ -80,25 +116,33 @@
                     formControlName="otp"
                     placeholder="Enter 4-digit OTP"
                     [class.is-invalid]="
-                      otpLoginForm.controls.otp.invalid && otpLoginForm.controls.otp.touched
+                      otpLoginForm.controls.otp.invalid &&
+                      otpLoginForm.controls.otp.touched
                     "
                     autocomplete="off"
                     [disabled]="loading"
                   />
-                  <div class="invalid-feedback" *ngIf="otpLoginForm.controls.otp.errors">
-                    <span *ngIf="otpLoginForm.controls.otp.hasError('required')">OTP is required.</span>
-                    <span *ngIf="otpLoginForm.controls.otp.hasError('pattern')">Enter a valid 4-digit OTP.</span>
+                  <div
+                    class="invalid-feedback"
+                    *ngIf="otpLoginForm.controls.otp.errors"
+                  >
+                    <span class="error-msg" *ngIf="otpLoginForm.controls.otp.hasError('required')"
+                      >OTP is required.</span
+                    >
+                    <span class="error-msg" *ngIf="otpLoginForm.controls.otp.hasError('pattern')"
+                      >Enter a valid 4-digit OTP.</span
+                    >
                   </div>
                 </div>
 
                 <!-- Verify OTP Button -->
                 <button
                   type="button"
-                  class="btn btn-success w-100 mb-2"
+                  class="btn seller-login-btn w-100 mb-2"
                   [disabled]="loading || otpLoginForm.controls.otp.invalid"
                   (click)="onVerifyOtp()"
                 >
-                  {{ loading ? 'Verifying...' : 'Verify OTP' }}
+                  {{ loading ? "Verifying..." : "Verify OTP" }}
                 </button>
 
                 <!-- Resend OTP Button -->
@@ -115,7 +159,7 @@
 
             <!-- Email/Password Login Form -->
             <div *ngIf="!isOtpLogin">
-              <div class="mb-3">
+              <div class="mb-2">
                 <label for="email" class="form-label fw-semibold">Email</label>
                 <input
                   type="email"
@@ -125,17 +169,33 @@
                   placeholder="Enter your email"
                   autocomplete="off"
                   [class.is-invalid]="
-                    emailPasswordLoginForm.controls.email.invalid && emailPasswordLoginForm.controls.email.touched
+                    emailPasswordLoginForm.controls.email.invalid &&
+                    emailPasswordLoginForm.controls.email.touched
                   "
                 />
-                <div class="invalid-feedback" *ngIf="emailPasswordLoginForm.controls.email.errors">
-                  <span *ngIf="emailPasswordLoginForm.controls.email.hasError('required')">Email is required.</span>
-                  <span *ngIf="emailPasswordLoginForm.controls.email.hasError('email')">Enter a valid email address.</span>
+                <div
+                  class="invalid-feedback"
+                  *ngIf="emailPasswordLoginForm.controls.email.errors"
+                >
+                  <span class="error-msg"
+                    *ngIf="
+                      emailPasswordLoginForm.controls.email.hasError('required')
+                    "
+                    >Email is required.</span
+                  >
+                  <span class="error-msg"
+                    *ngIf="
+                      emailPasswordLoginForm.controls.email.hasError('email')
+                    "
+                    >Enter a valid email address.</span
+                  >
                 </div>
               </div>
 
               <div class="mb-3">
-                <label for="password" class="form-label fw-semibold">Password</label>
+                <label for="password" class="form-label fw-semibold"
+                  >Password</label
+                >
                 <input
                   type="password"
                   id="password"
@@ -144,36 +204,53 @@
                   placeholder="Enter your password"
                   autocomplete="off"
                   [class.is-invalid]="
-                    emailPasswordLoginForm.controls.password.invalid && emailPasswordLoginForm.controls.password.touched
+                    emailPasswordLoginForm.controls.password.invalid &&
+                    emailPasswordLoginForm.controls.password.touched
                   "
                 />
-                <div class="invalid-feedback" *ngIf="emailPasswordLoginForm.controls.password.errors">
-                  <span *ngIf="emailPasswordLoginForm.controls.password.hasError('required')">Password is required.</span>
-                  <span *ngIf="emailPasswordLoginForm.controls.password.hasError('minlength')">Password must be at least 6 characters.</span>
+                <div
+                  class="invalid-feedback"
+                  *ngIf="emailPasswordLoginForm.controls.password.errors"
+                >
+                  <span class="error-msg"
+                    *ngIf="
+                      emailPasswordLoginForm.controls.password.hasError(
+                        'required'
+                      )
+                    "
+                    >Password is required.</span
+                  >
+                  <span class="error-msg"
+                    *ngIf="
+                      emailPasswordLoginForm.controls.password.hasError(
+                        'minlength'
+                      )
+                    "
+                    >Password must be at least 6 characters.</span
+                  >
                 </div>
               </div>
 
               <!-- Login Button -->
               <button
                 type="submit"
-                class="btn btn-primary w-100 mb-3"
+                class="btn btn-primary seller-login-btn w-100 mb-3"
                 [disabled]="loading || emailPasswordLoginForm.invalid"
               >
-                {{ loading ? 'Logging in...' : 'Login' }}
+                {{ loading ? "Logging in..." : "Login" }}
               </button>
             </div>
           </form>
-        </div>
-
-        <div class="card-footer text-center bg-light">
-          <small>Don't have an account?</small>
-          <button
-            class="btn btn-link fw-semibold p-0 ms-2"
-            (click)="navigateToRegister()"
-            [disabled]="loading"
-          >
-            Register as Seller
-          </button>
+          <div class="text-center py-1">
+            <small>Don't have an account?</small>
+            <button
+              class="btn fw-semibold primaryTitleColor p-0 ms-2"
+              (click)="navigateToRegister()"
+              [disabled]="loading"
+            >
+              Register
+            </button>
+          </div>
         </div>
       </div>
     </div>
