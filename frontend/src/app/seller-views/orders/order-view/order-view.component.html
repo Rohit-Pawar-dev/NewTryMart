@@ -128,7 +128,7 @@
         <h6 class="fw-bold mb-3">Order & Shipping Info</h6>
 
         <!-- Order Status -->
-        <div class="mb-3" *ngIf="order">
+        <!-- <div class="mb-3" *ngIf="order">
           <label class="form-label fw-semibold" for="orderStatus">Order Status</label>
          <select
   class="form-select"
@@ -143,18 +143,27 @@
   <option value="Returned">Returned</option>
   <option value="Cancelled">Cancelled</option>
 </select>
-        </div>
+        </div> -->
+<div class="mb-3" *ngIf="order">
+  <label class="form-label fw-semibold">Order Status</label>
+  <div class="form-control bg-light">{{ order.status }}</div>
+</div>
 
 
         <!-- Payment Status -->
-         <div class="mb-3">
+         <!-- <div class="mb-3">
           <label class="form-label fw-semibold">Payment Status</label>
           <select class="form-select" [(ngModel)]="order.payment_status" (change)="updatePaymentStatus()">
             <option value="Paid">Paid</option>
             <option value="Unpaid">Unpaid</option>
-            <!-- <option value="Refunded">Refunded</option> -->
+            <option value="Refunded">Refunded</option>
           </select>
-        </div>
+        </div> -->
+        <div class="mb-3">
+  <label class="form-label fw-semibold">Payment Status</label>
+  <div class="form-control bg-light">{{ order.payment_status }}</div>
+</div>
+
 
         <!-- Shipping Type -->
         <!-- <div class="mb-3">

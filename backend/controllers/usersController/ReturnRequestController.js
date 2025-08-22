@@ -139,6 +139,8 @@ exports.cancelOrder = async (req, res) => {
         const sellerShare = order.total_price - (order.admin_commission + order.delivery_charge);
 
         admin.admin_wallet -= (order.admin_commission + order.delivery_charge);
+        admin.seller_commission -= order.admin_commission;
+        
         await new WalletTransaction({
           admin: admin._id,
           type: "debit",
@@ -146,7 +148,6 @@ exports.cancelOrder = async (req, res) => {
           balanceAfter: admin.admin_wallet,
           description: `Commission reversal for cancelled order #${order.order_id} with delivery charge`,
         }).save();
-
 
         const seller = await Seller.findById(order.seller_id);
         seller.seller_wallet -= sellerShare;
@@ -158,7 +159,6 @@ exports.cancelOrder = async (req, res) => {
           description: `Reversal for cancelled order #${order.order_id}`,
         }).save();
         await seller.save();
-
 
         user.wallet_amount += refundAmount;
         await new WalletTransaction({
@@ -189,7 +189,6 @@ exports.cancelOrder = async (req, res) => {
         }).save();
       }
 
-
       await user.save();
       await admin.save();
 
@@ -208,90 +207,3 @@ exports.cancelOrder = async (req, res) => {
     return res.status(500).json({ status: false, message: "Server error", error: err.message });
   }
 };
-
-// exports.cancelOrder = async (req, res) => {  
-//   try {
-//     const userId = req.user.id;
-//     const { orderId } = req.params;
-
-//     const order = await Order.findOne({ _id: orderId, customer_id: userId });
-//     if (!order) {
-//       return res.status(404).json({ status: false, message: "Order not found" });
-//     }
-
-//     if (order.status === "Cancelled") {
-//       return res.status(400).json({ status: false, message: "Order already cancelled" });
-//     }
-
-//     // If unpaid → just cancel
-//     if (order.payment_status === "Unpaid") {
-//       order.status = "Cancelled";
-//       await order.save();
-//       return res.json({ status: true, message: "Order cancelled successfully (Unpaid)" });
-//     }
-
-//     // If paid → refund logic
-//     if (order.payment_status === "Paid") {
-//       const user = await User.findById(userId);
-//       const admin = await Admin.findOne();
-//       if (!admin) {
-//         return res.status(500).json({ status: false, message: "Admin config missing" });
-//       }
-
-//       const refundAmount = order.total_price;
-
-//       if (order.seller_is === "seller") {
-//         // Deduct commission from admin
-//         admin.admin_wallet -= order.admin_commission;
-
-//         // Deduct seller share
-//         const sellerShare = order.total_price - order.admin_commission;
-//         await Seller.findByIdAndUpdate(
-//           order.seller_id,
-//           { $inc: { seller_wallet: -sellerShare } },
-//           { new: true }
-//         );
-
-//         // Refund to user
-//         user.wallet_amount += refundAmount;
-//         await new WalletTransaction({
-//           user: user._id,
-//           type: "credit",
-//           amount: refundAmount,
-//           balanceAfter: user.wallet_amount,
-//           description: `Refund for cancelled order #${order.order_id}`,
-//         }).save();
-//       } else {
-//         // Admin sold product → deduct from admin wallet
-//         admin.admin_wallet -= refundAmount;
-
-//         // Refund to user
-//         user.wallet_amount += refundAmount;
-//         await new WalletTransaction({
-//           user: user._id,
-//           type: "credit",
-//           amount: refundAmount,
-//           balanceAfter: user.wallet_amount,
-//           description: `Refund for cancelled order #${order.order_id}`,
-//         }).save();
-//       }
-
-//       // Save changes
-//       await user.save();
-//       await admin.save();
-
-//       // Update order
-//       order.status = "Cancelled";
-//       order.payment_status = "Refunded";
-//       await order.save();
-
-//       return res.json({ status: true, message: "Order cancelled & refunded successfully" });
-//     }
-
-//     return res.status(400).json({ status: false, message: "Invalid order state for cancellation" });
-
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ status: false, message: "Server error", error: err.message });
-//   }
-// };

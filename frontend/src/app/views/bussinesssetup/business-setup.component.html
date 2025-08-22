@@ -43,7 +43,10 @@
           <label class="form-label"><strong>Delivery Charges:</strong></label>
           <input type="number" class="form-control" name="deliveryCharges" [(ngModel)]="business.deliveryCharges" />
         </div>
-
+         <div class="mb-3 col-md-4 d-none">
+          <label class="form-label"><strong>Razor Pay Key:</strong></label>
+          <input type="text" class="form-control" name="razorPayKey" [(ngModel)]="business.razorPayKey" required />
+        </div>
         <div class="mb-3 col-md-4">
           <label for="sellerCommision" class="form-label">
             <strong>Seller Commission (%):</strong>

@@ -43,7 +43,7 @@
       <div class="dashboard-stat border-primary d-flex justify-content-between">
         <div class="das-side">
           <div class="dashboard-title">Wallet Balance</div>
-          <div class="dashboard-value">{{ walletBalance !== null ? walletBalance : '...' }}</div>
+          <div class="dashboard-value">{{ walletBalance !== null ? walletBalance.toFixed(2) : '...' }}</div>
         </div>
         <div class="dashboard-icon text-primary"><i class="cil-wallet"></i></div>
       </div>
@@ -55,7 +55,7 @@
       <div class="dashboard-stat border-secondary d-flex justify-content-between">
         <div class="das-side">
           <div class="dashboard-title">Total Commission</div>
-          <div class="dashboard-value">{{ totalcommission !== null ? totalcommission : '...' }}</div>
+          <div class="dashboard-value">{{ totalcommission !== null ? totalcommission.toFixed(2) : '...' }}</div>
         </div>
         <div class="dashboard-icon text-info"><i class="cil-chart-line"></i></div>
       </div>
@@ -67,7 +67,7 @@
       <div class="dashboard-stat border-success d-flex justify-content-between">
         <div class="das-side">
           <div class="dashboard-title">Delivery Charges Earn</div>
-          <div class="dashboard-value">{{ totalDeliveryCharges !== null ? totalDeliveryCharges : '...' }}</div>
+          <div class="dashboard-value">{{ totalDeliveryCharges !== null ? totalDeliveryCharges.toFixed(2) : '...' }}</div>
         </div>
         <div class="dashboard-icon text-success"><i class="cil-car-alt"></i></div>
       </div>

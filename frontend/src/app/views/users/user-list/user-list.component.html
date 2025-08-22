@@ -37,7 +37,7 @@
                     alt="User Image" class="img-thumbnail mt-2" />
                 </div>
                 <div class="user-name">
-                  {{ user.name }}
+                 {{ user.name && user.name.trim() !== "" ? user.name : "Guest User" }}
                   <div class="user-email">{{ user.email }}</div>
                 </div>
               </div>

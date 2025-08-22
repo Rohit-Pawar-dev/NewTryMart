@@ -30,6 +30,7 @@ export class BusinessSetupComponent implements OnInit {
     websiteLogo: '',
     deliveryCharges: 0,
     sellerCommision: 0,
+    razorPayKey: ''
   };
 
   private apiUrl = `${environment.apiUrl}/admin/setting/business-setup`;
@@ -86,54 +87,54 @@ export class BusinessSetupComponent implements OnInit {
   }
 
 
-async onUpdate(): Promise<void> {
-  const confirmResult = await Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you want to update the business setup?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, update it!',
-    cancelButtonText: 'Cancel',
-  });
+  async onUpdate(): Promise<void> {
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to update the business setup?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update it!',
+      cancelButtonText: 'Cancel',
+    });
 
-  if (!confirmResult.isConfirmed) {
-    return; // User cancelled the action
-  }
-
-  this.success = null;
-  this.error = null;
-  this.isLoading = true;
-
-  try {
-    // Upload logo if selected
-    if (this.selectedLogoFile) {
-      const formData = new FormData();
-      formData.append('logo', this.selectedLogoFile);
-
-      const uploadRes = await this.http
-        .post<any>(`${environment.apiUrl}/upload-logo`, formData)
-        .toPromise();
-
-      if (uploadRes?.path) {
-        this.business.websiteLogo = uploadRes.path;
-      }
+    if (!confirmResult.isConfirmed) {
+      return; // User cancelled the action
     }
 
-    // Update business setup
-    await this.http.put<any>(this.apiUrl, this.business).toPromise();
+    this.success = null;
+    this.error = null;
+    this.isLoading = true;
 
-    this.originalData = { ...this.business };
-    this.selectedLogoFile = null;
-    this.previewLogoUrl = null;
-    this.isLoading = false;
+    try {
+      // Upload logo if selected
+      if (this.selectedLogoFile) {
+        const formData = new FormData();
+        formData.append('logo', this.selectedLogoFile);
 
-    Swal.fire('Success', 'Business setup updated successfully.', 'success');
-  } catch (err: any) {
-    this.isLoading = false;
-    this.error = err.error?.message || 'Failed to update business setup.';
-    Swal.fire('Error', this.error ?? 'An unknown error occurred.', 'error');
+        const uploadRes = await this.http
+          .post<any>(`${environment.apiUrl}/upload-logo`, formData)
+          .toPromise();
+
+        if (uploadRes?.path) {
+          this.business.websiteLogo = uploadRes.path;
+        }
+      }
+
+      // Update business setup
+      await this.http.put<any>(this.apiUrl, this.business).toPromise();
+
+      this.originalData = { ...this.business };
+      this.selectedLogoFile = null;
+      this.previewLogoUrl = null;
+      this.isLoading = false;
+
+      Swal.fire('Success', 'Business setup updated successfully.', 'success');
+    } catch (err: any) {
+      this.isLoading = false;
+      this.error = err.error?.message || 'Failed to update business setup.';
+      Swal.fire('Error', this.error ?? 'An unknown error occurred.', 'error');
+    }
   }
-}
 
 
   onCancel(): void {

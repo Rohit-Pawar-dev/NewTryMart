@@ -19,7 +19,7 @@ const BusinessSetupSchema = new mongoose.Schema({
     match: [/.+\@.+\..+/, 'Please enter a valid email address']
   },
   websiteLogo: {
-    type: String, 
+    type: String,
     trim: true
   },
   sellerCommision: {
@@ -31,6 +31,10 @@ const BusinessSetupSchema = new mongoose.Schema({
   deliveryCharges: {
     type: Number,
     default: 0
+  },
+  razorPayKey: {
+    type: String,
+    required: true
   },
   companyAddress: {
     type: String,
@@ -48,7 +52,7 @@ const BusinessSetupSchema = new mongoose.Schema({
     trim: true
   }
 }, {
-  timestamps: true 
+  timestamps: true
 });
 
 module.exports = mongoose.model('BusinessSetup', BusinessSetupSchema);

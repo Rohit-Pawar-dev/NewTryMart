@@ -19,7 +19,7 @@
       <div class="dashboard-stat border-primary d-flex justify-content-between ">
         <div class="das-side">
           <div class="dashboard-title">Total Earnings</div>
-          <div class="dashboard-value">₹{{ totalEarnings ?? '...' }}</div>
+          <div class="dashboard-value">₹{{ totalEarnings!=null ? totalEarnings.toFixed(2) : '...' }}</div>
         </div>
         <div class="dashboard-icon text-primary mb-0  d-flex justify-content-between align-items-center">
           <img src="assets/seller-icons/wallet.png" width="35" class="m-0" alt="" srcset="">
