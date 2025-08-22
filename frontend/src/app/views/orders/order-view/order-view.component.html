@@ -57,7 +57,7 @@
               <td>{{ i + 1 }}</td>
               <td>
                 <div class="d-flex align-items-center gap-2">
-                  <img [src]="item.product_id?.thumbnail || item.thumbnail" alt="thumb" width="50" height="50" />
+                  <img [src]="mediaUrl+item.product_id?.thumbnail || item.thumbnail" alt="thumb" width="50" height="50" />
                   <div>
                     <div class="fw-semibold">{{ item.name }}</div>
                     <div class="small text-success">

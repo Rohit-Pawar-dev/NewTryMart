@@ -71,7 +71,7 @@
       <tr *ngFor="let item of order.order_items; let i = index">
         <td>{{ i + 1 }}</td>
         <td>{{ item.name }}</td>
-        <td><img [src]="item.thumbnail" alt="{{ item.name }}" width="60" style="object-fit: cover;" /></td>
+        <td><img [src]="mediaUrl+item.thumbnail" alt="{{ item.name }}" width="60" style="object-fit: cover;" /></td>
         <td>{{ item.quantity }}</td>
         <td>{{ item.unit_price | number:'1.2-2' }}</td>
         <td>

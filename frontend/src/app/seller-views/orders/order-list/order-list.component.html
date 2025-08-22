@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<div class="container mt-4 gx-3 p-0  ">
   <h4 class="fw-bold mb-4">All Orders</h4>
 
   <!-- Filter Panel -->
@@ -57,9 +57,9 @@
   </div>
 
   <!-- Orders Table -->
-  <div class="table-responsive" *ngIf="!isLoading && orders.length > 0">
-    <table class="table align-middle table-bordered shadow-sm rounded">
-      <thead class="bg-light text-muted border-bottom">
+  <div class="table-responsive " *ngIf="!isLoading && orders.length > 0">
+    <table class="table align-middle table-bordered text-nowrap shadow-sm rounded ">
+      <thead class="order-tablehead text-muted border-bottom text-center ">
         <tr>
           <th>SL</th>
           <th>Order ID</th>
@@ -98,8 +98,8 @@
               {{ order.payment_status || 'N/A' }}
             </div>
           </td>
-          <td>
-            <span class="badge rounded-pill px-3 py-1" [ngClass]="{
+          <td class="text-center">
+            <span class="badge rounded-pill  px-3 py-2" [ngClass]="{
               'bg-primary text-dark': order.status === 'Pending',
               'bg-success': order.status === 'Delivered',
               'bg-warning text-dark': order.status === 'Processing',
