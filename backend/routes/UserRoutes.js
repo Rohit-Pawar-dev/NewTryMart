@@ -22,6 +22,7 @@ const walletController = require("../controllers/usersController/walletControlle
 const optionalAuth = require("../middleware/optionalAuth");
 const returnRequestController = require("../controllers/usersController/ReturnRequestController");
 const uploadReturn = getCustomMulter('return_requests');
+const authController = require("../controllers/usersController/authController");
 
 // product routes
 router.get("/products/offers_for_you", optionalAuth, productController.offersForYou);
@@ -96,5 +97,9 @@ router.get("/return-requests/:order_id", auth, returnRequestController.getReturn
 
 // Upload a single proof image
 router.post("/return-requests/upload", auth, uploadReturn.single('image'), returnRequestController.uploadReturnImage);
+
+
+//paymentmethod get
+router.get("/business-setup/payment-methods", authController.getPaymentOptions);
 
 module.exports = router;

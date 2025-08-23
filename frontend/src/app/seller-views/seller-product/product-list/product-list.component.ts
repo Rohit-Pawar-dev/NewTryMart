@@ -21,6 +21,7 @@ export class ProductListComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
   mediaUrl = environment.mediaUrl;
+  requestStatus: string = '';
   // Pagination
   currentPage = 1;
   pageSize = 10;
@@ -35,13 +36,18 @@ export class ProductListComponent implements OnInit {
   loadProducts(): void {
     this.isLoading = true;
 
-    const queryParams = {
+    const queryParams: any = {
       limit: this.pageSize,
       offset: (this.currentPage - 1) * this.pageSize,
       search: this.searchTerm,
-      added_by: 'admin',
+      added_by: 'seller',
     };
-    this.sellerAuthService.getSellerProducts().subscribe({
+
+    if (this.requestStatus) {
+      queryParams.request_status = this.requestStatus;
+    }
+
+    this.sellerAuthService.getSellerProducts(queryParams).subscribe({
       next: (res) => {
         const prependBase = (path: string) =>
           path && !/^https?:\/\//i.test(path) ? this.mediaUrl + path : path;
@@ -81,6 +87,11 @@ export class ProductListComponent implements OnInit {
       },
     });
   }
+  onRequestStatusChange(): void {
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
 
   onSearchChange(): void {
     this.currentPage = 1;
@@ -118,7 +129,7 @@ export class ProductListComponent implements OnInit {
   toggleStatus(product: Product): void {
     const newStatus = product.status === 1 ? 0 : 1;
 
-    this.productService
+    this.sellerAuthService
       .updateProductStatus({ id: product._id!, status: newStatus })
       .subscribe({
         next: (res) => {

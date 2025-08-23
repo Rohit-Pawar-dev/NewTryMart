@@ -3,6 +3,30 @@ const VariantOption = require("../../models/VariantOption");
 const Review = require("../../models/Review");
 const mongoose = require('mongoose');
 
+const generateSkuCode = (base) => {
+    return (
+        base
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "") +
+        "-" +
+        Math.floor(Math.random() * 100000)
+    );
+};
+
+// Helper to generate slug
+const generateSlug = (name) => {
+    return (
+        name
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "") +
+        "-" +
+        Math.floor(Math.random() * 10000)
+    );
+};
+
 exports.getProductsBySeller = async (req, res) => {
     try {
         const sellerId = req.user?.id;
@@ -16,7 +40,8 @@ exports.getProductsBySeller = async (req, res) => {
             page = 1,
             min_price,
             max_price,
-            min_rating
+            min_rating,
+            request_status,
         } = req.query;
         const parsedLimit = Math.max(1, parseInt(limit));
         const parsedPage = Math.max(1, parseInt(page));
@@ -29,6 +54,10 @@ exports.getProductsBySeller = async (req, res) => {
         if (search) {
             filter.name = { $regex: search, $options: "i" };
         }
+        if (request_status) {
+            filter.request_status = request_status;
+        }
+
         if (min_price || max_price) {
             filter.unit_price = {};
             if (min_price) filter.unit_price.$gte = parseFloat(min_price);
@@ -88,3 +117,136 @@ exports.getProductsBySeller = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.createProduct = async (req, res) => {
+    try {
+        const data = req.body;
+
+        // Set admin/seller flags
+        if (data.added_by === "admin") {
+            data.seller_id = null;
+            data.status = 1;
+            data.request_status = 1;
+        } else if (data.added_by === "seller") {
+            data.status = 0;
+            data.request_status = 0;
+        }
+
+        // Validate required name
+        if (!data.name) {
+            return res.status(400).json({ error: "Product name is required to generate SKU." });
+        }
+
+        // Generate unique product-level SKU
+        let sku = generateSkuCode(data.name);
+        while (await Product.findOne({ sku_code: sku })) {
+            sku = generateSkuCode(data.name);
+        }
+        data.sku_code = sku;
+
+        // Generate unique slug
+        let slug = generateSlug(data.name);
+        while (await Product.findOne({ slug })) {
+            slug = generateSlug(data.name);
+        }
+        data.slug = slug;
+
+        // Save product (no session here)
+        const [product] = await Product.create([data]);
+
+        // Handle variants
+        let variationOptions = [];
+
+        if (data.variation_options?.length > 0) {
+            // Manual variant options provided
+            for (const option of data.variation_options) {
+                let variantSku = option.sku || generateSkuCode(
+                    data.name + "-" + Object.values(option.variant_values).join("-")
+                );
+
+                while (await VariantOption.findOne({ sku: variantSku })) {
+                    variantSku = generateSkuCode(data.name + "-" + Object.values(option.variant_values).join("-"));
+                }
+
+                variationOptions.push({
+                    product_id: product._id,
+                    variant_values: option.variant_values,
+                    price: option.price,
+                    stock: option.stock || 0,
+                    images: option.images || [],
+                    sku: variantSku,
+                });
+            }
+        } else if (data.variants?.length > 0) {
+            // Auto-generate variant options from variant definitions
+            const combinations = generateVariantCombinations(data.variants);
+
+            for (const variant_values of combinations) {
+                let variantSku = generateSkuCode(data.name + "-" + Object.values(variant_values).join("-"));
+
+                while (await VariantOption.findOne({ sku: variantSku })) {
+                    variantSku = generateSkuCode(data.name + "-" + Object.values(variant_values).join("-"));
+                }
+
+                variationOptions.push({
+                    product_id: product._id,
+                    variant_values,
+                    price: data.unit_price,
+                    stock: 10,
+                    images: [],
+                    sku: variantSku,
+                });
+            }
+        }
+
+        if (variationOptions.length > 0) {
+            await VariantOption.insertMany(variationOptions);
+        }
+
+        res.status(201).json({
+            message: "Product created successfully",
+            product,
+            variant_count: variationOptions.length,
+        });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+exports.status_update = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ success: 0, message: "Product not found" });
+    }
+
+    let success = 1;
+
+    if (status === 1) {
+      if (
+        product.added_by === "seller" &&
+        (product.request_status === 0 || product.request_status === 2)
+      ) {
+        success = 0;
+      } else {
+        product.status = status;
+      }
+    } else {
+      product.status = status;
+    }
+
+    await product.save();
+
+    return res.status(200).json({ success });
+  } catch (err) {
+    console.error("Status Update Error:", err);
+    return res.status(500).json({
+      success: 0,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+

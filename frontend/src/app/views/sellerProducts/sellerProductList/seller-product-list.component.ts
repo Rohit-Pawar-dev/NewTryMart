@@ -16,6 +16,7 @@ import Swal from 'sweetalert2';
 export class SellerProductListComponent implements OnInit {
   products: Product[] = [];
   searchTerm = '';
+  requestStatusFilter: string = '';
   isLoading = false;
 
   // Pagination State
@@ -33,12 +34,15 @@ export class SellerProductListComponent implements OnInit {
   loadProducts(): void {
     this.isLoading = true;
 
-    const queryParams = {
+    const queryParams: any = {
       search: this.searchTerm,
       added_by: 'seller',
       limit: this.limit,
       offset: this.offset,
     };
+    if (this.requestStatusFilter !== '') {
+      queryParams.request_status = this.requestStatusFilter;
+    }
 
     this.productService.getAllProducts(queryParams).subscribe({
       next: (res) => {

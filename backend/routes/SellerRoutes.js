@@ -23,7 +23,7 @@ const {
   verifyOtpSeller,
 } = require("../controllers/sellersController/Auth/VerifyController");
 const getProducts = require("../controllers/sellersController/sellerProductController");
-const sellerOrderController = require ("../controllers/sellersController/sellerOrders");
+const sellerOrderController = require("../controllers/sellersController/sellerOrders");
 
 //seller side apis 
 router.get("/view", auth, sellerOnly, getMySellerProfile);
@@ -31,12 +31,14 @@ router.put("/edit", auth, sellerOnly, updateMySellerProfile);
 router.post('/change-password', auth, sellerOnly, changeSellerPassword);
 // Get products by seller
 router.get('/products', auth, sellerOnly, getProducts.getProductsBySeller);
+router.post('/products', auth, sellerOnly, getProducts.createProduct);
+router.post('/products/status', auth, sellerOnly, getProducts.status_update);
 
 // Get all orders for the authenticated seller with pagination and filters
-router.get("/orders",auth, sellerOnly, sellerOrderController.getSellerOrders);
+router.get("/orders", auth, sellerOnly, sellerOrderController.getSellerOrders);
 
 // Get a particular order by ID for the seller
-router.get("/orders/:id",auth, sellerOnly, sellerOrderController.getSellerOrderById);
+router.get("/orders/:id", auth, sellerOnly, sellerOrderController.getSellerOrderById);
 
 // Get transactions related to the authenticated seller
 router.get("/transactions", auth, sellerOnly, sellerOrderController.getSellerTransactions);
@@ -45,6 +47,8 @@ router.post("/:orderId/paymentStatus", auth, sellerOnly, sellerOrderController.c
 router.post("/:orderId/status", auth, sellerOnly, sellerOrderController.changeOrderStatus);
 
 router.get("/dashboard", auth, sellerOnly, sellerDashboardController.sellerDashboard);
+
+
 
 // router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
 

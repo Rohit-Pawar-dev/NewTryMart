@@ -54,8 +54,8 @@ exports.createProduct = async (req, res) => {
       data.status = 1;
       data.request_status = 1;
     } else if (data.added_by === "seller") {
-      data.status = 0;
-      data.request_status = 0;
+      data.status = 1;
+      data.request_status = 1;
     }
 
     // Validate required name
@@ -151,6 +151,7 @@ exports.getAllProducts = async (req, res) => {
       max_price,
       min_rating,
       added_by, // Accept "admin", "seller", or comma-separated list
+      request_status,
     } = req.query;
 
     const parsedLimit = Math.max(1, parseInt(limit));
@@ -169,6 +170,12 @@ exports.getAllProducts = async (req, res) => {
       filter.added_by = { $in: roles };
     }
 
+    if (request_status !== undefined) {
+      const parsedStatus = parseInt(request_status);
+      if ([0, 1, 2].includes(parsedStatus)) {
+        filter.request_status = parsedStatus;
+      }
+    }
     // Price filter
     if (min_price || max_price) {
       filter.unit_price = {};
@@ -359,51 +366,6 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// Change request status (0: pending, 1: approved, 2: denied)
-// exports.changeProductRequestStatus = async (req, res) => {
-//   try {
-//     const productId = req.params.id;
-//     const { request_status } = req.body;
-
-//     // Validate request_status value
-//     if (![0, 1, 2].includes(request_status)) {
-//       return res.status(400).json({ error: "Invalid request status value." });
-//     }
-
-//     // Find product by ID
-//     const product = await Product.findById(productId);
-//     if (!product) {
-//       return res.status(404).json({ error: "Product not found" });
-//     }
-
-//     // Update request_status
-//     product.request_status = request_status;
-
-//     // Update product active status based on request_status
-//     if (request_status === 1) {
-//       // Approved: activate product
-//       product.status = 1;
-//     } else if (request_status === 2) {
-//       // Denied: deactivate product
-//       product.status = 0;
-//     } else if (request_status === 0) {
-//       // Pending: optionally deactivate product or keep current
-//       // Here I choose to deactivate product for safety
-//       product.status = 0;
-//     }
-
-//     // Save updated product
-//     await product.save();
-
-//     return res.json({
-//       message: "Request status updated successfully",
-//       product,
-//     });
-//   } catch (err) {
-//     console.error("Error updating request status:", err);
-//     return res.status(500).json({ error: "Server error occurred" });
-//   }
-// };
 exports.changeProductRequestStatus = async (req, res) => {
   try {
     const productId = req.params.id;

@@ -8,6 +8,13 @@
       <div class="mb-3 d-flex justify-content-between align-items-center">
         <input type="text" [(ngModel)]="searchTerm" (input)="onSearchChange()"
           class="form-control w-25 mx-3 mt-2 border border-outline-primary" placeholder="Search by product name" />
+        <select class="form-select w-25 mx-3 mt-2" [(ngModel)]="requestStatusFilter" (change)="onSearchChange()">
+          <option value="">All Request Status</option>
+          <option value="0">Pending</option>
+          <option value="1">Approved</option>
+          <option value="2">Denied</option>
+        </select>
+
         <button class="btn btn-primary primary mx-3 mt-2" routerLink="/admin/products/add">
           Add New Product
         </button>
@@ -21,6 +28,7 @@
             <th>Name</th>
             <th>Price</th>
             <th>Status</th>
+            <th>Request Status</th>
             <th>Offer</th>
             <th>Trending</th>
             <th>Actions</th>
@@ -46,6 +54,15 @@
             </td>
             <td>
               <span class="badge" [ngClass]="{
+    'bg-info': product.request_status === 0,
+    'bg-success': product.request_status === 1,
+    'bg-danger': product.request_status === 2
+  }">
+                {{ product.request_status === 0 ? 'Pending' : product.request_status === 1 ? 'Approved' : 'Denied' }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="{
     'bg-success': product.is_offers,
     'bg-secondary': !product.is_offers
   }">
@@ -61,14 +78,17 @@
                 {{ product.is_trending ? 'Yes' : 'No' }}
               </span>
             </td>
+
+
+
             <td>
               <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-outline-primary primaryout" [routerLink]="['/admin/seller-products/view', product._id]"
-                  title="View">
+                <button class="btn btn-sm btn-outline-primary primaryout"
+                  [routerLink]="['/admin/seller-products/view', product._id]" title="View">
                   <i class="far fa-eye fs-6"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-warning" [routerLink]="['/admin/seller-products/edit', product._id]"
-                  title="Edit">
+                <button class="btn btn-sm btn-outline-warning"
+                  [routerLink]="['/admin/seller-products/edit', product._id]" title="Edit">
                   <i class="cil-pencil"></i>
                 </button>
                 <button class="btn btn-sm btn-outline-secondary" (click)="toggleStatus(product)" title="Toggle Status">

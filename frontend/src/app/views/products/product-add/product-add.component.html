@@ -17,6 +17,39 @@
         </div>
       </div>
 
+     <div class="form-group mb-3">
+  <label for="added_by">Added By</label>
+  <select
+    id="added_by"
+    class="form-control"
+    formControlName="added_by"
+    (change)="onAddedByChange($event)"
+  >
+    <option value="admin">Admin</option>
+    <option value="seller">Seller</option>
+  </select>
+</div>
+
+<div class="form-group mb-3" *ngIf="form.get('added_by')?.value === 'seller'">
+  <label for="seller_id">Select Seller</label>
+  <select
+    id="seller_id"
+    class="form-control"
+    formControlName="seller_id"
+    required
+  >
+    <option [ngValue]="null" disabled>Select Seller</option>
+    <option *ngFor="let seller of sellers" [value]="seller._id">
+      {{ seller.name }}
+    </option>
+  </select>
+</div>
+
+
+
+
+
+
       <!-- Description -->
       <div class="mb-4">
         <label class="form-label">Description</label>

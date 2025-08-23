@@ -62,10 +62,18 @@ export class SellerAuthService {
     }
   }
 
-  getSellerProducts(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/products`);
+  getSellerProducts(params: any = {}): Observable<any> {
+    return this.http.get(`${this.apiUrl}/products`, { params });
   }
 
+  updateProductStatus(data: {
+    id: string;
+    status: number;
+  }): Observable<{ success: number }> {
+    return this.http.post<{ success: number }>(
+      `${this.apiUrl}/products/status`,
+      data
+    );
+  }
 
-  
 }

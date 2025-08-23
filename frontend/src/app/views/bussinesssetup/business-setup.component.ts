@@ -30,7 +30,10 @@ export class BusinessSetupComponent implements OnInit {
     websiteLogo: '',
     deliveryCharges: 0,
     sellerCommision: 0,
-    razorPayKey: ''
+    razorPayKey: '',
+    display_cod_payment: true,
+    display_online_payment: true,
+    display_wallet_payment: true
   };
 
   private apiUrl = `${environment.apiUrl}/admin/setting/business-setup`;

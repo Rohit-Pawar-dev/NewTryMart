@@ -54,8 +54,8 @@ export class ProductAddComponent implements OnInit {
     private sellerAuthService: SellerAuthService,
   ) {
 
-   let sellerId = this.sellerAuthService.getSellerId();
-   let sellerProfile = this.sellerAuthService.getSellerProfile();
+    let sellerId = this.sellerAuthService.getSellerId();
+    let sellerProfile = this.sellerAuthService.getSellerProfile();
 
     this.form = this.fb.group({
       name: ['', Validators.required],
@@ -449,7 +449,7 @@ export class ProductAddComponent implements OnInit {
         if (formValue.sub_category_id === '') {
           formValue.sub_category_id = null;
         }
-        this.productService.createProduct(formValue).subscribe({
+        this.productService.createProductBySeller(formValue).subscribe({
           next: () => {
             Swal.fire(
               'Product Created',

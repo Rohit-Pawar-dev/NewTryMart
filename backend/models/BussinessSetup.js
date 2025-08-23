@@ -28,6 +28,18 @@ const BusinessSetupSchema = new mongoose.Schema({
     default: 0,
 
   },
+  display_cod_payment: {
+    type: Boolean,
+    default: true
+  },
+  display_online_payment: {
+    type: Boolean,
+    default: true
+  },
+  display_wallet_payment: {
+    type: Boolean,
+    default: true
+  },
   deliveryCharges: {
     type: Number,
     default: 0

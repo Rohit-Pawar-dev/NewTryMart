@@ -25,7 +25,7 @@ export interface Product {
   request_status?: number;
   created_at?: string;
   sku_code?: string;
-  is_trending?:boolean;
+  is_trending?: boolean;
   is_offers?: boolean;
   unit?: string;
   updated_at?: string;
@@ -78,9 +78,10 @@ export interface SubCategory {
 })
 export class ProductService {
   private apiUrl = `${environment.apiUrl}/products`;
+  private sellerApiUrl = `${environment.apiUrl}/sellers/products`;
   private categoriesUrl = `${environment.apiUrl}/categories`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Admin - Get all products
@@ -94,6 +95,7 @@ export class ProductService {
       min_price?: number;
       max_price?: number;
       min_rating?: number;
+      request_status?: 0 | 1 | 2;
     } = {}
   ): Observable<any> {
     let httpParams = new HttpParams();
@@ -145,7 +147,7 @@ export class ProductService {
     return this.http.get<CategoryResponse>(this.categoriesUrl, { params });
   }
 
-  
+
   /**
    * Admin - Change product request status (0: pending, 1: approved, 2: denied)
    */
@@ -170,4 +172,13 @@ export class ProductService {
       data
     );
   }
+
+  //product add by seller 
+
+  createProductBySeller(product: Product | FormData): Observable<Product> {
+    return this.http.post<Product>(this.sellerApiUrl, product);
+  }
+
+
+
 }

@@ -73,10 +73,12 @@ export class ProductAddComponent implements OnInit {
       variation_options: this.fb.array([]),
     });
   }
+  sellers: any[] = [];
 
   ngOnInit(): void {
     this.loadCategories();
     this.loadVariantAttributes();
+    this.loadSellers();
     document.addEventListener('click', this.handleClickOutside.bind(this));
     document.removeEventListener('click', this.handleClickOutside.bind(this));
   }
@@ -89,6 +91,16 @@ export class ProductAddComponent implements OnInit {
       error: (err) => {
         console.error('Error loading categories:', err);
       },
+    });
+  }
+  loadSellers(): void {
+    this.http.get<{ data: any[] }>(`${environment.apiUrl}/seller`).subscribe({
+      next: (res) => {
+        this.sellers = res.data;
+      },
+      error: (err) => {
+        console.error("Failed to load sellers:", err);
+      }
     });
   }
 
@@ -464,6 +476,16 @@ export class ProductAddComponent implements OnInit {
       }
     });
   }
+
+  onAddedByChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    if (value === 'admin') {
+      this.form.patchValue({ seller_id: 'admin' });
+    } else {
+      this.form.patchValue({ seller_id: null });
+    }
+  }
+
   removeVariant(index: number): void {
     this.variationOptions.removeAt(index);
     delete this.variantImageFiles[index];
