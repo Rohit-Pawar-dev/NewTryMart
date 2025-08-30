@@ -44,7 +44,7 @@ const productSchema = new Schema(
     discount: { type: Number, default: 0 },
     discount_type: { type: String, enum: ["flat", "percent"], default: "flat" },
     current_stock: { type: Number, default: 0 },
-    description: { type: String }, // CKEditor content
+    description: { type: String }, 
     status: { type: Number, enum: [0, 1], default: 1 },
     request_status: { type: Number, enum: [0, 1, 2], default: 0 },
 
@@ -52,7 +52,7 @@ const productSchema = new Schema(
     unit: { type: String },
     is_offers: { type: Boolean, default: false },
     is_trending: { type: Boolean, default: false },
-
+    is_variant:{type: Boolean , default: false},
     variants: [variantSchema],
     // variation_options: [
     //   {

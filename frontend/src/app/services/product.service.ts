@@ -180,5 +180,13 @@ export class ProductService {
   }
 
 
+  updateProductBySeller(
+    id: string,
+    product: Partial<Product> | FormData
+  ): Observable<Product> {
+    return this.http.put<Product>(`${this.sellerApiUrl}/${id}`, product);
+  }
+
+
 
 }

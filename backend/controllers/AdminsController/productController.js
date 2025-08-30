@@ -4,8 +4,6 @@ const Review = require("../../models/Review");
 const mongoose = require('mongoose');
 const path = require('path');
 
-// Create Product
-// Helper to generate a SKU code
 const generateSkuCode = (base) => {
   return (
     base
@@ -17,7 +15,6 @@ const generateSkuCode = (base) => {
   );
 };
 
-// Helper to generate slug
 const generateSlug = (name) => {
   return (
     name
@@ -30,7 +27,6 @@ const generateSlug = (name) => {
   );
 };
 
-// Helper to generate all combinations of variant values
 const generateVariantCombinations = (variants) => {
   const combine = (index, current) => {
     if (index === variants.length) return [current];
@@ -47,8 +43,6 @@ const generateVariantCombinations = (variants) => {
 exports.createProduct = async (req, res) => {
   try {
     const data = req.body;
-
-    // Set admin/seller flags
     if (data.added_by === "admin") {
       data.seller_id = null;
       data.status = 1;
@@ -57,34 +51,23 @@ exports.createProduct = async (req, res) => {
       data.status = 1;
       data.request_status = 1;
     }
-
-    // Validate required name
     if (!data.name) {
       return res.status(400).json({ error: "Product name is required to generate SKU." });
     }
-
-    // Generate unique product-level SKU
     let sku = generateSkuCode(data.name);
     while (await Product.findOne({ sku_code: sku })) {
       sku = generateSkuCode(data.name);
     }
     data.sku_code = sku;
-
-    // Generate unique slug
     let slug = generateSlug(data.name);
     while (await Product.findOne({ slug })) {
       slug = generateSlug(data.name);
     }
     data.slug = slug;
-
-    // Save product (no session here)
     const [product] = await Product.create([data]);
-
-    // Handle variants
     let variationOptions = [];
 
     if (data.variation_options?.length > 0) {
-      // Manual variant options provided
       for (const option of data.variation_options) {
         let variantSku = option.sku || generateSkuCode(
           data.name + "-" + Object.values(option.variant_values).join("-")
@@ -104,7 +87,6 @@ exports.createProduct = async (req, res) => {
         });
       }
     } else if (data.variants?.length > 0) {
-      // Auto-generate variant options from variant definitions
       const combinations = generateVariantCombinations(data.variants);
 
       for (const variant_values of combinations) {
@@ -139,8 +121,6 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-
-// Admin - Get All Products
 exports.getAllProducts = async (req, res) => {
   try {
     const {
@@ -150,7 +130,7 @@ exports.getAllProducts = async (req, res) => {
       min_price,
       max_price,
       min_rating,
-      added_by, // Accept "admin", "seller", or comma-separated list
+      added_by,
       request_status,
     } = req.query;
 
@@ -159,12 +139,10 @@ exports.getAllProducts = async (req, res) => {
 
     const filter = {};
 
-    // Text search on product name
     if (search) {
       filter.name = { $regex: search, $options: "i" };
     }
 
-    // Filter by added_by (admin/seller)
     if (added_by) {
       const roles = added_by.split(",").map((r) => r.trim().toLowerCase());
       filter.added_by = { $in: roles };
@@ -176,14 +154,14 @@ exports.getAllProducts = async (req, res) => {
         filter.request_status = parsedStatus;
       }
     }
-    // Price filter
+
     if (min_price || max_price) {
       filter.unit_price = {};
       if (min_price) filter.unit_price.$gte = parseFloat(min_price);
       if (max_price) filter.unit_price.$lte = parseFloat(max_price);
     }
 
-    // Get products with base filters
+
     let products = await Product.find(filter)
       .sort({ created_at: -1 })
       .skip(parsedOffset)
@@ -193,7 +171,6 @@ exports.getAllProducts = async (req, res) => {
 
     const productIds = products.map((p) => p._id);
 
-    // Filter by average rating if provided
     if (min_rating !== undefined) {
       const reviews = await Review.aggregate([
         { $match: { product_id: { $in: productIds }, status: "active" } },
@@ -255,30 +232,22 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-// Admin: Get Product by ID
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
       .populate("category_id sub_category_id seller_id")
       .lean();
-
     if (!product) return res.status(404).json({ msg: "Product not found" });
-
-    // Fetch variation options from separate collection
     const variation_options = await VariantOption.find({
       product_id: req.params.id,
     }).lean();
-
-    // Inject variation_options into product response
     product.variation_options = variation_options;
-
     res.json(product);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
-// Update
 exports.updateProduct = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -288,9 +257,6 @@ exports.updateProduct = async (req, res) => {
     if (!existingProduct) {
       return res.status(404).json({ error: "Product not found" });
     }
-
-    // Your existing status checks...
-
     if (
       existingProduct.request_status === 0 &&
       data.status === 1 &&
@@ -310,43 +276,58 @@ exports.updateProduct = async (req, res) => {
       data.status = 0;
     }
 
-    // Update product
+    if (data.name && data.name !== existingProduct.name) {
+      let newSlug = generateSlug(data.name);
+      while (await Product.findOne({ slug: newSlug, _id: { $ne: productId } })) {
+        newSlug = generateSlug(data.name);
+      }
+      data.slug = newSlug;
+
+      let newSku = generateSkuCode(data.name);
+      while (await Product.findOne({ sku_code: newSku, _id: { $ne: productId } })) {
+        newSku = generateSkuCode(data.name);
+      }
+      data.sku_code = newSku;
+    }
     const updatedProduct = await Product.findByIdAndUpdate(productId, data, {
       new: true,
     });
-
-    // Handle variation options
     if (Array.isArray(data.variation_options)) {
       await VariantOption.deleteMany({ product_id: productId });
 
-      const newVariants = data.variation_options.map((variant, index) => {
-        // Use product name or something as base for SKU generation
-        const base = variant.name || `variant-${index + 1}`;
+      const newVariants = [];
+      for (let i = 0; i < data.variation_options.length; i++) {
+        const variant = data.variation_options[i];
+        const base = updatedProduct.name + '-' + Object.values(variant.variant_values || {}).join("-");
 
         let sku = variant.sku;
         if (typeof sku !== "string" || sku.trim() === "") {
-          // Generate SKU if missing or empty
+          sku = generateSkuCode(base);
+        }
+        while (await VariantOption.findOne({ sku, product_id: { $ne: productId } })) {
           sku = generateSkuCode(base);
         }
 
-        return {
+        newVariants.push({
           ...variant,
           sku,
           product_id: productId,
-        };
-      });
+        });
+      }
 
       await VariantOption.insertMany(newVariants);
     }
 
-    res.json(updatedProduct);
+    res.json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
   } catch (err) {
     console.error("Update error:", err);
     res.status(400).json({ error: err.message });
   }
 };
 
-// Delete
 exports.deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id;
@@ -406,7 +387,6 @@ exports.changeProductRequestStatus = async (req, res) => {
   }
 };
 
-// status update
 exports.status_update = async (req, res) => {
   try {
     const { id, status } = req.body;
@@ -443,8 +423,6 @@ exports.status_update = async (req, res) => {
     });
   }
 };
-
-
 
 exports.uploadThumbnail = (req, res) => {
   if (!req.file) {
