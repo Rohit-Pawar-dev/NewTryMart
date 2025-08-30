@@ -121,8 +121,6 @@ exports.getProductsBySeller = async (req, res) => {
 exports.createProduct = async (req, res) => {
     try {
         const data = req.body;
-
-        // Set admin/seller flags
         if (data.added_by === "admin") {
             data.seller_id = null;
             data.status = 1;
@@ -131,34 +129,26 @@ exports.createProduct = async (req, res) => {
             data.status = 0;
             data.request_status = 0;
         }
-
-        // Validate required name
         if (!data.name) {
             return res.status(400).json({ error: "Product name is required to generate SKU." });
         }
-
-        // Generate unique product-level SKU
         let sku = generateSkuCode(data.name);
         while (await Product.findOne({ sku_code: sku })) {
             sku = generateSkuCode(data.name);
         }
         data.sku_code = sku;
 
-        // Generate unique slug
         let slug = generateSlug(data.name);
         while (await Product.findOne({ slug })) {
             slug = generateSlug(data.name);
         }
         data.slug = slug;
 
-        // Save product (no session here)
         const [product] = await Product.create([data]);
 
-        // Handle variants
         let variationOptions = [];
 
         if (data.variation_options?.length > 0) {
-            // Manual variant options provided
             for (const option of data.variation_options) {
                 let variantSku = option.sku || generateSkuCode(
                     data.name + "-" + Object.values(option.variant_values).join("-")
@@ -178,7 +168,6 @@ exports.createProduct = async (req, res) => {
                 });
             }
         } else if (data.variants?.length > 0) {
-            // Auto-generate variant options from variant definitions
             const combinations = generateVariantCombinations(data.variants);
 
             for (const variant_values of combinations) {
