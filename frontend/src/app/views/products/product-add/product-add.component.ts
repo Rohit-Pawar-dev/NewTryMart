@@ -97,6 +97,7 @@ export class ProductAddComponent implements OnInit {
     this.http.get<{ data: any[] }>(`${environment.apiUrl}/seller`).subscribe({
       next: (res) => {
         this.sellers = res.data;
+        console.log(this.sellers);
       },
       error: (err) => {
         console.error("Failed to load sellers:", err);
@@ -404,8 +405,6 @@ export class ProductAddComponent implements OnInit {
 
       try {
         if (this.thumbnailFile) {
-          // const thumbUrl = await this.uploadFile(this.thumbnailFile);
-          // this.form.patchValue({ thumbnail: thumbUrl });
           const thumbUrl = await this.uploadFile(this.thumbnailFile, 'thumbnail');
           this.form.patchValue({ thumbnail: thumbUrl });
 
@@ -416,10 +415,6 @@ export class ProductAddComponent implements OnInit {
         }
 
         if (this.multiplePhotoFiles.length > 0) {
-          // const photoUrls = await Promise.all(
-          //   this.multiplePhotoFiles.map((file) => this.uploadFile(file))
-          // );
-          //  this.form.patchValue({ images: photoUrls });
           const photoUrls = await Promise.all(
             this.multiplePhotoFiles.map((file) => this.uploadFile(file, 'image'))
           );
@@ -433,9 +428,6 @@ export class ProductAddComponent implements OnInit {
         for (let i = 0; i < this.variationOptions.length; i++) {
           const files = this.variantImageFiles[i] || [];
           if (files.length > 0) {
-            // const urls = await Promise.all(
-            //   files.map((file) => this.uploadFile(file))
-            // );
             const urls = await Promise.all(
               files.map((file) => this.uploadFile(file, 'variant'))
             );

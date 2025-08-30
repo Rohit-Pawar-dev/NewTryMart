@@ -239,3 +239,82 @@ exports.status_update = async (req, res) => {
   }
 };
 
+exports.updateProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const data = req.body;
+
+    const existingProduct = await Product.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    if (
+      existingProduct.request_status === 0 &&
+      data.status === 1 &&
+      existingProduct.status === 0
+    ) {
+      return res.status(400).json({
+        error: "Product must be approved (request_status = 1) before activating.",
+      });
+    }
+
+    if (
+      existingProduct.request_status === 0 &&
+      data.request_status === 1 &&
+      existingProduct.status === 0 &&
+      data.status === undefined
+    ) {
+      data.status = 0;
+    }
+
+    if (data.name && data.name !== existingProduct.name) {
+      let newSlug = generateSlug(data.name);
+      while (await Product.findOne({ slug: newSlug, _id: { $ne: productId } })) {
+        newSlug = generateSlug(data.name);
+      }
+      data.slug = newSlug;
+
+      let newSku = generateSkuCode(data.name);
+      while (await Product.findOne({ sku_code: newSku, _id: { $ne: productId } })) {
+        newSku = generateSkuCode(data.name);
+      }
+      data.sku_code = newSku;
+    }
+    const updatedProduct = await Product.findByIdAndUpdate(productId, data, {
+      new: true,
+    });
+    if (Array.isArray(data.variation_options)) {
+      await VariantOption.deleteMany({ product_id: productId });
+
+      const newVariants = [];
+      for (let i = 0; i < data.variation_options.length; i++) {
+        const variant = data.variation_options[i];
+        const base = updatedProduct.name + '-' + Object.values(variant.variant_values || {}).join("-");
+
+        let sku = variant.sku;
+        if (typeof sku !== "string" || sku.trim() === "") {
+          sku = generateSkuCode(base);
+        }
+        while (await VariantOption.findOne({ sku, product_id: { $ne: productId } })) {
+          sku = generateSkuCode(base);
+        }
+
+        newVariants.push({
+          ...variant,
+          sku,
+          product_id: productId,
+        });
+      }
+
+      await VariantOption.insertMany(newVariants);
+    }
+
+    res.json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(400).json({ error: err.message });
+  }
+};

@@ -3,45 +3,52 @@
     <h3 class="mb-0">Edit Product</h3>
   </div>
   <div class="card-body">
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Product Name -->
       <div class="row">
-        <!-- Product Name -->
         <div class="col-md-12 mb-3">
           <label class="form-label">Product Name</label>
-          <input type="text" class="form-control" formControlName="name" />
+          <input type="text" class="form-control" formControlName="name" required />
         </div>
+      </div>
+      <!-- Added By -->
+      <div class="form-group mb-3">
+        <label for="added_by">Added By</label>
+        <select id="added_by" class="form-control" formControlName="added_by" (change)="onAddedByChange($event)">
+          <option value="admin">Admin</option>
+          <option value="seller">Seller</option>
+        </select>
+      </div>
+      <div class="form-group mb-3" *ngIf="form.get('added_by')?.value === 'seller'">
+        <label for="seller_id">Select Seller</label>
+        <select id="seller_id" class="form-control" formControlName="seller_id" required>
+          <option [ngValue]="null" disabled>Select Seller</option>
+          <option *ngFor="let seller of sellers" [value]="seller._id">
+            {{ seller.name }}
+          </option>
+        </select>
       </div>
 
       <!-- Description -->
       <div class="mb-4">
         <label class="form-label">Description</label>
-        <ckeditor
-          [editor]="Editor"
-          formControlName="description"
-          [config]="{ placeholder: 'Enter product description here...' }"
-          class="static_pages-editor"
-        ></ckeditor>
+        <ckeditor [editor]="Editor" formControlName="description"
+          [config]="{ placeholder: 'Enter product description here...' }" class="static_pages-editor"></ckeditor>
       </div>
 
+      <!-- Category & Subcategory -->
       <div class="row">
-        <!-- Category -->
         <div class="col-md-6 mb-3">
           <label class="form-label">Category</label>
-          <select
-            class="form-select"
-            formControlName="category_id"
-            (change)="onCategoryChange()"
-          >
+          <select class="form-select" formControlName="category_id" (change)="onCategoryChange()">
             <option value="">-- Select Category --</option>
             <option *ngFor="let category of categories" [value]="category._id">
               {{ category.name }}
             </option>
           </select>
         </div>
-
-        <!-- Subcategory -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Subcategory</label>
+          <label class="form-label">Sub Category</label>
           <select class="form-select" formControlName="sub_category_id">
             <option value="">-- Select Subcategory --</option>
             <option *ngFor="let sub of subcategories" [value]="sub._id">
@@ -55,11 +62,11 @@
       <div class="row">
         <div class="col-md-4 mb-3">
           <label class="form-label">Unit Price</label>
-          <input type="number" class="form-control" formControlName="unit_price" />
+          <input type="number" class="form-control" formControlName="unit_price" min="0" />
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Discount</label>
-          <input type="number" class="form-control" formControlName="discount" />
+          <input type="number" class="form-control" formControlName="discount" min="0" />
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label">Discount Type</label>
@@ -84,175 +91,124 @@
           <input type="number" class="form-control" formControlName="min_qty" min="1" />
         </div>
       </div>
-
-      <!-- Images Upload -->
+      <!-- Thumbnail & Images -->
       <div class="row mt-2">
         <div class="col-md-6 mb-4">
           <label class="form-label">Images</label>
-          <input
-            type="file"
-            class="form-control"
-            multiple
-            accept="image/*"
-            (change)="onMultiplePhotosSelected($event)"
-          />
+          <input type="file" class="form-control" (change)="onMultiplePhotosSelected($event)" multiple
+            accept="image/*" />
           <div class="mt-3 d-flex flex-wrap gap-3">
-            <div
-              *ngFor="let img of photoPreviews; let i = index"
-              class="position-relative border rounded p-1"
-              style="max-width: 120px"
-            >
-              <img
-                [src]="img"
-                alt="Photo"
-                class="img-fluid rounded"
-                style="max-height: 100px; object-fit: cover"
-              />
-              <button
-                type="button"
-                class="close-button"
-                (click)="removePhoto(i)"
-                title="Remove image"
-              >
-                     <i class="fas fa-times"></i> 
+            <div *ngFor="let img of photoPreviews; let i = index" class="position-relative border rounded p-1"
+              style="max-width: 120px">
+              <img [src]="img.startsWith('data:') ? img : (mediaUrl + img)" class="img-fluid rounded"
+                style="max-height: 100px; object-fit: cover" />
+              <button type="button" class="close-button" (click)="removePhoto(i)">
+                <i class="fas fa-times"></i>
               </button>
             </div>
           </div>
         </div>
-
         <div class="col-md-6 mb-4">
           <label class="form-label">Thumbnail</label>
           <input type="file" class="form-control" (change)="onImageSelected($event)" />
-          <div *ngIf="imagePreview" class="mt-2 position-relative d-inline-block">
-            <img
-              [src]="imagePreview"
-              alt="Thumbnail"
-              class="rounded border"
-              style="max-height: 150px"
-            />
-            <button
-              type="button"
-              class="close-button"
-              (click)="removeThumbnail()"
-              title="Remove thumbnail"
-            >
-                   <i class="fas fa-times"></i> 
+          <div *ngIf="imagePreview" class="mt-3 position-relative d-inline-block">
+            <img [src]="imagePreview?.startsWith('data:') ? imagePreview : mediaUrl + imagePreview"
+              class="rounded border" style="max-height: 150px" />
+            <button type="button" class="close-button" (click)="removeThumbnail()">
+              <i class="fas fa-times"></i>
             </button>
           </div>
         </div>
       </div>
-
-      <!-- Variants Section -->
+      <!-- Checkbox to toggle variant on/off -->
       <div class="mb-4">
-        <label class="form-label">Variants (e.g., Size, Color)</label>
-        <div formArrayName="variants">
-          <div
-            *ngFor="let v of variants.controls; let i = index"
-            [formGroupName]="i"
-            class="border rounded p-3 mb-2"
-          >
-            <div class="row">
-              <div class="col-md-5 mb-2">
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="name"
-                  placeholder="Variant Name (e.g. Size)"
-                />
-              </div>
-              <div class="col-md-5 mb-2">
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="values"
-                  placeholder="Comma-separated values (e.g. S,M,L)"
-                />
-              </div>
-              <div class="col-md-2 text-end">
-                <button class="close-button" type="button" (click)="removeVariant(i)">
-                       <i class="fas fa-times"></i> 
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="text-end">
-          <button class="btn btn-sm btn-primary primary" type="button" (click)="addVariant()">Add Variant</button>
-          <button
-            class="btn btn-sm btn-outline-primary primaryout ms-2"
-            type="button"
-            (click)="generateVariantOptions()"
-          >
-            Generate Combinations
-          </button>
-        </div>
+        <label class="form-check-label me-3">
+          <input type="checkbox" class="form-check-input me-2" [checked]="isVariant"
+            (change)="onToggleVariant($event)" />
+          Add Variants to this Product
+        </label>
       </div>
-
-      <!-- Variation Options Section -->
-      <div class="mb-4" formArrayName="variation_options">
-        <label class="form-label">Variation Combinations</label>
-        <div
-          *ngFor="let opt of variationOptions.controls; let i = index"
-          [formGroupName]="i"
-          class="border rounded p-3 mb-3"
-        >
-          <div class="row">
-            <div class="col-md-4 mb-2">
-              <input
-                [value]="formatVariantValues(opt.value.variant_values)"
-                class="form-control"
-                disabled
-              />
-            </div>
-            <div class="col-md-2 mb-2">
-              <input type="number" formControlName="price" class="form-control" placeholder="Price" />
-            </div>
-            <div class="col-md-2 mb-2">
-              <input type="number" formControlName="stock" class="form-control" placeholder="Stock" />
-            </div>
-            <div class="col-md-2 mb-2">
-              <input type="text" formControlName="sku" class="form-control" placeholder="SKU" />
-            </div>
-            <div class="col-md-2 mb-2">
-              <input
-                type="file"
-                class="form-control"
-                (change)="onVariantImagesSelected($event, i)"
-                multiple
-                accept="image/*"
-              />
-              <div class="mt-2 d-flex flex-wrap gap-2">
-                <div
-                  *ngFor="let img of opt.get('images')?.value; let idx = index"
-                  class="position-relative border rounded p-1"
-                  style="max-width: 90px"
-                >
-                  <img
-                    [src]="img"
-                    alt="Variant Image"
-                    class="img-fluid rounded"
-                    style="max-height: 80px; object-fit: cover"
-                  />
-                  <button
-                    type="button"
-                    class="close-button"
-                    (click)="removeVariantImage(i, idx)"
-                  >
-                         <i class="fas fa-times"></i> 
-                  </button>
+      <!-- Variant Selection UI, only when variants enabled -->
+      <div *ngIf="isVariant" class="mb-4">
+        <div class="row">
+          <div class="col-md-6 mb-3" *ngFor="let type of variantTypes">
+            <label class="form-label text-capitalize d-block">
+              {{ type }} Options
+            </label>
+            <div class="position-relative">
+              <input type="text" class="form-control" [readonly]="true" (click)="toggleDropdown(type)"
+                [value]="selectedVariants[type]?.join(', ') || ''" />
+              <div class="dropdown-menu show w-100 mt-1" *ngIf="openDropdown === type" style="
+            max-height: 120px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+          ">
+                <div *ngFor="let val of variantOptions[type]" class="form-check">
+                  <input type="checkbox" class="form-check-input" [id]="type + '-' + val"
+                    [checked]="selectedVariants[type]?.includes(val)" (change)="onCheckboxChange($event, type, val)" />
+                  <label class="form-check-label" [for]="type + '-' + val">{{
+                    val
+                    }}</label>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- Variant Combinations -->
+      <div *ngIf="isVariant" class="mb-4" formArrayName="variation_options">
+        <label class="form-label">Variant Combinations</label>
+        <div *ngFor="let option of variationControls; let i = index" [formGroupName]="i"
+          class="border rounded p-3 mb-3">
+          <div class="row">
+            <div class="col-md-4 mb-2">
+              <label>Values</label>
+              <input type="text" class="form-control" [value]="formatVariantValues(option.get('variant_values')?.value)"
+                disabled />
+            </div>
 
-      <!-- Submit & Cancel -->
-      <div class="text-end">
-        <button type="submit" class="btn btn-primary primary">
-          {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+            <div class="col-md-4 mb-2">
+              <label>Price</label>
+              <input type="number" class="form-control" formControlName="price" min="0" />
+            </div>
+            <div class="col-md-4 mb-2">
+              <label>Stock</label>
+              <input type="number" class="form-control" formControlName="stock" min="0" />
+            </div>
+
+            <div class="col-md-12 mb-2">
+              <label>Upload Images</label>
+              <input type="file" class="form-control" (change)="onVariantImages($event, i)" multiple accept="image/*" />
+              <div class="row">
+                <div class="col-12 mt-2 w-100">
+                  <div class="d-flex flex-wrap gap-2 justify-content-start">
+                    <div *ngFor="let img of option.get('images')?.value; let idx = index"
+                      class="position-relative border rounded p-1" style="width: 100px">
+                      <img [src]="img?.startsWith('data:') ? img : mediaUrl + img" class="img-fluid rounded"
+                        style="max-height: 80px; object-fit: cover; width: 100%" />
+                      <button type="button" class="close-button" (click)="removeVariantImage(i, idx)">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 text-end">
+              <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeVariant(i)">
+                Remove Variant
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? "Submitting..." : "Edit Product" }}
         </button>
-        <button type="button" class="btn btn-secondary ms-2" (click)="onCancel()">Cancel</button>
       </div>
     </form>
   </div>

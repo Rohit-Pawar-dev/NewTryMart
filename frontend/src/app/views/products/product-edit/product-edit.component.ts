@@ -1,387 +1,416 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
-import {
-  ProductService,
-  Category,
-  SubCategory,
-  Product,
-} from '../../../services/product.service';
+import { ProductService, Category, SubCategory } from '../../../services/product.service';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Swal from 'sweetalert2';
-import { forkJoin } from 'rxjs';
-
+import { firstValueFrom } from 'rxjs';
+import { AttributeService } from '../../../services/attribute.service';
 @Component({
-  selector: 'app-product-edit',
   standalone: true,
+  selector: 'app-product-edit',
   templateUrl: './product-edit.component.html',
   imports: [CommonModule, ReactiveFormsModule, FormsModule, CKEditorModule],
 })
 export class ProductEditComponent implements OnInit {
   public Editor = ClassicEditor;
-
   form: FormGroup;
-  variants: FormArray;
-  variationOptions: FormArray;
-  variantImageFiles: { [key: number]: File[] } = {};
-  photoPreviews: string[] = [];
+  isSubmitting = false;
+  isVariant = false;
+  variantTypes: ('color' | 'size')[] = ['color', 'size'];
+  variantOptions: { [key: string]: string[] } = {};
+  selectedVariants: { [key: string]: string[] } = {};
+  thumbnailFile: File | null = null;
+  multiplePhotoFiles: File[] = [];
+  variantImageFiles: { [variantIndex: number]: File[] } = {};
   imagePreview: string | null = null;
+  existingImages: string[] = [];
+  photoPreviews: string[] = [];
   categories: Category[] = [];
   subcategories: SubCategory[] = [];
-  productId = '';
-  isUploading = false;
-  isPhotosUploading = false;
-  isSubmitting = false;
-
-  private uploadUrl = `${environment.apiUrl}/upload-media`;
+  sellers: any[] = [];
+  openDropdown: string | null = null;
+  productId!: string;
+  mediaUrl = environment.mediaUrl;
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private productService: ProductService,
-    private http: HttpClient,
-    private router: Router
+    private attributeService: AttributeService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient
   ) {
     this.form = this.fb.group({
       name: ['', Validators.required],
       slug: [''],
+      seller_id: [null],
+      added_by: ['admin'],
       category_id: ['', Validators.required],
       sub_category_id: [''],
       thumbnail: ['', Validators.required],
       images: [[]],
-      unit_price: [0, Validators.required],
-      tax: [0],
+      unit: ['piece'],
+      unit_price: [0, [Validators.required, Validators.min(0)]],
+      tax: [0, Validators.min(0)],
       discount_type: ['percent'],
-      discount: [0],
-      min_qty: [1],
-      current_stock: [0],
+      discount: [0, Validators.min(0)],
+      min_qty: [1, [Validators.required, Validators.min(1)]],
+      current_stock: [0, Validators.min(0)],
       description: [''],
-      status: [1, Validators.required],
+      is_variant: [false],
       variants: this.fb.array([]),
       variation_options: this.fb.array([]),
-    });
-
-    this.variants = this.form.get('variants') as FormArray;
-    this.variationOptions = this.form.get('variation_options') as FormArray;
-
-    this.form.get('name')?.valueChanges.subscribe((name) => {
-      if (!this.form.get('slug')?.value) {
-        this.form.patchValue({ slug: this.generateSlug(name) }, { emitEvent: false });
-      }
     });
   }
 
   ngOnInit(): void {
-    this.productId = this.route.snapshot.params['id'];
-
-    forkJoin({
-      product: this.productService.getProductById(this.productId),
-      categories: this.productService.getAllCategories(),
-    }).subscribe({
-      next: ({ product, categories }) => {
-        this.categories = categories.data;
-        this.patchBaseFields(product);
-        this.loadVariants(product);
-      },
-      error: () => {
-        Swal.fire('Error', 'Failed to load product data.', 'error');
-      },
-    });
+    this.productId = this.route.snapshot.paramMap.get('id')!;
+    this.loadInitialData();
+    this.loadProduct();
+    document.addEventListener('click', this.handleClickOutside.bind(this));
   }
 
-  private patchBaseFields(product: Product) {
+  loadInitialData(): void {
+    this.productService.getAllCategories().subscribe(res => this.categories = res.data);
+    this.http.get<{ data: any[] }>(`${environment.apiUrl}/seller`).subscribe(res => this.sellers = res.data);
+    for (const type of this.variantTypes) {
+      this.attributeService.getAttributesByType(type).subscribe(res => {
+        this.variantOptions[type] = res.data.map((a: any) => a.value);
+      });
+    }
+  }
+
+  loadProduct(): void {
+  this.productService.getProductById(this.productId).subscribe((product: any) => {
+
+    let categoryId: string = '';
+    if (product.category_id) {
+      categoryId = typeof product.category_id === 'string'
+        ? product.category_id
+        : product.category_id._id;
+    }
+    let subCategoryId: string = '';
+    if (product.sub_category_id) {
+      subCategoryId = typeof product.sub_category_id === 'string'
+        ? product.sub_category_id
+        : product.sub_category_id._id;
+    }
     this.form.patchValue({
-      ...product,
+      name: product.name,
+      slug: product.slug,
+      seller_id: product.seller_id,
+      added_by: product.added_by,
+      category_id: categoryId,
+      sub_category_id: subCategoryId,
+      thumbnail: product.thumbnail,
       images: product.images || [],
-      thumbnail: product.thumbnail || '',
+      unit: product.unit,
+      unit_price: product.unit_price,
+      tax: product.tax,
+      discount_type: product.discount_type,
+      discount: product.discount,
+      min_qty: product.min_qty,
+      current_stock: product.current_stock,
+      description: product.description,
+      is_variant: Array.isArray(product.variation_options) && product.variation_options.length > 0,
     });
 
-    this.imagePreview = product.thumbnail || '';
-    this.photoPreviews = product.images || [];
-
-    const selectedCat = this.categories.find((c) => c._id === product.category_id);
-    this.subcategories = selectedCat?.sub_categories || [];
-    this.form.patchValue({
-      category_id: product.category_id || '',
-      sub_category_id: product.sub_category_id || '',
-    });
-  }
-
-  private loadVariants(product: Product) {
-    if (product.variants) {
-      product.variants.forEach((v) => {
-        this.variants.push(
-          this.fb.group({
-            name: [v.name, Validators.required],
-            values: [v.values.join(','), Validators.required],
-          })
-        );
-      });
-      this.generateVariantOptions();
+    this.existingImages = product.images || [];
+    this.photoPreviews = [...this.existingImages];
+    this.imagePreview = product.thumbnail || null;
+    const cat = this.categories.find(c => c._id === categoryId);
+    this.subcategories = cat?.sub_categories || [];
+    if (product.variation_options?.length) {
+      this.isVariant = true;
+      this.setExistingVariants(product.variation_options);
     }
-
-    if (product.variation_options) {
-      product.variation_options.forEach((opt, i) => {
-        const group = this.variationOptions.at(i);
-        group.patchValue({
-          price: opt.price,
-          stock: opt.stock,
-          sku: opt.sku,
-          images: opt.images || [],
-        });
-      });
-    }
-  }
-
-  // onCategoryChange(): void {
-  //   const cat = this.categories.find((c) => c._id === this.form.value.category_id);
-  //   this.subcategories = cat?.sub_categories || [];
-  //   this.form.patchValue({ sub_category_id: '' });
-  // }
-  onCategoryChange(): void {
-  const cat = this.categories.find((c) => c._id === this.form.value.category_id);
-  this.subcategories = cat?.sub_categories || [];
-  this.form.patchValue({ sub_category_id: '' });
-
-  console.log('Category changed to:', cat);
-  console.log('Subcategories:', this.subcategories);
+  });
 }
 
-
-  onImageSelected(e: Event): void {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    const fd = new FormData();
-    fd.append('type', 'product');
-    fd.append('file', file);
-
-    this.isUploading = true;
-    this.http.post<{ file: string }>(this.uploadUrl, fd).subscribe({
-      next: (res) => {
-        const url = res.file.replace(/\\/g, '/');
-        this.form.patchValue({ thumbnail: url });
-        this.imagePreview = url;
-        this.isUploading = false;
-      },
-      error: () => {
-        this.isUploading = false;
-        Swal.fire('Error', 'Thumbnail upload failed.', 'error');
-      },
+  setExistingVariants(options: any[]): void {
+    const array = this.form.get('variation_options') as FormArray;
+    array.clear();
+    options.forEach(opt => {
+      array.push(this.fb.group({
+        variant_values: [opt.variant_values],
+        price: [opt.price, [Validators.required, Validators.min(0)]],
+        stock: [opt.stock, [Validators.required, Validators.min(0)]],
+        sku: [opt.sku],
+        images: [opt.images || []],
+      }));
     });
   }
 
-  onMultiplePhotosSelected(e: Event): void {
-    const files = (e.target as HTMLInputElement).files;
-    if (!files) return;
-
-    this.isPhotosUploading = true;
-    const uploadPromises = Array.from(files).map((f) => {
-      const fd = new FormData();
-      fd.append('type', 'product');
-      fd.append('file', f);
-      return this.http.post<{ file: string }>(this.uploadUrl, fd).toPromise();
-    });
-
-    Promise.all(uploadPromises)
-      .then((responses) => {
-        const urls = responses
-          .filter((r): r is { file: string } => !!r && !!r.file)
-          .map((r) => r.file.replace(/\\/g, '/'));
-
-        this.photoPreviews.push(...urls);
-        this.form.patchValue({ images: this.photoPreviews });
-        this.isPhotosUploading = false;
-      })
-      .catch(() => {
-        this.isPhotosUploading = false;
-        Swal.fire('Error', 'Photo uploads failed.', 'error');
-      });
+  handleClickOutside(event: Event): void {
+    if (!(event.target as HTMLElement).closest('.position-relative')) {
+      this.openDropdown = null;
+    }
+  }
+  onCategoryChange(): void {
+    const catId = this.form.value.category_id;
+    const cat = this.categories.find(c => c._id === catId);
+    this.subcategories = cat?.sub_categories || [];
+    this.form.patchValue({ sub_category_id: '' });
   }
 
-  removePhoto(i: number): void {
-    this.photoPreviews.splice(i, 1);
-    this.form.patchValue({ images: this.photoPreviews });
+  onToggleVariant(event: Event): void {
+    this.isVariant = (event.target as HTMLInputElement).checked;
+    this.form.patchValue({ is_variant: this.isVariant });
+
+    if (!this.isVariant) {
+      this.selectedVariants = {};
+      this.form.setControl('variants', this.fb.array([]));
+      this.setExistingVariants([]);
+    }
   }
 
-  removeThumbnail(): void {
-    this.imagePreview = null;
-    this.form.patchValue({ thumbnail: '' });
+  toggleVariantValue(event: Event, type: string, value: string): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (!this.selectedVariants[type]) this.selectedVariants[type] = [];
+    if (checked) this.selectedVariants[type].push(value);
+    else this.selectedVariants[type] = this.selectedVariants[type].filter(v => v !== value);
+    this.buildVariantsFromSelectedAttributes();
   }
 
-  addVariant(): void {
-    this.variants.push(
+  buildVariantsFromSelectedAttributes(): void {
+    const selected = Object.entries(this.selectedVariants)
+      .filter(([_, vals]) => vals.length)
+      .map(([k, v]) => ({ name: k, values: v }));
+
+    this.form.setControl('variants', this.fb.array(selected.map(attr =>
       this.fb.group({
-        name: ['', Validators.required],
-        values: ['', Validators.required],
+        name: [attr.name],
+        values: [attr.values],
       })
-    );
-  }
+    )));
 
-  removeVariant(i: number): void {
-    this.variants.removeAt(i);
-    this.generateVariantOptions();
-  }
-  formatVariantValues(variantObj: { [key: string]: string }): string {
-    if (!variantObj) return '';
-    return Object.entries(variantObj)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join(', ');
-  }
+    const combinations = this.cartesianProduct(selected);
+    const varArray = this.form.get('variation_options') as FormArray;
+    varArray.clear();
 
-  onCancel(): void {
-    this.router.navigate(['/admin/products']);
-  }
-
-
-  generateVariantOptions() {
-    this.variationOptions.clear();
-    const variants = this.variants.value.map((v: any) => {
-      const values = Array.isArray(v.values)
-        ? v.values
-        : (typeof v.values === 'string'
-          ? v.values.split(',').map((x: string) => x.trim()).filter((x: string) => x)
-          : []);
-
-      return { name: v.name.trim(), values };
-    });
-
-    const combos = this.cartesianProduct(variants);
-    combos.forEach(combo => {
-      this.variationOptions.push(this.fb.group({
+    combinations.forEach(combo => {
+      varArray.push(this.fb.group({
         variant_values: [combo],
-        price: [0, Validators.min(0)],
-        stock: [0, Validators.min(0)],
+        price: [0, [Validators.required, Validators.min(0)]],
+        stock: [0, [Validators.required, Validators.min(0)]],
         sku: [''],
         images: [[]],
       }));
     });
-    this.variantImageFiles = {};
   }
 
-
-  private cartesianProduct(arr: any[]): any[] {
-    const recurse = (i: number, cur: any) => {
-      return arr[i].values.flatMap((val: string) => {
-        const next = { ...cur, [arr[i].name]: val };
-        return i + 1 < arr.length ? recurse(i + 1, next) : [next];
+  cartesianProduct(arr: any[]): any[] {
+    if (!arr.length) return [];
+    const recurse = (i = 0, prefix: any = {}) => {
+      const results: any[] = [];
+      arr[i].values.forEach((val: string) => {
+        const next = { ...prefix, [arr[i].name]: val };
+        if (i === arr.length - 1) results.push(next);
+        else results.push(...recurse(i + 1, next));
       });
+      return results;
     };
-    return recurse(0, {});
+    return recurse();
   }
 
-  onVariantImagesSelected(e: Event, i: number): void {
-    const files = (e.target as HTMLInputElement).files;
-    if (!files) return;
-    if (!this.variantImageFiles[i]) this.variantImageFiles[i] = [];
-    this.variantImageFiles[i].push(...Array.from(files));
+  removePhoto(i: number): void {
+    if (i < this.existingImages.length) {
+      this.existingImages.splice(i, 1);
+    } else {
 
-    const ctrl = this.variationOptions.at(i);
-    const prev = ctrl.get('images')?.value || [];
-    Array.from(files).forEach((f) => {
+      const newImageIndex = i - this.existingImages.length;
+      this.multiplePhotoFiles.splice(newImageIndex, 1);
+    }
+    this.photoPreviews.splice(i, 1);
+  }
+
+  onVariantImages(event: Event, index: number): void {
+    const files = (event.target as HTMLInputElement).files;
+    if (!files) return;
+    if (!this.variantImageFiles[index]) this.variantImageFiles[index] = [];
+    Array.from(files).forEach(f => this.variantImageFiles[index].push(f));
+    const control = (this.form.get('variation_options') as FormArray).at(index).get('images');
+    Array.from(files).forEach(f => {
       const reader = new FileReader();
-      reader.onload = () => {
-        ctrl.patchValue({ images: [...prev, reader.result as string] });
-      };
+      reader.onload = () => control?.patchValue([...control.value, reader.result]);
       reader.readAsDataURL(f);
     });
   }
 
-  removeVariantImage(i: number, xi: number): void {
-    this.variantImageFiles[i]?.splice(xi, 1);
-    const ctrl = this.variationOptions.at(i);
-    const imgs = ctrl.get('images')?.value;
-    imgs.splice(xi, 1);
-    ctrl.patchValue({ images: imgs });
-  }
-  private prepareVariantsForSubmit(): void {
-    const vout = this.variants.value.map((v: any) => {
-      let valuesArray: string[] = [];
-
-      if (Array.isArray(v.values)) {
-        valuesArray = v.values.map((x: any) => (typeof x === 'string' ? x.trim() : '')).filter(Boolean);
-      } else if (typeof v.values === 'string') {
-        valuesArray = v.values.split(',').map((x: string) => x.trim()).filter(Boolean);
-      } else {
-        valuesArray = [];
-      }
-
-      return {
-        name: v.name.trim(),
-        values: valuesArray,
-      };
-    });
-
-    this.form.patchValue({ variants: vout });
-
-    const opts = this.variationOptions.value.map((opt: any) => ({
-      variant_values: opt.variant_values,
-      price: opt.price,
-      stock: opt.stock,
-      sku: opt.sku,
-      images: opt.images,
-    }));
-
-    this.form.patchValue({ variation_options: opts });
+  removeVariantImage(i: number, imgIdx: number): void {
+    this.variantImageFiles[i]?.splice(imgIdx, 1);
+    const control = (this.form.get('variation_options') as FormArray).at(i).get('images');
+    const imgs = control?.value || [];
+    imgs.splice(imgIdx, 1);
+    control?.patchValue(imgs);
   }
 
-  submit(): void {
-    if (this.isUploading || this.isPhotosUploading || this.isSubmitting) {
-      Swal.fire('Please wait', 'Uploads or submission still in progress.', 'info');
-      return;
+  removeVariant(i: number): void {
+    (this.form.get('variation_options') as FormArray).removeAt(i);
+    delete this.variantImageFiles[i];
+  }
+
+  get variationOptions(): FormArray {
+    return this.form.get('variation_options') as FormArray;
+  }
+
+  get variationControls() {
+    return this.variationOptions.controls;
+  }
+
+  formatVariantValues(vals: any): string {
+    return Object.entries(vals).map(([k, v]) => `${k}: ${v}`).join(', ');
+  }
+
+  generateSlug(val = ''): string {
+    return val.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+  }
+  async uploadFile(file: File, type: 'thumbnail' | 'image' | 'variant'): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    let endpoint = '';
+    if (type === 'thumbnail') {
+      endpoint = `${environment.apiUrl}/products/upload-thumbnail`;
+    } else if (type === 'image') {
+      endpoint = `${environment.apiUrl}/products/upload-image`;
+    } else if (type === 'variant') {
+      endpoint = `${environment.apiUrl}/products/upload-variant-image`;
     }
 
-    if (this.form.invalid) {
-      Swal.fire('Invalid', 'Please fix form errors.', 'warning');
-      return;
+    const res = await firstValueFrom(
+      this.http.post<{ path: string }>(endpoint, formData)
+    );
+
+    if (!res || !res.path) {
+      throw new Error('Upload failed: No path returned');
     }
 
-    this.prepareVariantsForSubmit();
+    return res.path.replace(/\\/g, '/');
+  }
 
+  async onSubmit(): Promise<void> {
+    if (!this.form.get('slug')?.value) this.form.patchValue({ slug: this.generateSlug(this.form.value.name) });
     Swal.fire({
-      title: 'Update Product?',
+      title: 'Confirm Save',
+      text: 'Update this product?',
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Yes, update it',
-    }).then((res) => {
-      if (res.isConfirmed) this.sendUpdate();
+      confirmButtonText: 'Yes, update',
+    }).then(async res => {
+      if (!res.isConfirmed) return;
+      this.isSubmitting = true;
+
+      try {
+        if (this.thumbnailFile) {
+          const thumbUrl = await this.uploadFile(this.thumbnailFile, 'thumbnail');
+          this.form.patchValue({ thumbnail: thumbUrl });
+          this.imagePreview = thumbUrl;
+        }
+        let uploadedImageUrls: string[] = [];
+        if (this.multiplePhotoFiles.length) {
+          uploadedImageUrls = await Promise.all(
+            this.multiplePhotoFiles.map(f => this.uploadFile(f, 'image'))
+          );
+        }
+        const allImages = [...this.existingImages, ...uploadedImageUrls];
+        this.form.patchValue({ images: allImages });
+        this.photoPreviews = allImages;
+
+        for (let i = 0; i < this.variationOptions.length; i++) {
+          const files = this.variantImageFiles[i] || [];
+          if (files.length) {
+            const urls = await Promise.all(files.map(f => this.uploadFile(f, 'variant')));
+            const control = this.variationOptions.at(i);
+            control.patchValue({ images: [...control.value.images.filter((img: string) => !img.startsWith('data:')), ...urls] });
+          }
+        }
+
+        const val = { ...this.form.value, sub_category_id: this.form.value.sub_category_id || null };
+        this.productService.updateProduct(this.productId, val).subscribe({
+          next: () => Swal.fire('Updated!', 'Product updated successfully', 'success').then(() => this.router.navigate(['/admin/products'])),
+          error: err => { this.isSubmitting = false; Swal.fire('Error', 'Update failed', 'error'); console.error(err); }
+        });
+      } catch (err) {
+        this.isSubmitting = false;
+        Swal.fire('Upload failed', 'Could not upload images', 'error');
+        console.error(err);
+      }
     });
   }
+  onAddedByChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    if (value === 'admin') {
+      this.form.patchValue({ seller_id: 'admin' });
+    } else {
+      this.form.patchValue({ seller_id: null });
+    }
+  }
+  onMultiplePhotosSelected(event: Event): void {
+    const files = (event.target as HTMLInputElement).files;
+    if (!files || files.length === 0) return;
 
-  private sendUpdate(): void {
-    const data = this.cleanIds(this.form.value);
-    this.isSubmitting = true;
+    const newFiles = Array.from(files);
+    this.multiplePhotoFiles.push(...newFiles);
 
-    this.productService.updateProduct(this.productId, data).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        Swal.fire('Updated!', 'Product successfully updated.', 'success').then(() =>
-          this.router.navigate(['/admin/products'])
-        );
-      },
-      error: () => {
-        this.isSubmitting = false;
-        Swal.fire('Error', 'Update failed.', 'error');
-      },
-    });
+    for (const file of newFiles) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.photoPreviews.push(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
-  private cleanIds(obj: any): any {
-    const o = { ...obj };
-    if (o.sub_category_id === '') o.sub_category_id = null;
-    if (o.category_id === '') o.category_id = null;
-    return o;
+  onImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.thumbnailFile = file;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
-  private generateSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g, '');
+  removeThumbnail(): void {
+    this.thumbnailFile = null;
+    this.imagePreview = null;
+    this.form.patchValue({ thumbnail: '' });
   }
+
+
+  toggleDropdown(type: string) {
+    this.openDropdown = this.openDropdown === type ? null : type;
+  }
+
+  onCheckboxChange(event: Event, type: string, value: string): void {
+    const input = event.target as HTMLInputElement;
+    const checked = input.checked;
+
+    if (!this.selectedVariants[type]) {
+      this.selectedVariants[type] = [];
+    }
+
+    if (checked) {
+      if (!this.selectedVariants[type].includes(value)) {
+        this.selectedVariants[type].push(value);
+      }
+    } else {
+      this.selectedVariants[type] = this.selectedVariants[type].filter(
+        (v) => v !== value
+      );
+    }
+
+    this.buildVariantsFromSelectedAttributes();
+  }
+
 }

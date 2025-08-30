@@ -32,6 +32,9 @@ router.post('/change-password', auth, sellerOnly, changeSellerPassword);
 // Get products by seller
 router.get('/products', auth, sellerOnly, getProducts.getProductsBySeller);
 router.post('/products', auth, sellerOnly, getProducts.createProduct);
+router.put('/products/:id', auth, sellerOnly, getProducts.updateProduct);
+
+
 router.post('/products/status', auth, sellerOnly, getProducts.status_update);
 
 // Get all orders for the authenticated seller with pagination and filters
@@ -47,8 +50,6 @@ router.post("/:orderId/paymentStatus", auth, sellerOnly, sellerOrderController.c
 router.post("/:orderId/status", auth, sellerOnly, sellerOrderController.changeOrderStatus);
 
 router.get("/dashboard", auth, sellerOnly, sellerDashboardController.sellerDashboard);
-
-
 
 // router.post("/upload-logo", upload.single("logo"), sellerController.uploadLogo);
 
