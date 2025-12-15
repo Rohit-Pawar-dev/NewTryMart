@@ -69,10 +69,11 @@ router.post(
 
 router.post(
     '/tryon-shoes',
-    // upload.fields([
-    //     { name: 'model_photo', maxCount: 1 },
-    //     { name: 'shoes_photo', maxCount: 1 },
-    // ]),
-    getTryOnResult
+    upload.fields([
+        { name: 'model_photo', maxCount: 1 },
+        { name: 'shoes_photo', maxCount: 1 },
+    ]),
+    // getTryOnResult
+    tryOnShoes
 );
 module.exports = router;

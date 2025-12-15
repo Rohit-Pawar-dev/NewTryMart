@@ -303,23 +303,23 @@ exports.tryOnClothes = async (req, res) => {
 
 // Dummy controller for Shoes Try-On API
 exports.getTryOnResult = (req, res) => {
-  try {
-    // Dummy response data
-    const response = {
-      success: true,
-      message: "Shoes try-on result received successfully.",
-      data: "https://40e507dd0272b7bb46d376a326e6cb3c.cdn.bubble.io/f1762606396131x623989171948111000/tmpi7y6fiif.jpeg"
-    };
+    try {
+        // Dummy response data
+        const response = {
+            success: true,
+            message: "Shoes try-on result received successfully.",
+            data: "https://40e507dd0272b7bb46d376a326e6cb3c.cdn.bubble.io/f1762771571370x115021385705457840/output_0.png"
+        };
 
-    // Return response
-    return res.status(200).json(response);
-  } catch (error) {
-    console.error("Error in try-on controller:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
+        // Return response
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error("Error in try-on controller:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
 };
 
 
